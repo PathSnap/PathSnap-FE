@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "$EC2_SSH_KEY" > ~/ec2_key
           chmod 600 ~/ec2_key
-          scp -i ~/ec2_key -r ./dist/* ubuntu@$MY_IP:/var/www/html/
+          scp -o StrictHostKeyChecking=no -i ~/ec2_key -r ./dist/* ubuntu@$MY_IP:/var/www/html/
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          MY_IP: ${{ secrets.EC2IP }}
+          MY_IP: ${{ secrets.MY_IP }}
