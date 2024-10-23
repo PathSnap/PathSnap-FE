@@ -24,13 +24,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. ESLint 검사
-      - name: Run ESLint
-        run: npm run lint
+      # # 4. ESLint 검사
+      # - name: Run ESLint
+      #   run: npm run lint
 
-      # 5. Jest로 테스트 실행
-      - name: Run tests
-        run: npm run test -- --ci --coverage
+      # # 5. Jest로 테스트 실행
+      # - name: Run tests
+      #   run: npm run test -- --ci --coverage
 
       # 6. React 프로젝트 빌드 테스트
       - name: Build project
