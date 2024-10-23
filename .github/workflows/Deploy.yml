@@ -1,9 +1,9 @@
 name: Deploy React App to EC2
 
 on:
-  push:
+  pull_request:
     branches:
-      - main  # main 브랜치에 푸시될 때 실행
+      - main  
 
 jobs:
   build:
