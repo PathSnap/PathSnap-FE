@@ -3,7 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- Manifest 파일 링크 -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- 모바일 웹 앱을 위한 메타 태그 -->
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- 아이콘 관련 메타 태그 (홈 화면 추가 시 사용됨) -->
+    <link rel="apple-touch-icon" href="/icons/apple-icon-180.png" />
+    <link
+      rel="icon"
+      sizes="192x192"
+      href="/icons/manifest-icon-192.maskable.png"
+    />
+    <link
+      rel="icon"
+      sizes="512x512"
+      href="/icons/manifest-icon-512.maskable.png"
+    />
+
+    <!-- 뷰포트 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <title>Path-Snap</title>
@@ -13,8 +34,7 @@
     <script type="module" src="/src/main.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
-        // Register a service worker hosted at the root of the
-        // site using the default scope.
+        // Register a service worker hosted at the root of the site using the default scope.
         navigator.serviceWorker
           .register('/sw.js')
           .then((registration) => {
