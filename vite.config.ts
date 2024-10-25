@@ -11,47 +11,32 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
+        short_name: 'Path-Snap',
+        name: 'Path-Snap',
         icons: [
           {
-            src: './icons/apple-touch-icon-57x57.png',
-            sizes: '57x57',
+            src: 'icons/manifest-icon-192.maskable.png',
+            sizes: '192x192',
             type: 'image/png',
+            purpose: 'any',
           },
           {
-            src: './icons/apple-touch-icon-60x60.png',
-            sizes: '60x60',
+            src: 'icons/manifest-icon-192.maskable.png',
+            sizes: '192x192',
             type: 'image/png',
+            purpose: 'maskable',
           },
           {
-            src: './icons/apple-touch-icon-72x72.png',
-            sizes: '72x72',
+            src: 'icons/manifest-icon-512.maskable.png',
+            sizes: '512x512',
             type: 'image/png',
+            purpose: 'any',
           },
           {
-            src: './icons/apple-touch-icon-76x76.png',
-            sizes: '76x76',
+            src: 'icons/manifest-icon-512.maskable.png',
+            sizes: '512x512',
             type: 'image/png',
-          },
-          {
-            src: './icons/apple-touch-icon-114x114.png',
-            sizes: '114x114',
-            type: 'image/png',
-          },
-          {
-            src: './icons/apple-touch-icon-120x120.png',
-            sizes: '120x120',
-            type: 'image/png',
-          },
-
-          {
-            src: './icons/apple-touch-icon-144x144.png',
-            sizes: '144x144',
-            type: 'image/png',
-          },
-          {
-            src: './icons/apple-touch-icon-152x152.png',
-            sizes: '152x152',
-            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
         start_url: '.',
