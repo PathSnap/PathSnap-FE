@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 dev-dist
+
+# TypeScript build info files
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo

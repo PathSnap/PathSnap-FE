@@ -4,7 +4,7 @@
 - [ ] Refactor
 - [ ] Fix
 - [ ] Design
-- [ ] Publishing
+- [ ] Chore
 
 ## Changes(or Solution)
 
