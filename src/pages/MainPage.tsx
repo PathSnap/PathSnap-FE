@@ -1,4 +1,4 @@
-import MapComponent from '../components/MapComponent';
+import MapComponent from '../components/Map/MapComponent';
 
 const MainPage = () => {
   return (

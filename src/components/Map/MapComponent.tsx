@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../icons/Map/MapStyles.css'; 
-import customMainMarker from '../icons/Map/CustomMainMarker'; 
-import customImageMarker from '../icons/Map/CustomImageMarker';
+import customMainMarker from './marker/CustomMainMarker'; 
+import customImageMarker from './marker/CustomImageMarker';
 
 const MapComponent: React.FC = () => {
   const [position, setPosition] = useState<[number, number] | null>(null); // 타입을 [number, number]로 수정
