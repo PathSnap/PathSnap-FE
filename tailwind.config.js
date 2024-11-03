@@ -13,14 +13,14 @@ export default {
         xs: '0px -8px 12px rgba(0, 0, 0, 0.08)',
       },
       keyframes: {
-        glow: {
+        main_marker_glow: {
           '0%': { boxShadow: '0 0 5px 5px rgba(160, 229, 229, 0.5)' },
           '50%': { boxShadow: '0 0 15px 15px rgba(0, 0, 0, 0.3)' },
           '100%': { boxShadow: '0 0 5px 5px rgba(160, 229, 229, 0.5)' },
         },
       },
       animation: {
-        glow: 'glow 2s infinite',
+        main_marker_glow: 'main_marker_glow 2s infinite',
       },
     },
   },
