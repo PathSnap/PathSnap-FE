@@ -13,7 +13,7 @@ const SelectBox: React.FC<SelectBoxProps> = ({ leftText, rightText }) => {
   return (
     <div
       className={
-        'w-[140px] h-[52px] bg-white shadow-xxs rounded-full flex px-[22px] justify-between items-center'
+        'w-[140px] h-[52px] bg-white shadow-xxs rounded-full flex px-[22px] justify-between items-center pt-0.5'
       }
     >
       {boxItems.map((boxItem, boxIndex) => {
@@ -27,7 +27,7 @@ const SelectBox: React.FC<SelectBoxProps> = ({ leftText, rightText }) => {
           >
             {boxItem}
             <div
-              className={`w-1 h-1 bg-primary rounded-full absolute right-1/2 -top-1.5 ${boxIndex === selectedItemIndex ? 'visible' : 'invisible'}`}
+              className={`w-1 h-1 bg-primary rounded-full absolute right-1/2 -top-1 ${boxIndex === selectedItemIndex ? 'visible' : 'invisible'}`}
             ></div>
           </div>
         );
