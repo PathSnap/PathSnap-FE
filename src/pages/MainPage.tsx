@@ -26,7 +26,7 @@ const MainPage = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col relative">
+    <div className="h-screen w-screen z-0 flex flex-col relative">
       {/* 지도가 남은 화면 공간을 채우도록 flex-grow 적용 */}
       <div className="flex-grow">
         <MapComponent currentPosition={currentPosition} />
