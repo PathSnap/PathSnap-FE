@@ -16,10 +16,10 @@ const Footer: React.FC = () => {
   const [selectedFooterIndex, setSelectedFooterIndex] = useState<number>(0);
 
   return (
-    <div className="max-w-[500px] w-full fixed h-20 bottom-0 flex justify-around items-center shadow-xs rounded-t-2xl ">
+    <div className="max-w-[500px] w-full fixed h-20 bottom-0 flex justify-around items-center shadow-xs rounded-t-2xl z-50 bg-white">
       <div
         className={
-          'absolute bg-primary w-[68px] h-[68px] rounded-full bottom-[42px]'
+          'absolute bg-primary w-[68px] h-[68px] rounded-full bottom-[42px] z-40'
         }
       ></div>
 

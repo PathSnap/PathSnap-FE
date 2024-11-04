@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import Footer from './components/Footer';
+import BottomSheet from './components/BottomSheet/BottomSheet';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
       </Routes>
+      <BottomSheet />
       <Footer />
     </Router>
   );
