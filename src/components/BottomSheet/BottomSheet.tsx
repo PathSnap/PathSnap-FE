@@ -1,26 +1,39 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import SelectBox from './SelectBox';
 import IconDrag from '../../icons/BottomSheeet/IconDrag';
 import IconCar from '../../icons/BottomSheeet/IconCar';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 
 const BottomSheet: React.FC = () => {
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<Boolean>(false);
+  const handleBottomSheet = (): void => {
+    setIsBottomSheetOpen((prev) => !prev);
+  };
   return (
     <div
-      className={
-        'w-full h-fit bg-white absolute top-14 rounded-t-3xl max-w-[500px] shadow-m z-50'
-      }
+      className={`w-full bg-white absolute rounded-t-3xl max-w-[500px] shadow-m z-50 transition-all duration-300 ${
+        isBottomSheetOpen
+          ? 'top-[53px] h-[calc(100%-53px)]'
+          : 'top-[calc(100%-62px)] h-[62px]'
+      }`}
     >
-      <Header />
-      <ContentWrapper />
+      <Header handleBottomSheet={handleBottomSheet} />
+      {isBottomSheetOpen && <ContentWrapper />}
     </div>
   );
 };
 export default BottomSheet;
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  handleBottomSheet: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ handleBottomSheet }) => {
   return (
-    <div className={'h-[62px] pt-2.5 flex justify-center'}>
+    <div
+      onClick={() => handleBottomSheet()}
+      className={'h-[62px] pt-2.5 flex justify-center'}
+    >
       <div className={'bg-[#D1D1D6] h-1.5 w-9 rounded-[9px]'}></div>
     </div>
   );
@@ -117,7 +130,7 @@ const LocationRecord: React.FC = () => {
           <div>부천시 | 7:30</div>
           <div>강원도 | 15:30</div>
         </div>
-        <div className={'text-sm flex gap-2.5'}>
+        <div className={'text-sm flex gap-2.5 items-center'}>
           <IconCar />
           <div>26분 | 3.5km</div>
         </div>
