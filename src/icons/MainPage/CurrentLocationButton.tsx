@@ -9,7 +9,7 @@ const CurrentLocationButton: React.FC<CurrentLocationButtonProps> = ({
 }) => {
   return (
     <div className="relative">
-      <div style={{ zIndex: 1000 }} className="absolute bottom-[150px] right-2">
+      <div style={{ zIndex: 1000 }} className="absolute bottom-[70px] right-2">
         <button
           onClick={onClick}
           className="h-[44px] w-[44px] bg-[#FFFFFF] rounded-full shadow-lg flex items-center justify-center"
