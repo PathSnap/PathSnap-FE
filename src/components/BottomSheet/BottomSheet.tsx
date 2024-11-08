@@ -52,7 +52,7 @@ const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
 
 const ContentHeader: React.FC = () => {
   return (
-    <div className={'flex justify-between items-center w-full'}>
+    <div className={'flex justify-between items-center w-full px-1'}>
       <div className={'text-second font-semibold text-2xl'}>여행 제목 없음</div>
       <SelectBox leftText="내 기록" rightText="단체" />
     </div>

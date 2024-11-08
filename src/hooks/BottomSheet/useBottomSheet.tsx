@@ -10,7 +10,6 @@ interface BottomSheetMetrics {
     prevTouchY?: number;
     movingDirection: 'none' | 'down' | 'up';
   };
-  isContentAreaTouched: boolean;
 }
 
 const useBottomSheet = () => {
@@ -24,17 +23,17 @@ const useBottomSheet = () => {
     touchMove: {
       movingDirection: 'none',
     },
-    isContentAreaTouched: false,
   });
+  const [isContentAreaTouched, setIsContentAreaTouched] = React.useState(false);
 
   useEffect(() => {
-    // 바텀시트가 움직일 수 있는 지 판별
+    // 바텀시트가 움직일 수 있는지 판별
     const canUserMoveBottomSheet = () => {
-      const { touchMove, isContentAreaTouched } = metrics.current;
+      const { touchMove } = metrics.current;
 
-      // 컨텐츠 영역 아님 -> 바텀시트를 움직이는 영역
-      if (!isContentAreaTouched) {
-        return true;
+      // 컨텐츠 영역을 터치한 경우 바텀시트를 움직이지 않음
+      if (isContentAreaTouched) {
+        return false;
       }
 
       // 바텀시트가 최대로 올라와있지 않음
@@ -42,20 +41,17 @@ const useBottomSheet = () => {
         return true;
       }
 
-      // 아래로 스크롤(위로 올림)했지만 더이상 올라갈 수 없음 -> 바텀시트를 움직임
-      if (touchMove.movingDirection === 'down') {
-        return content.current!.scrollTop <= 0;
-      }
+      // 아래로 스크롤(위로 올림)했지만 더 이상 올라갈 수 없음 -> 바텀시트를 움직임
+      // if (content.current && content.current.scrollTop <= 0) {
+      //   return content.current!.scrollTop <= 0;
+      // }
 
-      // 위에 해당 없음 -> 바텀시트 움직임 X
       return false;
     };
 
     const handleTouchStart = (e: TouchEvent) => {
       const { touchStart } = metrics.current;
-      // touchStart.sheetY(바텀시트 최상단 y값)에 현재 바텀시트의 최상단 y값 저장
       touchStart.sheetY = sheet.current!.getBoundingClientRect().y;
-      // 터치한 곳의 y값을 touchStart.touchY에 저장
       touchStart.touchY = e.touches[0].clientY;
     };
 
@@ -63,75 +59,80 @@ const useBottomSheet = () => {
       const { touchStart, touchMove } = metrics.current;
       const currentTouch = e.touches[0];
 
-      // prevTouchY가 없으면 현재 터치한 곳의 y값을 저장
       if (touchMove.prevTouchY === undefined) {
         touchMove.prevTouchY = touchStart.touchY;
       }
 
-      // 앱을 처음 시작하면 prevTouchY가 0이므로 현재 터치한 곳의 y값을 저장
       if (touchMove.prevTouchY === 0) {
         touchMove.prevTouchY = touchStart.touchY;
       }
 
-      // 현재 터치한 곳의 y값이 이전 터치한 곳의 y값보다 아래(y값은 더 큼) -> down
       if (currentTouch.clientY > touchMove.prevTouchY) {
         touchMove.movingDirection = 'down';
       }
 
-      // 현재 터치한 곳의 y값이 이전 터치한 곳의 y값보다 위(y값은 더 작음) -> up
       if (currentTouch.clientY < touchMove.prevTouchY) {
         touchMove.movingDirection = 'up';
       }
 
       if (canUserMoveBottomSheet()) {
-        e.preventDefault();
+        e.preventDefault(); // 바텀시트가 움직일 때 콘텐츠 스크롤을 막음
 
-        // 드래그된 현재 Y 위치 - 처음 터치한 Y 위치(이 값만큼 바텀시트를 이동해야 함)
+        // 드래그된 현재 Y 위치 - 처음 터치한 Y 위치
         const touchOffset = currentTouch.clientY - touchStart.touchY;
-        // 이동 후의 바텀시트의 최상단 y값
         let nextSheetY = touchStart.sheetY + touchOffset;
-        console.log(nextSheetY);
 
         if (nextSheetY <= MIN_Y) {
-          return (nextSheetY = MIN_Y);
+          nextSheetY = MIN_Y;
         }
         if (nextSheetY >= MAX_Y) {
-          return (nextSheetY = MAX_Y);
+          nextSheetY = MAX_Y;
         }
 
-        console.log('translate1');
         sheet.current!.style.setProperty(
           'transform',
           `translateY(${nextSheetY - MAX_Y}px)`
         );
       } else {
-        document.body.style.overflowY = 'hidden';
+        document.body.style.overflowY = 'hidden'; // 바텀시트가 아닌 곳을 터치하면 콘텐츠 스크롤 차단
       }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       document.body.style.overflowY = 'auto';
-      const { touchMove } = metrics.current;
 
-      //드래그 끝나고 바텀시트가 위치한 곳을 저장
+      const { touchMove } = metrics.current;
       const currentSheetY = sheet.current!.getBoundingClientRect().y;
 
-      if (currentSheetY !== MIN_Y) {
-        if (touchMove.movingDirection === 'down') {
+      if (!isContentAreaTouched) {
+        console.log('isContentAreaTouched', isContentAreaTouched);
+        sheet.current!.style.transition = 'transform 0.3s ease';
+        if (touchMove.movingDirection === 'down' && currentSheetY >= MIN_Y) {
           sheet.current!.style.setProperty('transform', 'translateY(0)');
-          console.log('translate2');
         }
 
-        if (touchMove.movingDirection === 'up') {
+        if (
+          touchMove.movingDirection === 'up' &&
+          currentSheetY <= MAX_Y - FOOTER_HEIGHT
+        ) {
           sheet.current!.style.setProperty(
             'transform',
             `translateY(${MIN_Y - MAX_Y + FOOTER_HEIGHT}px)`
           );
-          console.log('translate3');
         }
       }
 
-      // metrics 초기화.
+      // 애니메이션이 끝난 후 transition 속성을 제거
+      const handleTransitionEnd = () => {
+        sheet.current!.style.transition = '';
+        sheet.current!.removeEventListener(
+          'transitionend',
+          handleTransitionEnd
+        );
+      };
+      sheet.current!.addEventListener('transitionend', handleTransitionEnd);
+
+      // metrics 초기화
       metrics.current = {
         touchStart: {
           sheetY: 0,
@@ -141,29 +142,38 @@ const useBottomSheet = () => {
           prevTouchY: 0,
           movingDirection: 'none',
         },
-        isContentAreaTouched: false,
       };
+      // setIsContentAreaTouched(false);
     };
+    const handleTouchStartContentArea = () => {
+      console.log('content touched');
+      setIsContentAreaTouched(true); // content 영역을 터치한 경우 바텀시트 이동 차단
+    };
+
+    const handleTouchStartOutside = (e: TouchEvent) => {
+      if (!content.current?.contains(e.target as Node)) {
+        setIsContentAreaTouched(false); // content 영역 외부를 터치한 경우 바텀시트 이동 가능
+      }
+    };
+
     sheet.current?.addEventListener('touchstart', handleTouchStart);
     sheet.current?.addEventListener('touchmove', handleTouchMove);
     sheet.current?.addEventListener('touchend', handleTouchEnd);
+    content.current?.addEventListener(
+      'touchstart',
+      handleTouchStartContentArea
+    );
+    document.body.addEventListener('touchstart', handleTouchStartOutside);
 
     return () => {
       sheet.current?.removeEventListener('touchstart', handleTouchStart);
       sheet.current?.removeEventListener('touchmove', handleTouchMove);
       sheet.current?.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, []);
-
-  // 컨텐츠 영역 터치했을 때
-  useEffect(() => {
-    const handleTouchStart = () => {
-      metrics.current!.isContentAreaTouched = true;
-    };
-    content.current?.addEventListener('touchstart', handleTouchStart);
-
-    return () => {
-      content.current?.removeEventListener('touchstart', handleTouchStart);
+      content.current?.removeEventListener(
+        'touchstart',
+        handleTouchStartContentArea
+      );
+      document.body.removeEventListener('touchstart', handleTouchStartOutside);
     };
   }, []);
 
