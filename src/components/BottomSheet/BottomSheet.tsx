@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import SelectBox from './SelectBox';
 
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
@@ -12,6 +12,7 @@ import RecordWrapper from './Records/RecordWrapper';
 import PhotoRecord from './Records/PhotoRecord';
 import LocationRecord from './Records/LocationRecord';
 import useRecordStore from '../../stores/RecordStore';
+import useModalStore from '../../stores/ModalStore';
 
 const BottomSheet: React.FC = () => {
   const { sheet } = useBottomSheet();
@@ -149,6 +150,7 @@ const Content: React.FC = () => {
 };
 
 const AddPhoto: React.FC = () => {
+  const { openModal } = useModalStore();
   return (
     <RecordWrapper
       className={
@@ -159,6 +161,9 @@ const AddPhoto: React.FC = () => {
         className={
           'w-[68px] h-[68px] rounded-full shadow-xxs grid place-items-center'
         }
+        onClick={() => {
+          openModal('addPhotoModal');
+        }}
       >
         <IconPlus width={22} height={22} />
       </div>
