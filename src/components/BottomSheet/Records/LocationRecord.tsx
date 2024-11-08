@@ -14,9 +14,9 @@ const LocationRecord: React.FC = () => {
           }
         >
           <div className={'row-span-2 self-center'}>
-            <div className={'w-2 h-2 rounded-full bg-[#D6D6D6]'}></div>
+            <div className={'w-2 h-2 rounded-full bg-[#FF936B]'}></div>
             <div className="w-[5px] h-[30px] border-r-2 border-dashed border-[#D6D6D6] "></div>
-            <div className={'w-2 h-2 rounded-full bg-[#D6D6D6]'}></div>
+            <div className={'w-2 h-2 rounded-full bg-[#77CEBD]'}></div>
           </div>
           <div>부천시 | 7:30</div>
           <div>강원도 | 15:30</div>
@@ -26,8 +26,8 @@ const LocationRecord: React.FC = () => {
           <div>26분 | 3.5km</div>
         </div>
       </div>
-      <div className={'w-full rounded-2xl'}>
-        <img src="/icons/apple-icon-180.png" className={'w-full h-full'} />
+      <div className={'w-full rounded-2xl border-2 border-gray-200'}>
+        지도자리..
       </div>
     </RecordWrapper>
   );
