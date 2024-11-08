@@ -1,6 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url('@/fonts/pretendardvariable/PretendardVariable.ttf')
+    format('truetype-variations');
+}
 
 html {
   margin: 0px;
@@ -14,6 +22,7 @@ body {
   height: 100vh;
   min-width: 375px;
   max-width: 500px;
+  font-family: 'Pretendard Variable';
 }
 
 #root {
