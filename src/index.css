@@ -1,28 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @font-face {
   font-family: 'Pretendard Variable';
-  font-weight: 45 920;
   font-style: normal;
+  font-weight: 45 920;
   font-display: swap;
-  src: url('@/fonts/pretendardvariable/PretendardVariable.ttf')
-    format('truetype-variations');
+  src: url('/fonts/PretendardVariable.ttf') format('truetype-variations'); /* 경로를 확인 */
 }
 
 html {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   height: 100vh;
 }
 
 body {
-  margin: 0px auto;
-  padding: 0px;
+  margin: 0 auto;
+  padding: 0;
   height: 100vh;
   min-width: 375px;
   max-width: 500px;
-  font-family: 'Pretendard Variable';
+  font-family: 'Pretendard Variable'; /* 기본 폰트 적용 */
 }
 
 #root {
@@ -30,6 +30,8 @@ body {
   position: relative;
 }
 
+.scroll::-webkit-scrollbar,
+#root::-webkit-scrollbar,
 ::-webkit-scrollbar {
-  display: none;
+  display: none; /* 모든 스크롤바 비활성화 */
 }
