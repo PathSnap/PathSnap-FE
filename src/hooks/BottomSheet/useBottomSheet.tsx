@@ -69,7 +69,7 @@ export function useBottomSheet2() {
         `translateY(${nextSheetY - MAX_Y}px)`
       );
     };
-    const handleTouchEnd = (e: TouchEvent) => {
+    const handleTouchEnd = () => {
       const { touchMove } = metrics.current;
 
       const currentSheetY = headerRef.current!.getBoundingClientRect().y;
