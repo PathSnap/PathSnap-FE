@@ -1,68 +1,147 @@
-import React, { ReactNode, useState } from 'react';
+import React from 'react';
+import { BOTTOM_SHEET_HEIGHT, MAX_Y } from '../../utils/BottomSheetOption';
+import { useBottomSheet2 } from '../../hooks/BottomSheet/useBottomSheet';
+import PhotoRecord from './Records/PhotoRecord';
 import SelectBox from './SelectBox';
-import IconDrag from '../../icons/BottomSheeet/IconDrag';
-import IconCar from '../../icons/BottomSheeet/IconCar';
+import useRecordStore from '../../stores/RecordStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
+import useModalStore from '../../stores/ModalStore';
+import RecordWrapper from './Records/RecordWrapper';
+import LocationRecord from './Records/LocationRecord';
 
-const BottomSheet: React.FC = () => {
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<Boolean>(false);
-  const handleBottomSheet = (): void => {
-    setIsBottomSheetOpen((prev) => !prev);
-  };
+const BottomSheet2: React.FC = () => {
+  const { sheetRef, headerRef } = useBottomSheet2();
   return (
     <div
-      className={`w-full bg-white absolute rounded-t-3xl max-w-[500px] shadow-m z-50 transition-all duration-300 ${
-        isBottomSheetOpen
-          ? 'top-[53px] h-[calc(100%-53px)]'
-          : 'top-[calc(100%-62px)] h-[62px]'
-      }`}
+      style={{ height: BOTTOM_SHEET_HEIGHT, top: MAX_Y }}
+      className={`flex flex-col fixed left-0 right-0 bg-white transition-transform duration-150 ease-out rounded-t-3xl shadow-m z-50`}
+      ref={sheetRef}
     >
-      <Header handleBottomSheet={handleBottomSheet} />
-      {isBottomSheetOpen && <ContentWrapper />}
+      <BottomSheetHeader headerRef={headerRef} />
+      <ContentHeader />
+      <ContentWrapper>
+        <Content />
+      </ContentWrapper>
     </div>
   );
 };
-export default BottomSheet;
 
-interface HeaderProps {
-  handleBottomSheet: () => void;
+export default BottomSheet2;
+
+interface BottomSheetHeaderProps {
+  headerRef: React.RefObject<HTMLDivElement>;
 }
 
-const Header: React.FC<HeaderProps> = ({ handleBottomSheet }) => {
+const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({ headerRef }) => {
   return (
     <div
-      onClick={() => handleBottomSheet()}
-      className={'h-[62px] pt-2.5 flex justify-center'}
+      ref={headerRef}
+      className={'h-[62px] pt-2.5 flex justify-center flex-shrink-0'}
     >
       <div className={'bg-[#D1D1D6] h-1.5 w-9 rounded-[9px]'}></div>
     </div>
   );
 };
 
-const ContentWrapper: React.FC = () => {
+const ContentHeader: React.FC = () => {
+  const { isGroupRecord, setIsGroupRecord } = useRecordStore();
+  const selectedBoxIndex = isGroupRecord ? 1 : 0;
+
   return (
     <div
-      className={'px-[22px] flex flex-col gap-5 justify-center items-center'}
+      className={
+        'flex justify-between items-center w-full gap-5 px-[22px] pb-5'
+      }
     >
-      <ContentHeader />
-      <Content />
+      <div className={'text-second font-semibold text-2xl'}>여행 제목 없음</div>
+      <SelectBox
+        leftText="내 기록"
+        rightText="단체"
+        selectedBoxIndex={selectedBoxIndex}
+        setSelectedBoxIndex={setIsGroupRecord}
+      />
     </div>
   );
 };
 
-const ContentHeader: React.FC = () => {
+//  단체 기록일때 함께 여행한 사람들을 나타내는 컴포넌트
+interface ProfileProps {
+  photoSrc?: string;
+  name: string;
+  isLeader: boolean;
+}
+const Profile: React.FC<ProfileProps> = ({
+  photoSrc = '/icons/apple-icon-180.png',
+  name,
+  isLeader,
+}) => {
   return (
-    <div className={'flex justify-between items-center w-full'}>
-      <div className={'text-second font-semibold text-2xl'}>여행 제목 없음</div>
-      <SelectBox leftText="내 기록" rightText="단체" />
+    <div
+      className={
+        'flex flex-col items-center flex-shrink-0 relative gap-2 last:pr-[22px]'
+      }
+    >
+      <img src={photoSrc} className={'w-14 rounded-full aspect-square'} />
+      <div className={'text-sm text-second'}>{name}</div>
+      {/* 리더라면 강조표시 */}
+      {isLeader && (
+        <div className="absolute rounded-full w-[60px] aspect-square border-2 -translate-y-0.5 border-primary"></div>
+      )}
+    </div>
+  );
+};
+
+const PeopleWithTravel: React.FC = () => {
+  return (
+    <div className={'pb-5 w-screen pl-[10px]'}>
+      <div className={'font-semibold text-second '}>함께 여행한 사람들</div>
+      <div
+        className={
+          'flex gap-x-[18px] overflow-x-auto justify-start items-center w-full pt-[14px]'
+        }
+      >
+        {/* 사람 추가 */}
+        <div
+          className={'flex flex-col items-center overflow-visible gap-2 px-1'}
+        >
+          <div
+            className={
+              'w-14 aspect-square rounded-full grid place-items-center shadow-xxs p-1'
+            }
+          >
+            <IconPlus width={16} height={16} />
+          </div>
+          <div className={'text-second text-opacity-50 text-sm'}>추가</div>
+        </div>
+        {/* 프로필들 나열될 부분 */}
+        <Profile name="김람운" isLeader={true} />
+
+        {[0, 1, 2, 3, 4, 5].map((item) => {
+          return <Profile name="이희연" isLeader={false} key={item} />;
+        })}
+      </div>
+    </div>
+  );
+};
+
+interface ContentWrapperProps {
+  children?: React.ReactNode;
+}
+const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
+  const isGroupRecord = useRecordStore((state) => state.isGroupRecord);
+  return (
+    <div className={'h-full px-3 overflow-y-auto '}>
+      {isGroupRecord ? <PeopleWithTravel /> : null}
+      {children}
     </div>
   );
 };
 
 const Content: React.FC = () => {
   return (
-    <div className={'flex flex-col gap-[14px] w-full'}>
-      <div className={'text-second font-semibold w-full text-left'}>기록</div>
+    <div className={'px-[10px] flex flex-col gap-5 pb-5'}>
+      <PhotoRecord />
+      <PhotoRecord />
       <PhotoRecord />
       <LocationRecord />
       <AddPhoto />
@@ -70,79 +149,8 @@ const Content: React.FC = () => {
   );
 };
 
-interface RecordWrapperProps {
-  children: ReactNode;
-  className?: string;
-}
-const RecordWrapper: React.FC<RecordWrapperProps> = ({
-  children,
-  className,
-}) => {
-  return (
-    <div className={`w-full h-[170px] rounded-2xl relative ${className}`}>
-      {children}
-    </div>
-  );
-};
-
-const PhotoRecord: React.FC = () => {
-  return (
-    <RecordWrapper>
-      <div className={'w-full h-[170px] rounded-2xl relative'}>
-        {/* 오버레이 */}
-        <div
-          className={
-            'w-full h-full bg-black bg-opacity-15 absolute rounded-2xl'
-          }
-        ></div>
-        <img
-          src="/icons/apple-icon-180.png"
-          className={'w-full h-full object-cover'}
-        />
-        {/* 이미지 위의 요소들 */}
-        <div className={'absolute right-3 top-3'}>
-          <IconDrag />
-        </div>
-        <div className={'absolute bottom-3 left-3 text-white text-xs'}>
-          <div className={'font-bold'}>장소이름</div>
-          <div>2024.11.03</div>
-        </div>
-      </div>
-    </RecordWrapper>
-  );
-};
-
-const LocationRecord: React.FC = () => {
-  return (
-    <RecordWrapper className={'shadow-l flex p-[14px] gap-5'}>
-      <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
-        <div className={'font-semibold'}>전주로 이동</div>
-        <div
-          className={
-            'text-sm grid grid-cols-[13px_minmax(0,1fr)] grid-rows-2 gap-x-1.5 gap-y-[18px]'
-          }
-        >
-          <div className={'row-span-2 self-center'}>
-            <div className={'w-2 h-2 rounded-full bg-[#D6D6D6]'}></div>
-            <div className="w-[5px] h-[30px] border-r-2 border-dashed border-[#D6D6D6] "></div>
-            <div className={'w-2 h-2 rounded-full bg-[#D6D6D6]'}></div>
-          </div>
-          <div>부천시 | 7:30</div>
-          <div>강원도 | 15:30</div>
-        </div>
-        <div className={'text-sm flex gap-2.5 items-center'}>
-          <IconCar />
-          <div>26분 | 3.5km</div>
-        </div>
-      </div>
-      <div className={'w-full rounded-2xl'}>
-        <img src="/icons/apple-icon-180.png" className={'w-full h-full'} />
-      </div>
-    </RecordWrapper>
-  );
-};
-
 const AddPhoto: React.FC = () => {
+  const { openModal } = useModalStore();
   return (
     <RecordWrapper
       className={
@@ -153,6 +161,9 @@ const AddPhoto: React.FC = () => {
         className={
           'w-[68px] h-[68px] rounded-full shadow-xxs grid place-items-center'
         }
+        onClick={() => {
+          openModal('addPhotoModal');
+        }}
       >
         <IconPlus width={22} height={22} />
       </div>

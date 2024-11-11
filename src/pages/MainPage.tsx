@@ -26,14 +26,11 @@ const MainPage = () => {
   };
 
   return (
-    <div className="h-screen w-screen z-0 flex flex-col relative">
+    <div className="h-full w-full z-0 flex flex-col relative">
       {/* 지도가 남은 화면 공간을 채우도록 flex-grow 적용 */}
       <div className="flex-grow">
         <MapComponent currentPosition={currentPosition} />
       </div>
-      {/* Footer 영역 확보 */}
-      <div className="h-20"></div>
-
       {/* 현재 위치로 이동 버튼 */}
       <CurrentLocationButton onClick={goToCurrentLocation} />
     </div>
