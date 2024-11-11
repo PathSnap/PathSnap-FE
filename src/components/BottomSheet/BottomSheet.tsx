@@ -14,7 +14,7 @@ const BottomSheet2: React.FC = () => {
   return (
     <div
       style={{ height: BOTTOM_SHEET_HEIGHT, top: MAX_Y }}
-      className={`flex flex-col fixed left-0 right-0 bg-white transition-transform duration-150 ease-out rounded-t-3xl shadow-m z-50`}
+      className={`flex flex-col fixed  bg-white transition-transform duration-150 ease-out rounded-t-3xl shadow-m z-50 max-w-[500px] w-full`}
       ref={sheetRef}
     >
       <BottomSheetHeader headerRef={headerRef} />
