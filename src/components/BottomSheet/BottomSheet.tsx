@@ -8,6 +8,7 @@ import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import useModalStore from '../../stores/ModalStore';
 import RecordWrapper from './Records/RecordWrapper';
 import LocationRecord from './Records/LocationRecord';
+import { useNavigate } from 'react-router';
 
 const BottomSheet2: React.FC = () => {
   const { sheetRef, headerRef } = useBottomSheet2();
@@ -100,19 +101,7 @@ const PeopleWithTravel: React.FC = () => {
           'flex gap-x-[18px] overflow-x-auto justify-start items-center w-full pt-[14px]'
         }
       >
-        {/* 사람 추가 */}
-        <div
-          className={'flex flex-col items-center overflow-visible gap-2 px-1'}
-        >
-          <div
-            className={
-              'w-14 aspect-square rounded-full grid place-items-center shadow-xxs p-1'
-            }
-          >
-            <IconPlus width={16} height={16} />
-          </div>
-          <div className={'text-second text-opacity-50 text-sm'}>추가</div>
-        </div>
+        <AddPerson />
         {/* 프로필들 나열될 부분 */}
         <Profile name="김람운" isLeader={true} />
 
@@ -120,6 +109,28 @@ const PeopleWithTravel: React.FC = () => {
           return <Profile name="이희연" isLeader={false} key={item} />;
         })}
       </div>
+    </div>
+  );
+};
+
+const AddPerson = () => {
+  const router = useNavigate();
+  const moveToAddPersonPage = () => {
+    router('/add');
+  };
+  return (
+    <div className={'flex flex-col items-center overflow-visible gap-2 px-1'}>
+      <div
+        onClick={() => {
+          moveToAddPersonPage();
+        }}
+        className={
+          'w-14 aspect-square rounded-full grid place-items-center shadow-xxs p-1'
+        }
+      >
+        <IconPlus width={16} height={16} />
+      </div>
+      <div className={'text-second text-opacity-50 text-sm'}>추가</div>
     </div>
   );
 };
