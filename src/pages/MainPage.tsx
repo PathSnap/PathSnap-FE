@@ -1,6 +1,6 @@
 // pages/MainPage.tsx
 
-import MapComponent from '../components/MainPage/Map/OSMMapComponent';
+import MapComponent from '../components/MainPage/Map/NaverMapComponent';
 import CurrentLocationButton from '../icons/MainPage/CurrentLocationButton';
 import { useState } from 'react';
 
@@ -29,7 +29,8 @@ const MainPage = () => {
     <div className="h-full w-full z-0 flex flex-col relative">
       {/* 지도가 남은 화면 공간을 채우도록 flex-grow 적용 */}
       <div className="flex-grow">
-        <MapComponent currentPosition={currentPosition} />
+        {/* <MapComponent currentPosition={currentPosition} /> */}
+        <MapComponent center={{ lat: 37.5665, lng: 126.978 }} zoom={13} />
       </div>
       {/* 현재 위치로 이동 버튼 */}
       <CurrentLocationButton onClick={goToCurrentLocation} />
