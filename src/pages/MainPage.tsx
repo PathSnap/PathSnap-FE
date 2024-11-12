@@ -1,6 +1,6 @@
 // pages/MainPage.tsx
 
-import MapComponent from '../components/MainPage/Map/MapComponent';
+import MapComponent from '../components/MainPage/Map/OSMMapComponent';
 import CurrentLocationButton from '../icons/MainPage/CurrentLocationButton';
 import { useState } from 'react';
 

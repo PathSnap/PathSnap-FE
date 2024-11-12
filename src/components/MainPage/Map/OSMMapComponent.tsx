@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import CustomMainMarker from './marker/CustomMainMarker';
-import CustomImageMarker from './marker/CustomImageMarker';
+import CustomMainMarker from './marker/OSMCustomMainMarker';
+import CustomImageMarker from './marker/OSMCustomImageMarker';
 
 interface MapComponentProps {
   currentPosition: [number, number] | null;
