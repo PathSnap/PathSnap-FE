@@ -115,7 +115,7 @@ const Person: React.FC<PersonProps> = ({ photoSrc, name, phoneNum }) => {
 };
 
 const Buttons = () => {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, _] = useState(false);
   const router = useNavigate();
   const handleClickCancel = () => {
     router('/');
