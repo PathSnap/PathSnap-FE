@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import '/src/css/tailwind.css';
 
 @font-face {
   font-family: 'Pretendard Variable';

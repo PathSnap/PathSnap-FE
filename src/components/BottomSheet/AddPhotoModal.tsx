@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ModalWrapper from '../Modals/ModalWrapper';
 import useModalStore from '../../stores/ModalStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 
 const AddPhotoModal: React.FC = () => {
-  const isFill = false;
+  const [isFill, _] = useState(false);
   const { closeModal } = useModalStore();
   return (
     <ModalWrapper classProp="w-[330px] h-fit bg-white rounded-[20px]  px-[30px] pt-5 pb-7 gap-[18px] text-second">
@@ -32,9 +32,7 @@ const AddPhotoModal: React.FC = () => {
       </div>
       <div className={'flex justify-between w-full font-semibold'}>
         <button
-          className={
-            'w-[127px] h-11 rounded-2xl grid place-items-center bg-[#E5E5E5] text-[#919191]'
-          }
+          className={'w-[127px] h-11 gray-button'}
           onClick={() => {
             closeModal();
           }}
@@ -42,7 +40,7 @@ const AddPhotoModal: React.FC = () => {
           취소
         </button>
         <button
-          className={`w-[127px] h-11 rounded-2xl grid place-items-center bg-primary text-white ${isFill ? '' : 'text-opacity-50'}`}
+          className={`w-[127px] h-11 rounded-2xl  ${isFill ? 'is-active-green-button' : 'non-active-green-button'}`}
         >
           저장
         </button>
