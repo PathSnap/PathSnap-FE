@@ -12,7 +12,7 @@ interface BottomSheetMetrics {
   };
 }
 
-export function useBottomSheet2() {
+export function useBottomSheet() {
   const sheetRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 

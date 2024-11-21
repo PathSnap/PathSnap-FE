@@ -1,6 +1,6 @@
 import React from 'react';
 import { BOTTOM_SHEET_HEIGHT, MAX_Y } from '../../utils/BottomSheetOption';
-import { useBottomSheet2 } from '../../hooks/BottomSheet/useBottomSheet';
+import { useBottomSheet } from '../../hooks/BottomSheet/useBottomSheet';
 import PhotoRecord from './Records/PhotoRecord';
 import SelectBox from './SelectBox';
 import useRecordStore from '../../stores/RecordStore';
@@ -9,9 +9,10 @@ import useModalStore from '../../stores/ModalStore';
 import RecordWrapper from './Records/RecordWrapper';
 import LocationRecord from './Records/LocationRecord';
 import { useNavigate } from 'react-router';
+import IconMenu from '../../icons/BottomSheeet/IconMenu';
 
 const BottomSheet2: React.FC = () => {
-  const { sheetRef, headerRef } = useBottomSheet2();
+  const { sheetRef, headerRef } = useBottomSheet();
   return (
     <div
       style={{ height: BOTTOM_SHEET_HEIGHT, top: MAX_Y }}
@@ -45,22 +46,22 @@ const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({ headerRef }) => {
 };
 
 const ContentHeader: React.FC = () => {
-  const { isGroupRecord, setIsGroupRecord } = useRecordStore();
+  const { isGroupRecord } = useRecordStore();
   const selectedBoxIndex = isGroupRecord ? 1 : 0;
 
   return (
-    <div
-      className={
-        'flex justify-between items-center w-full gap-5 px-[22px] pb-5'
-      }
-    >
-      <div className={'text-second font-semibold text-2xl'}>여행 제목 없음</div>
+    <div className={'flex flex-col w-full gap-5 px-[22px] pb-5'}>
       <SelectBox
         leftText="내 기록"
         rightText="단체"
         selectedBoxIndex={selectedBoxIndex}
-        setSelectedBoxIndex={setIsGroupRecord}
       />
+      <div className={'flex justify-between h-[60px] items-center'}>
+        <div className={'text-second font-semibold text-2xl'}>
+          여행 제목 없음
+        </div>
+        <IconMenu width={5} height={24} />
+      </div>
     </div>
   );
 };
