@@ -5,6 +5,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../../css/PhotoSlider.css';
 import IconContent from '../../../icons/BottomSheeet/IconContent';
+import useModalStore from '../../../stores/ModalStore';
 interface PhotoRecordProps {
   isPhotoRecord?: boolean;
 }
@@ -18,6 +19,8 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord }) => {
     slidesToScroll: 1,
     arrows: false,
   };
+
+  const { openModal } = useModalStore();
 
   return (
     <RecordWrapper isPhotoRecord={isPhotoRecord}>
@@ -56,7 +59,11 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord }) => {
             <div className={'font-bold text-sm'}>장소이름</div>
             <div className={'text-xs'}>2024.11.03</div>
           </div>
-          <IconContent onClick={() => {}} />
+          <IconContent
+            onClick={() => {
+              openModal('photoDetailModal');
+            }}
+          />
         </div>
       </div>
     </RecordWrapper>

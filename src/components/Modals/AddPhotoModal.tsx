@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ModalWrapper from '../Modals/ModalWrapper';
+import ModalWrapper from './ModalWrapper';
 import useModalStore from '../../stores/ModalStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 
@@ -7,7 +7,7 @@ const AddPhotoModal: React.FC = () => {
   const [isFill, _] = useState(false);
   const { closeModal } = useModalStore();
   return (
-    <ModalWrapper classProp="w-[330px] h-fit bg-white rounded-[20px]  px-[30px] pt-5 pb-7 gap-[18px] text-second">
+    <ModalWrapper classProp="w-[330px] h-fit bg-white rounded-[20px] px-[30px] pt-5 pb-7 gap-[18px] text-second">
       <div className={'font-semibold'}>사진추가</div>
       <div className={'flex flex-col w-full'}>
         <div className={'font-semibold text-xs flex items-center'}>
