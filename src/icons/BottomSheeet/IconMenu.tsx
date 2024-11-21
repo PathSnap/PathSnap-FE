@@ -3,11 +3,13 @@ import React from 'react';
 interface IconMenuProps {
   width?: number;
   height?: number;
+  onClick?: () => void;
 }
 
-const IconMenu: React.FC<IconMenuProps> = ({ width, height }) => {
+const IconMenu: React.FC<IconMenuProps> = ({ width, height, onClick }) => {
   return (
     <svg
+      onClick={onClick}
       width={width}
       height={height}
       viewBox="0 0 5 28"
