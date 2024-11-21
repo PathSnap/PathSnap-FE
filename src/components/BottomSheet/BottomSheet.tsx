@@ -142,7 +142,7 @@ interface ContentWrapperProps {
 const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
   const isGroupRecord = useRecordStore((state) => state.isGroupRecord);
   return (
-    <div className={'h-full px-3 overflow-y-auto '}>
+    <div className={'h-full px-3 overflow-y-auto overflow-x-hidden'}>
       {isGroupRecord ? <PeopleWithTravel /> : null}
       {children}
     </div>

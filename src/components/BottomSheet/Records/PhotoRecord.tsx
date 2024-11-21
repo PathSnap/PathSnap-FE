@@ -1,10 +1,10 @@
 import React from 'react';
 import RecordWrapper from './RecordWrapper';
-import IconDrag from '../../../icons/BottomSheeet/IconDrag';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../../css/PhotoSlider.css';
+import IconContent from '../../../icons/BottomSheeet/IconContent';
 
 const PhotoRecord: React.FC = () => {
   var settings = {
@@ -17,9 +17,7 @@ const PhotoRecord: React.FC = () => {
   };
   return (
     <RecordWrapper>
-      <div
-        className={'w-full h-[170px] rounded-2xl relative overflow-x-hidden'}
-      >
+      <div className={'w-full h-[170px] rounded-2xl relative'}>
         {/* 오버레이 */}
         <div
           style={{ pointerEvents: 'none' }}
@@ -48,17 +46,13 @@ const PhotoRecord: React.FC = () => {
             <h3>6</h3>
           </div>
         </Slider>
-        {/* <img
-          src="/icons/apple-icon-180.png"
-          className={'w-full h-full object-cover'}
-        /> */}
         {/* 이미지 위의 요소들 */}
-        <div className={'absolute right-3 top-3 z-20'}>
-          <IconDrag />
-        </div>
-        <div className={'absolute bottom-3 left-3 text-white text-xs z-20'}>
-          <div className={'font-bold'}>장소이름</div>
-          <div>2024.11.03</div>
+        <div className={'w-full absolute flex justify-between top-0 z-20 p-3'}>
+          <div className={'text-white'}>
+            <div className={'font-bold text-sm'}>장소이름</div>
+            <div className={'text-xs'}>2024.11.03</div>
+          </div>
+          <IconContent onClick={() => {}} />
         </div>
       </div>
     </RecordWrapper>
