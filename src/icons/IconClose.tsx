@@ -3,13 +3,16 @@ import React from 'react';
 interface IconCloseProps extends React.SVGProps<SVGSVGElement> {
   width?: number;
   className?: string;
+  onClick?: () => void;
 }
 
 const IconClose: React.FC<IconCloseProps> = ({
   width = 20,
   className = '',
+  onClick,
 }) => (
   <svg
+    onClick={onClick}
     width={width}
     height={width}
     viewBox="0 0 20 21"

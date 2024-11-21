@@ -5,8 +5,11 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../../css/PhotoSlider.css';
 import IconContent from '../../../icons/BottomSheeet/IconContent';
+interface PhotoRecordProps {
+  isPhotoRecord?: boolean;
+}
 
-const PhotoRecord: React.FC = () => {
+const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord }) => {
   var settings = {
     dots: true,
     infinite: true,
@@ -15,8 +18,9 @@ const PhotoRecord: React.FC = () => {
     slidesToScroll: 1,
     arrows: false,
   };
+
   return (
-    <RecordWrapper>
+    <RecordWrapper isPhotoRecord={isPhotoRecord}>
       <div className={'w-full h-[170px] rounded-2xl relative'}>
         {/* 오버레이 */}
         <div
