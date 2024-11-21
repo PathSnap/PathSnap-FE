@@ -20,7 +20,7 @@ function App() {
         <Route element={<NoBottomAndFooterLayout />}>
           <Route path="/add" element={<AddFriendPage />} />
           <Route path="login" element={<LoginPage />} />
-          <Route path="/profile" element={<RegisterPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Route>
       </Routes>
       <ModalView />
