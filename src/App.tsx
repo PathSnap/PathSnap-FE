@@ -5,7 +5,7 @@ import BottomAndFooterLayout from './layouts/BottomAndFooterLayout';
 import NoBottomAndFooterLayout from './layouts/NoBottomAndFooterLayout';
 import AddFriendPage from './pages/AddFriendPage';
 import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/ProfilePage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
         <Route element={<NoBottomAndFooterLayout />}>
           <Route path="/add" element={<AddFriendPage />} />
           <Route path="login" element={<LoginPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<RegisterPage />} />
         </Route>
       </Routes>
       <ModalView />

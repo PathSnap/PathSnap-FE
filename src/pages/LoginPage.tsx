@@ -47,7 +47,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
       onClick={onClick}
       className={`w-full h-[58px] grid grid-cols-[40px_1fr_40px] items-center rounded-2xl px-5 ${className}`}
     >
-      <div>{icon}</div>
+      <div className={'place-items-center'}>{icon}</div>
       <div className={'font-semibold text-lg text-center'}>{text}</div>
       <div></div>
     </div>

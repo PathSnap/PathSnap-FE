@@ -3,7 +3,7 @@ import IconBack from '../icons/IconBack';
 import Input from '../components/Input';
 import { useNavigate } from 'react-router';
 
-const Profile: React.FC = () => {
+const RegisterPage: React.FC = () => {
   const labelStyle = 'text-base font-semibold';
   const inputStyle = 'h-[54px]';
   const [isFill, _] = useState(false);
@@ -53,7 +53,7 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile;
+export default RegisterPage;
 
 const HeaderBar: React.FC = () => {
   const router = useNavigate();
