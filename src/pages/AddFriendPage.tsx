@@ -13,7 +13,7 @@ const AddFriend: React.FC = () => {
         <PersonList />
       </div>
       {/* 버튼 */}
-      <div className={'w-full py-10 px-[30px] flex gap-4 font-semibold'}>
+      <div className={'w-full py-10 px-[30px] flex gap-4 text-lg'}>
         <Buttons />
       </div>
     </>
@@ -126,12 +126,12 @@ const Buttons = () => {
         onClick={() => {
           handleClickCancel();
         }}
-        className={'w-full h-[58px] bg-[#E5E5E5] rounded-2xl text-[#919191]'}
+        className={'w-full h-[58px] gray-button'}
       >
         취소
       </button>
       <button
-        className={`w-full h-[58px] bg-primary rounded-2xl text-white ${isActive ? '' : 'text-opacity-50'}`}
+        className={`w-full h-[58px] ${isActive ? 'is-active-green-button' : 'non-active-green-button'}`}
       >
         저장
       </button>

@@ -9,7 +9,7 @@ export default {
         primaryDark: '#44b8b8',
         borderLight: '#e6f9f9',
         second: '#595959',
-        third: '#999999',
+        third: { DEFAULT: '#999999', light: '#E5E5E5', dark: '#919191' },
       },
       textColor: (theme) => ({ ...theme('colors') }),
       boxShadow: {

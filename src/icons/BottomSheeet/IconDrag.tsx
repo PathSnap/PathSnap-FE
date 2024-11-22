@@ -1,8 +1,13 @@
 import React from 'react';
 
-const IconDrag: React.FC = () => {
+interface IconDragProps {
+  className?: string;
+}
+
+const IconDrag: React.FC<IconDragProps> = ({ className }) => {
   return (
     <svg
+      className={className}
       width="16"
       height="14"
       viewBox="0 0 16 14"

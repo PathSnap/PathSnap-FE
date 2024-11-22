@@ -36,15 +36,11 @@ const RegisterPage: React.FC = () => {
       </div>
       {/* 버튼 */}
       <div className={'flex gap-4 py-10'}>
-        <button
-          className={
-            'w-1/3 h-[58px] bg-[#D9D9D9] text-[#8C8C8C] text-lg font-semibold rounded-2xl'
-          }
-        >
+        <button className={'w-1/3 h-[58px] text-lg gray-button'}>
           건너뛰기
         </button>
         <button
-          className={`w-2/3 h-[58px] bg-primary text-white text-lg font-semibold rounded-2xl  ${isFill ? '' : 'text-opacity-50'}`}
+          className={`w-2/3 h-[58px] text-lg ${isFill ? 'is-active-green-button' : 'non-active-green-button'}`}
         >
           저장하기
         </button>
