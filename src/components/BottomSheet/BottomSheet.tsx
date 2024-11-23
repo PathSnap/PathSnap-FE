@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { BOTTOM_SHEET_HEIGHT, MAX_Y } from '../../utils/BottomSheetOption';
 import { useBottomSheet } from '../../hooks/BottomSheet/useBottomSheet';
 import PhotoRecord from './Records/PhotoRecord';
@@ -13,6 +13,7 @@ import IconEdit from '../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../icons/BottomSheeet/IconTrash';
 import useEditRecordStore from '../../stores/EditRecordStore';
 import IconClose from '../../icons/IconClose';
+import Dropdown from './Dropdown';
 
 const BottomSheet2: React.FC = () => {
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
@@ -74,6 +75,27 @@ const ContentHeader: React.FC = () => {
   };
   const { currentState } = useEditRecordStore();
   const [title, setTitle] = useState<string>('여행 제목 없음');
+  const { setState } = useEditRecordStore();
+
+  // 드롭다운을 위한 아이템들
+  const dropdownItems = [
+    {
+      name: '수정',
+      onClick: () => {
+        setState('EDIT');
+        setIsDropdownOpen(false);
+      },
+      component: IconEdit,
+    },
+    {
+      name: '여행 삭제',
+      onClick: () => {
+        setState('DELETE');
+        setIsDropdownOpen(false);
+      },
+      component: IconTrash,
+    },
+  ];
 
   return (
     <div className={'flex flex-col w-full gap-5 px-[22px] pb-5'}>
@@ -108,73 +130,13 @@ const ContentHeader: React.FC = () => {
           )}
         </div>
         <IconMenu width={10} height={24} onClick={handleClickMenu} />
-        {isDropdownOpen && <Dropdown setIsDropdownOpen={setIsDropdownOpen} />}
+        {isDropdownOpen && (
+          <Dropdown
+            setIsDropdownOpen={setIsDropdownOpen}
+            dropdownItems={dropdownItems}
+          />
+        )}
       </div>
-    </div>
-  );
-};
-
-interface DropdownProps {
-  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Dropdown: React.FC<DropdownProps> = ({ setIsDropdownOpen }) => {
-  const { setState } = useEditRecordStore();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (dropdownRef.current) {
-      dropdownRef.current.focus();
-    }
-  }, []);
-
-  const dropdownItems = [
-    {
-      name: '수정',
-      onClick: () => {
-        setState('EDIT');
-        setIsDropdownOpen(false);
-      },
-      component: IconEdit,
-    },
-    {
-      name: '여행 삭제',
-      onClick: () => {
-        setState('DELETE');
-        setIsDropdownOpen(false);
-      },
-      component: IconTrash,
-    },
-  ];
-
-  return (
-    <div
-      tabIndex={-1}
-      ref={dropdownRef}
-      onBlur={() => {
-        setTimeout(() => {
-          setIsDropdownOpen(false);
-        }, 1);
-      }}
-      className={
-        'w-40 h-fit absolute right-0 top-full flex flex-col border border-[#D6DCE9] rounded-[10px] bg-white z-40 shadow-xxs focus:outline-none'
-      }
-    >
-      {dropdownItems.map((dropdownItem, dropdownIndex) => {
-        const Component = dropdownItem.component;
-        return (
-          <div
-            key={dropdownIndex}
-            onClick={dropdownItem.onClick}
-            className={
-              'py-3 px-[14px] flex justify-between items-center first:border-b border-[#D6DCE9]'
-            }
-          >
-            <div className={'text-second text-sm'}>{dropdownItem.name}</div>
-            <Component />
-          </div>
-        );
-      })}
     </div>
   );
 };
