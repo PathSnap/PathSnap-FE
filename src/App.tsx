@@ -6,6 +6,8 @@ import NoBottomAndFooterLayout from './layouts/NoBottomAndFooterLayout';
 import AddFriendPage from './pages/AddFriendPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ProfilePage from './pages/ProfilePage';
+import FooterLayout from './layouts/FooterLayout';
 
 function App() {
   return (
@@ -14,6 +16,11 @@ function App() {
         {/* 바텀시트와 푸터가 모두 존재하는 레이아웃 */}
         <Route path="/" element={<BottomAndFooterLayout />}>
           <Route index element={<MainPage />} />
+        </Route>
+
+        {/* 푸터만 존재하는 레이아웃 */}
+        <Route element={<FooterLayout />}>
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         {/* 바텀시트와 푸터가 모두 존재하지 않는 레이아웃 */}

@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
 import IconHome from '../icons/Footer/IconHome';
 import IconPerson from '../icons/Footer/IconPerson';
+import { useNavigate } from 'react-router';
 
 interface MenuItem {
   component: React.FC<{ isActive: boolean }>;
   text: string;
+  onClick: () => void;
 }
 
 const Footer: React.FC = () => {
+  const router = useNavigate();
   const menuItems: MenuItem[] = [
-    { component: IconHome, text: '홈' },
-    { component: IconPerson, text: '프로필' },
+    {
+      component: IconHome,
+      text: '홈',
+      onClick: () => {
+        router('/');
+      },
+    },
+    {
+      component: IconPerson,
+      text: '프로필',
+      onClick: () => router('/profile'),
+    },
   ];
 
   const [selectedFooterIndex, setSelectedFooterIndex] = useState<number>(0);
@@ -29,7 +42,10 @@ const Footer: React.FC = () => {
           <div
             key={menuIndex}
             className="flex flex-col justify-center items-center gap-1.5 "
-            onClick={() => setSelectedFooterIndex(menuIndex)}
+            onClick={() => {
+              setSelectedFooterIndex(menuIndex);
+              menuItem.onClick();
+            }}
           >
             <Component isActive={menuIndex === selectedFooterIndex} />
             <div className="text-xs opacity-50">{menuItem.text}</div>
