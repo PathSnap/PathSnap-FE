@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MAX_Y, MIN_Y } from '../../utils/BottomSheetOption';
 
 interface BottomSheetMetrics {
@@ -12,9 +12,10 @@ interface BottomSheetMetrics {
   };
 }
 
-export function useBottomSheet2() {
+export function useBottomSheet() {
   const sheetRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
 
   const metrics = useRef<BottomSheetMetrics>({
     touchStart: {
@@ -47,10 +48,12 @@ export function useBottomSheet2() {
 
       if (touchMove.prevTouchY < currentTouch.clientY) {
         touchMove.movingDirection = 'down';
+        setIsBottomSheetOpen(false);
       }
 
       if (touchMove.prevTouchY > currentTouch.clientY) {
         touchMove.movingDirection = 'up';
+        setIsBottomSheetOpen(true);
       }
 
       const touchOffset = currentTouch.clientY - touchStart.touchY;
@@ -111,5 +114,5 @@ export function useBottomSheet2() {
     };
   }, []);
 
-  return { sheetRef, headerRef };
+  return { sheetRef, headerRef, isBottomSheetOpen };
 }

@@ -3,9 +3,16 @@ import React from 'react';
 import IconCar from '../../../icons/BottomSheeet/IconCar';
 import RecordWrapper from './RecordWrapper';
 
-const LocationRecord: React.FC = () => {
+interface LocationRecordProps {
+  isPhotoRecord: boolean;
+}
+
+const LocationRecord: React.FC<LocationRecordProps> = ({ isPhotoRecord }) => {
   return (
-    <RecordWrapper className={'shadow-l flex p-[14px] gap-5'}>
+    <RecordWrapper
+      className={'shadow-l flex p-[14px] gap-5'}
+      isPhotoRecord={isPhotoRecord}
+    >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
         <div className={'font-semibold'}>전주로 이동</div>
         <div

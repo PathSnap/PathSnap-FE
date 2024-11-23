@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* width, height,글자 크기는 별도로 지정  */
+
+.gray-button {
+  @apply bg-third-light text-third-dark font-semibold rounded-2xl;
+}
+.is-active-green-button {
+  @apply bg-primary text-white font-semibold rounded-2xl;
+}
+
+.non-active-green-button {
+  @apply bg-primary text-[#BBE7DE] font-semibold rounded-2xl;
+}
