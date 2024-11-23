@@ -75,6 +75,7 @@ const ContentHeader: React.FC = () => {
   };
   const { currentState } = useEditRecordStore();
   const [title, setTitle] = useState<string>('여행 제목 없음');
+  const [travelDate, setTravelDate] = useState<string>('2024-10-10');
   const { setState } = useEditRecordStore();
 
   // 드롭다운을 위한 아이템들
@@ -98,17 +99,18 @@ const ContentHeader: React.FC = () => {
   ];
 
   return (
-    <div className={'flex flex-col w-full gap-5 px-[22px] pb-5'}>
+    <div className={'flex flex-col w-full gap-5 px-[22px] pb-5 text-second'}>
       <SelectBox
         leftText="내 기록"
         rightText="단체"
         selectedBoxIndex={selectedBoxIndex}
       />
+      {/* 여행 제목 */}
       <div
         className={'flex justify-between h-[60px] items-center gap-10 relative'}
       >
         <div
-          className={`relative w-full text-second font-semibold text-2xl py-1 border-b ${
+          className={`relative w-full font-semibold text-2xl py-1 border-b ${
             currentState === 'EDIT' ? ' border-second' : 'border-white'
           }`}
         >
@@ -137,6 +139,32 @@ const ContentHeader: React.FC = () => {
             className="right-0 top-full"
           />
         )}
+      </div>
+      {/* 여행 일자 */}
+      <div className={'grid grid-cols-[60px_auto] items-center gap-6'}>
+        <div className={'font-semibold flex-shrink-0'}>여행 일자</div>
+        <div
+          className={`relative w-full py-1 border-b text-end ${
+            currentState === 'EDIT' ? ' border-second' : 'border-white'
+          }`}
+        >
+          {currentState === 'EDIT' ? (
+            <>
+              <input
+                type="text"
+                value={travelDate}
+                onChange={(e) => setTravelDate(e.target.value)}
+                className="w-full h-full focus:outline-none text-end pr-8"
+              />
+              <IconClose
+                className={'absolute right-0 top-1/4 -translate-y-1'}
+                onClick={() => setTravelDate('')}
+              />
+            </>
+          ) : (
+            travelDate
+          )}
+        </div>
       </div>
     </div>
   );
