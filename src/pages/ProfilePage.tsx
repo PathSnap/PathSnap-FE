@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import IconMenu from '../icons/BottomSheeet/IconMenu';
 import IconPhone from '../icons/ProfilePage/IconPhone';
 import IconBirth from '../icons/ProfilePage/IconBirth';
 import IconMyHome from '../icons/ProfilePage/IconMyHome';
 import IconLeft from '../icons/ProfilePage/IconLeft';
 import IconRight from '../icons/ProfilePage/IconRight';
+import Dropdown from '../components/BottomSheet/Dropdown';
+import IconEdit from '../icons/BottomSheeet/IconEdit';
+import IconLogout from '../icons/ProfilePage/IconLogout';
 
 const ProfilePage: React.FC = () => {
   return (
@@ -34,6 +37,33 @@ const BoxWrapper: React.FC<BoxWrapperProps> = ({ children, className }) => {
 };
 
 const ShowProfile: React.FC = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const handleClickMenu = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  //   드롭다운 아이템들
+  const dropdownItems = [
+    {
+      name: '프로필 수정',
+      onClick: () => {
+        setIsDropdownOpen(false);
+      },
+      component: IconEdit,
+    },
+    {
+      name: '로그아웃',
+      onClick: () => {
+        setIsDropdownOpen(false);
+      },
+      component: IconLogout,
+    },
+    // {
+    //   name: '회원탈퇴',
+    //   onClick: () => {},
+    //   component: () => {},
+    // },
+  ];
   return (
     <BoxWrapper className="flex flex-col gap-5 p-4">
       {/* 사진, 이름, 이메일 */}
@@ -43,8 +73,15 @@ const ShowProfile: React.FC = () => {
           <div className={'text-[22px] font-semibold'}>이름</div>
           <div className={'text-xs text-second-light'}>asc1234@gmail.com</div>
         </div>
-        <div className={'w-6 h-full place-items-end'}>
-          <IconMenu width={5} height={24} />
+        <div className={'w-6 h-full place-items-end relative'}>
+          <IconMenu width={5} height={24} onClick={handleClickMenu} />
+          {isDropdownOpen && (
+            <Dropdown
+              setIsDropdownOpen={setIsDropdownOpen}
+              dropdownItems={dropdownItems}
+              className="right-5 -top-1"
+            />
+          )}
         </div>
       </div>
       {/* 전화번호, 생년월일, 집 주소 */}

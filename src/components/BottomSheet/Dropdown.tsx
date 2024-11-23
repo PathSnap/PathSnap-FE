@@ -10,11 +10,13 @@ interface DropDownItem {
 interface DropdownProps {
   setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   dropdownItems: DropDownItem[];
+  className: string;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
   setIsDropdownOpen,
   dropdownItems,
+  className,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +25,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="w-40 h-fit absolute right-0 top-full flex flex-col border border-[#D6DCE9] rounded-[10px] bg-white z-40 shadow-xxs focus:outline-none"
+      className={`w-40 h-fit absolute flex flex-col border border-[#D6DCE9] rounded-[10px] bg-white z-40 shadow-xxs focus:outline-none ${className}`}
     >
       {dropdownItems.map((dropdownItem, dropdownIndex) => {
         const Component = dropdownItem.component;

@@ -134,6 +134,7 @@ const ContentHeader: React.FC = () => {
           <Dropdown
             setIsDropdownOpen={setIsDropdownOpen}
             dropdownItems={dropdownItems}
+            className="right-0 top-full"
           />
         )}
       </div>
