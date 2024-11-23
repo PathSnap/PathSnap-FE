@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ModalWrapperProps {
-  classProp: string;
+  classProp?: string;
   children: React.ReactNode;
 }
 

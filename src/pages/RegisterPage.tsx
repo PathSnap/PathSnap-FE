@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import IconBack from '../icons/IconBack';
 import Input from '../components/Input';
 import { useNavigate } from 'react-router';
+import AddressSearchModal from '../components/Modals/AddressSearchModal';
 
 const RegisterPage: React.FC = () => {
   const labelStyle = 'text-base font-semibold';
@@ -73,27 +74,52 @@ const HeaderBar: React.FC = () => {
 };
 
 const AddressInput: React.FC = () => {
+  const [modalState, setModalState] = useState(false);
+  const openAddressSearch = () => {
+    setModalState(true);
+  };
+  const closeAddressSearch = () => {
+    setModalState(false);
+  };
+  const onCompletePost = (data: any) => {
+    setModalState(false);
+    setAddress(data.address);
+  };
+  const [address, setAddress] = useState('');
+
   return (
-    <div className={'flex flex-col gap-1.5 w-full relative'}>
-      <div className={'flex w-full justify-between items-center'}>
-        <div className={'text-base font-semibold'}>주소</div>
-        <div className={'text-xs text-[#9B9B9B]'}>
-          실시간 기록 기능을 위해 필요한 정보입니다.
+    <>
+      <div className={'flex flex-col gap-1.5 w-full relative'}>
+        <div className={'flex w-full justify-between items-center'}>
+          <div className={'text-base font-semibold'}>주소</div>
+          <div className={'text-xs text-[#9B9B9B]'}>
+            실시간 기록 기능을 위해 필요한 정보입니다.
+          </div>
         </div>
+        <input
+          onChange={(e) => setAddress(e.target.value)}
+          value={address}
+          disabled={true}
+          className={
+            'w-full rounded-[10px] bg-[#F5F5F5] pl-3 pr-28 focus:outline focus:outline-1 focus:outline-primary h-[54px]'
+          }
+          placeholder="기본주소"
+        />
+        <button
+          onClick={openAddressSearch}
+          className={
+            'absolute w-[88px] h-11 right-3 top-[35px] rounded-xl border border-primary text-primary font-semibold'
+          }
+        >
+          주소 검색
+        </button>
       </div>
-      <input
-        className={
-          'w-full rounded-[10px] bg-[#F5F5F5] px-3 focus:outline focus:outline-1 focus:outline-primary h-[54px]'
-        }
-        placeholder="기본주소"
-      />
-      <button
-        className={
-          'absolute w-[88px] h-11 right-3 top-[35px] rounded-xl border border-primary text-primary font-semibold'
-        }
-      >
-        주소 검색
-      </button>
-    </div>
+      {modalState && (
+        <AddressSearchModal
+          onCompletePost={onCompletePost}
+          closeAddressSearch={closeAddressSearch}
+        />
+      )}
+    </>
   );
 };
