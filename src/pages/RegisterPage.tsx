@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import IconBack from '../icons/IconBack';
 import Input from '../components/Input';
 import { useNavigate } from 'react-router';
@@ -7,7 +7,22 @@ import AddressSearchModal from '../components/Modals/AddressSearchModal';
 const RegisterPage: React.FC = () => {
   const labelStyle = 'text-base font-semibold';
   const inputStyle = 'h-[54px]';
-  const [isFill, _] = useState(false);
+  const [isFill, setIsFill] = useState(false);
+  const [info, setInfo] = useState({
+    name: '',
+    birth: '',
+    phoneNum: '',
+    address: '',
+  });
+
+  useEffect(() => {
+    if (info.name && info.birth && info.phoneNum && info.address) {
+      setIsFill(true);
+    } else {
+      setIsFill(false);
+    }
+  }, [info.name, info.birth, info.phoneNum, info.address]);
+
   return (
     <div className={'w-full h-full px-9 relative text-second flex flex-col'}>
       <HeaderBar />
@@ -17,6 +32,8 @@ const RegisterPage: React.FC = () => {
           placeholder="예) 홍길동"
           labelStyle={labelStyle}
           inputStyle={inputStyle}
+          value={info.name}
+          setValue={(value) => setInfo({ ...info, name: value })}
         />
         <Input
           label="생년월일"
@@ -24,15 +41,22 @@ const RegisterPage: React.FC = () => {
           type="date"
           labelStyle={labelStyle}
           inputStyle={inputStyle}
+          value={info.birth}
+          setValue={(value) => setInfo({ ...info, birth: value })}
         />
         <Input
           label="휴대폰번호"
           placeholder="-를 제외하고 입력"
           labelStyle={labelStyle}
           inputStyle={inputStyle}
+          value={info.phoneNum}
+          setValue={(value) => setInfo({ ...info, phoneNum: value })}
         />
         {/* 주소 입력 */}
-        <AddressInput />
+        <AddressInput
+          value={info.address}
+          setValue={(value) => setInfo({ ...info, address: value })}
+        />
         <div className={'text-xs'}>프로필 미입력 시 앱 사용이 제한됩니다.</div>
       </div>
       {/* 버튼 */}
@@ -73,7 +97,12 @@ const HeaderBar: React.FC = () => {
   );
 };
 
-const AddressInput: React.FC = () => {
+interface AddressInputProps {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+const AddressInput: React.FC<AddressInputProps> = ({ value, setValue }) => {
   const [modalState, setModalState] = useState(false);
   const openAddressSearch = () => {
     setModalState(true);
@@ -83,9 +112,8 @@ const AddressInput: React.FC = () => {
   };
   const onCompletePost = (data: any) => {
     setModalState(false);
-    setAddress(data.address);
+    setValue(data.address);
   };
-  const [address, setAddress] = useState('');
 
   return (
     <>
@@ -97,8 +125,8 @@ const AddressInput: React.FC = () => {
           </div>
         </div>
         <input
-          onChange={(e) => setAddress(e.target.value)}
-          value={address}
+          onChange={(e) => setValue(e.target.value)}
+          value={value}
           disabled={true}
           className={
             'w-full rounded-[10px] bg-[#F5F5F5] pl-3 pr-28 focus:outline focus:outline-1 focus:outline-primary h-[54px]'
