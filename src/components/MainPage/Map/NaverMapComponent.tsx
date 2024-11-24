@@ -3,6 +3,7 @@ import MainMarker from './marker/CustomMainMarker';
 import ImageMarker from './marker/CustomImageMarker';
 import CurrentLocationButton from '../CurrentLocationButton';
 import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
+import SerchButton from '../SerchButton';
 
 const NaverMapComponent: React.FC = () => {
   const mapElement = useRef<HTMLDivElement>(null);
@@ -67,7 +68,8 @@ const NaverMapComponent: React.FC = () => {
 
     if (!(window as any).naver) {
       const script = document.createElement('script');
-      script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<ClientId>`;
+      const apiKey = import.meta.env.VITE_MAP_API_KEY;
+      script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${apiKey}`;
       script.async = true;
       script.onload = () => initializeMap();
       document.head.appendChild(script);
@@ -149,6 +151,8 @@ const NaverMapComponent: React.FC = () => {
 
       {/* 현재 위치 버튼 */}
       <CurrentLocationButton onMoveToCurrentLocation={moveToCurrentLocation} />
+      {/* 검색 버튼 */}
+      <SerchButton />
     </>
   );
 };
