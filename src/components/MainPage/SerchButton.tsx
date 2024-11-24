@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import IconSearch from '../../icons/IconSerch'; // IconSearch 컴포넌트 가져오기
+import IconSearch from '../../icons/SerchPage/IconSerch'; // IconSearch 컴포넌트 가져오기
 
 const SerchButton: React.FC = () => {
   const navigate = useNavigate();
