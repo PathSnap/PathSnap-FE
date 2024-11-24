@@ -45,7 +45,7 @@ const RegisterPage: React.FC = () => {
           setValue={(value) => setInfo({ ...info, birth: value })}
         />
         <Input
-          label="휴대폰번호"
+          label="전화번호"
           placeholder="-를 제외하고 입력"
           labelStyle={labelStyle}
           inputStyle={inputStyle}
