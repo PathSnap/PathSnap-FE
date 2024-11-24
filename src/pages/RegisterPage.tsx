@@ -25,7 +25,7 @@ const RegisterPage: React.FC = () => {
 
   return (
     <div className={'w-full h-full px-9 relative text-second flex flex-col'}>
-      <HeaderBar />
+      <HeaderBar headerText="프로필 작성" />
       <div className={'pt-24 gap-[30px] flex flex-col flex-grow'}>
         <Input
           label="이름"
@@ -76,7 +76,11 @@ const RegisterPage: React.FC = () => {
 
 export default RegisterPage;
 
-const HeaderBar: React.FC = () => {
+interface HeaderBarProps {
+  headerText: string;
+}
+
+export const HeaderBar: React.FC<HeaderBarProps> = ({ headerText }) => {
   const router = useNavigate();
   return (
     <div
@@ -88,10 +92,10 @@ const HeaderBar: React.FC = () => {
         width={24}
         height={24}
         onClick={() => {
-          router('/login');
+          router(-1);
         }}
       />
-      <div className={'text-lg font-medium text-center'}>프로필 작성</div>
+      <div className={'text-lg font-medium text-center'}>{headerText}</div>
       <div></div>
     </div>
   );

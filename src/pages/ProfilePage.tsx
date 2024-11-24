@@ -8,6 +8,7 @@ import IconRight from '../icons/ProfilePage/IconRight';
 import Dropdown from '../components/BottomSheet/Dropdown';
 import IconEdit from '../icons/BottomSheeet/IconEdit';
 import IconLogout from '../icons/ProfilePage/IconLogout';
+import { useNavigate } from 'react-router';
 
 const ProfilePage: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ const ShowProfile: React.FC = () => {
   const handleClickMenu = () => {
     setIsDropdownOpen((prev) => !prev);
   };
+  const router = useNavigate();
 
   //   드롭다운 아이템들
   const dropdownItems = [
@@ -48,6 +50,7 @@ const ShowProfile: React.FC = () => {
       name: '프로필 수정',
       onClick: () => {
         setIsDropdownOpen(false);
+        router('/profile/edit');
       },
       component: IconEdit,
     },
