@@ -8,10 +8,14 @@ export default {
         primaryLight: '#a0e5e5',
         primaryDark: '#44b8b8',
         borderLight: '#e6f9f9',
-        second: '#595959',
+        second: { DEFAULT: '#595959', light: '#A3A3A3' },
         third: { DEFAULT: '#999999', light: '#E5E5E5', dark: '#919191' },
       },
       textColor: (theme) => ({ ...theme('colors') }),
+      fontSize: {
+        xxs: '0.625rem',
+        xxl: '1.375rem',
+      },
       boxShadow: {
         xxs: '0px 0px 8px rgba(0, 0, 0, 0.1)',
         xs: '0px -8px 12px rgba(0, 0, 0, 0.08)',

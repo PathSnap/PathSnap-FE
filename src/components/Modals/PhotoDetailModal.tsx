@@ -5,9 +5,11 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../css/PhotoSlider.css';
+import IconCancel from '../../icons/IconCancel';
+import useModalStore from '../../stores/ModalStore';
 
 const PhotoDetailModal: React.FC = () => {
-  // const { closeModal } = useModalStore();
+  const { closeModal } = useModalStore();
   var settings = {
     dots: true,
     infinite: true,
@@ -19,7 +21,8 @@ const PhotoDetailModal: React.FC = () => {
   return (
     <ModalWrapper classProp="w-full h-fit flex flex-col">
       {/* 슬라이더 */}
-      <div className="h-[380px] w-[380px] mb-[14px]">
+      <div className="h-[380px] w-[380px] mb-[14px] relative">
+        <IconCancel onClick={closeModal} className="fixed top-5 right-[10px]" />
         <Slider {...settings}>
           <div className={'grid place-items-center'}>
             <img src="/cute.png" className={'object-cover'} />
