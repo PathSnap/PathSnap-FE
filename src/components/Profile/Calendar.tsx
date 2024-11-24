@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BoxWrapper } from '../../pages/ProfilePage';
 import IconLeft from '../../icons/ProfilePage/IconLeft';
 import IconRight from '../../icons/ProfilePage/IconRight';
+import useModalStore from '../../stores/ModalStore';
 
 const Calendar: React.FC = () => {
   const [dateInfo, setDateInfo] = React.useState({
@@ -12,7 +13,7 @@ const Calendar: React.FC = () => {
   return (
     <div className={'flex flex-col gap-[14px]'}>
       <div className={'font-semibold'}>캘린더</div>
-      <BoxWrapper className="flex flex-col px-4 py-6 items-center gap-5">
+      <BoxWrapper className="flex flex-col px-4 py-6 items-center gap-5 relative">
         <CalendarHeader dateInfo={dateInfo} setDateInfo={setDateInfo} />
         <DaysOfWeek />
         <CalendarBody dateInfo={dateInfo} />
@@ -56,21 +57,40 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
       });
     }
   };
+
+  const [isMonthPickerOpen, setIsMonthPickerOpen] = useState<boolean>(false);
+  const handleClickMonthPicker = () => {
+    setIsMonthPickerOpen((prev) => !prev);
+  };
+
   return (
-    <div className={'flex gap-[14px] items-center'}>
+    <div className={'w-full flex gap-[14px] justify-center items-center'}>
       <IconLeft onClick={() => handleClickArrow(true)} />
-      <div className={'text-xxl font-semibold'}>
+      <div
+        onClick={handleClickMonthPicker}
+        className={`text-xxl font-semibold ${isMonthPickerOpen && 'text-[#77CEBD]'}`}
+      >
         {year}년 {month}월
       </div>
       <IconRight onClick={() => handleClickArrow(false)} />
+      {isMonthPickerOpen && (
+        <div className="w-full h-[calc(100%-56px)] overflow-y-auto absolute top-14 bg-white z-10 rounded-2xl">
+          {'이후 추가 예정>_<'}
+        </div>
+      )}
     </div>
   );
 };
 
-const DaysOfWeek = () => {
+interface DaysOfWeekProps {
+  className?: string;
+}
+export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({ className = '' }) => {
   const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   return (
-    <div className={'w-full h-14 grid grid-cols-7 place-items-center relative'}>
+    <div
+      className={`w-full h-14 grid grid-cols-7 place-items-center relative ${className}`}
+    >
       <div
         className={
           'absolute w-[calc(100%-32px)] h-[1.5px] bg-second-light/15 top-full'
@@ -93,8 +113,12 @@ interface CalendarBodyProps {
     year: number;
     month: number;
   };
+  className?: string;
 }
-const CalendarBody: React.FC<CalendarBodyProps> = ({ dateInfo }) => {
+export const CalendarBody: React.FC<CalendarBodyProps> = ({
+  dateInfo,
+  className = 'h-[54px]',
+}) => {
   const { year, month } = dateInfo;
 
   // 해당 달의 1일의 요일
@@ -114,7 +138,7 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({ dateInfo }) => {
     return daysOfMonth.map((day, index) => {
       return (
         <div
-          className={'w-full text-center h-[54px] font-medium text-sm'}
+          className={`w-full text-center font-medium text-sm grid place-items-center ${className}`}
           key={index}
         >
           {day}
@@ -127,8 +151,12 @@ const CalendarBody: React.FC<CalendarBodyProps> = ({ dateInfo }) => {
 };
 
 const CombineDaysBtn = () => {
+  const { openModal } = useModalStore();
   return (
-    <button className={'is-active-green-button h-[58px] text-lg my-3'}>
+    <button
+      onClick={() => openModal('packTripsModal')}
+      className={'is-active-green-button h-[58px] text-lg my-3'}
+    >
       일정을 하나로 묶어보세요!
     </button>
   );

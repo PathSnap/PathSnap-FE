@@ -93,7 +93,7 @@ interface InputProps {
 
 const Input: React.FC<InputProps> = ({ label, placeholder, type = 'text' }) => {
   return (
-    <div className={'flex flex-col gap-1.5 text-xs w-full'}>
+    <div className={'flex flex-col gap-1.5 text-xs w-full relative'}>
       <div>{label}</div>
       <input
         className={

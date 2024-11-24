@@ -13,7 +13,9 @@ import Calendar from '../components/Profile/Calendar';
 const ProfilePage: React.FC = () => {
   return (
     <div
-      className={'w-full h-full flex flex-col gap-6 py-7 px-[26px] text-second'}
+      className={
+        'w-full h-full flex flex-col gap-6 py-7 px-[26px] text-second mb-20'
+      }
     >
       <ShowProfile />
       <Calendar />
