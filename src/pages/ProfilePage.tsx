@@ -3,12 +3,12 @@ import IconMenu from '../icons/BottomSheeet/IconMenu';
 import IconPhone from '../icons/ProfilePage/IconPhone';
 import IconBirth from '../icons/ProfilePage/IconBirth';
 import IconMyHome from '../icons/ProfilePage/IconMyHome';
-import IconLeft from '../icons/ProfilePage/IconLeft';
 import IconRight from '../icons/ProfilePage/IconRight';
 import Dropdown from '../components/BottomSheet/Dropdown';
 import IconEdit from '../icons/BottomSheeet/IconEdit';
 import IconLogout from '../icons/ProfilePage/IconLogout';
 import { useNavigate } from 'react-router';
+import Calendar from '../components/Profile/Calendar';
 
 const ProfilePage: React.FC = () => {
   return (
@@ -29,7 +29,10 @@ interface BoxWrapperProps {
   className: string;
 }
 
-const BoxWrapper: React.FC<BoxWrapperProps> = ({ children, className }) => {
+export const BoxWrapper: React.FC<BoxWrapperProps> = ({
+  children,
+  className,
+}) => {
   return (
     <div className={`w-full h-fit rounded-2xl shadow-l ${className}`}>
       {children}
@@ -103,45 +106,6 @@ const ShowProfile: React.FC = () => {
         </div>
       </div>
     </BoxWrapper>
-  );
-};
-
-const Calendar: React.FC = () => {
-  const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  return (
-    <div className={'flex flex-col gap-[14px]'}>
-      <div className={'font-semibold'}>캘린더</div>
-      <BoxWrapper className="flex flex-col px-4 py-6 items-center gap-5">
-        {/* 캘린더 헤더 */}
-        <div className={'flex gap-[14px] items-center'}>
-          <IconLeft />
-          <div className={'text-xxl font-semibold'}>2024 5월</div>
-          <IconRight />
-        </div>
-        {/* 캘린더 요일 */}
-        <div className="w-full h-14 px-4 mb-12">
-          <div
-            className={
-              'w-full h-full flex justify-between items-center border-b-[1.5px] border-second-light/15 '
-            }
-          >
-            {DAYS.map((day, index) => (
-              <div
-                key={index}
-                className={'w-6 text-center text-second-light font-medium'}
-              >
-                {day}
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* 캘린더 본문 */}
-        <div className={'w-full h-fit flex flex-col'}></div>
-      </BoxWrapper>
-      <button className={'is-active-green-button h-[58px] text-lg '}>
-        일정을 하나로 묶어보세요!
-      </button>
-    </div>
   );
 };
 

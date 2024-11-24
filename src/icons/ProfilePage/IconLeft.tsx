@@ -1,6 +1,13 @@
-const IconLeft = () => {
+import React from 'react';
+
+interface IconLeftProps {
+  onClick: () => void;
+}
+
+const IconLeft: React.FC<IconLeftProps> = ({ onClick }) => {
   return (
     <svg
+      onClick={onClick}
       width="24"
       height="24"
       viewBox="0 0 24 24"
