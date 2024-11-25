@@ -113,6 +113,11 @@ const Location: React.FC<LocationProps> = ({ locationName, date }) => {
 };
 
 const SelectLocation: React.FC = () => {
+  const locationBlocks = Array.from(
+    { length: 12 },
+    (_, index) => `Location ${index + 1}`
+  );
+
   return (
     <div className="w-full h-[451px] flex flex-col justify-start items-center border-t border-gray-200 px-4">
       <div className="flex flex-wrap justify-around items-center bg-[#77CEBD]/20 rounded-[20px] py-[12px] px-[40px] w-[95%] h-[15%] mt-[15px]">
@@ -133,7 +138,23 @@ const SelectLocation: React.FC = () => {
         {/* 동읍면 */}
         <span className="text-[#595959]/30 text-[16px]">동·읍·면</span>
       </div>
-      <div className="w-[384px] h-[272px]"></div>
+      <div className="grid grid-cols-3 h-[272px] w-[384px] mt-4">
+        {locationBlocks.map((blockName, index) => (
+          <LocationBlock key={index} locationBlockName={blockName} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+interface LocationBlockProps {
+  locationBlockName: string;
+}
+
+const LocationBlock: React.FC<LocationBlockProps> = ({ locationBlockName }) => {
+  return (
+    <div className="flex justify-center items-center border border-[#000000]/4 bg-white h-[68px] W-[128px]">
+      {locationBlockName}
     </div>
   );
 };
