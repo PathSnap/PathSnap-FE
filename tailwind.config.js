@@ -10,6 +10,7 @@ export default {
         borderLight: '#e6f9f9',
         second: { DEFAULT: '#595959', light: '#A3A3A3' },
         third: { DEFAULT: '#999999', light: '#E5E5E5', dark: '#919191' },
+        error: '#FFB4B4',
       },
       textColor: (theme) => ({ ...theme('colors') }),
       fontSize: {
