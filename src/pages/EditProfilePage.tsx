@@ -3,6 +3,7 @@ import { HeaderBar } from './RegisterPage';
 import Input from '../components/Input';
 import AddressSearchModal from '../components/Modals/AddressSearchModal';
 import IconCamera from '../icons/ProfilePage/IconCamera';
+import useOverflowInput from '../hooks/useOverflowInput';
 
 const EditProfilePage: React.FC = () => {
   const labelStyle = 'text-base font-semibold';
@@ -100,27 +101,38 @@ const AddressInput: React.FC<AddressInputProps> = ({ value, setValue }) => {
     setModalState(false);
     setValue(data.address);
   };
+  const { inputRef, isOverflowing } = useOverflowInput(value);
   return (
     <>
       <div className={'flex flex-col gap-1.5 w-full relative'}>
         <div className={'text-base font-semibold'}>주소</div>
-        <input
-          onChange={(e) => setValue(e.target.value)}
-          value={value}
-          disabled={true}
-          className={
-            'w-full rounded-[10px] bg-[#F5F5F5] pl-3 pr-28 focus:outline focus:outline-1 focus:outline-primary h-[54px]'
+        <div
+          style={
+            isOverflowing
+              ? { flexDirection: 'column', padding: '12px' }
+              : { flexDirection: 'row' }
           }
-          placeholder="기본주소"
-        />
-        <button
-          onClick={openAddressSearch}
           className={
-            'absolute w-[88px] h-11 right-3 top-[35px] rounded-xl border border-primary text-primary font-semibold'
+            'w-full min-h-[54px] h-fit bg-[#F5F5F5] rounded-xl flex items-center px-3 gap-2.5'
           }
         >
-          주소 검색
-        </button>
+          <input
+            ref={inputRef}
+            value={value}
+            placeholder="기본주소"
+            disabled={true}
+            className={'w-full h-full bg-inherit rounded-xl focus:outline-none'}
+          />
+          <button
+            onClick={openAddressSearch}
+            style={isOverflowing ? { alignSelf: 'end' } : {}}
+            className={
+              'w-[88px] h-11 rounded-xl border border-primary text-primary font-semibold shrink-0'
+            }
+          >
+            주소 검색
+          </button>
+        </div>
       </div>
       {modalState && (
         <AddressSearchModal
