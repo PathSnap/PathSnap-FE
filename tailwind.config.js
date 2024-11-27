@@ -18,16 +18,16 @@ export default {
         xxl: '1.375rem',
       },
       boxShadow: {
-        xxs: '0px 0px 8px rgba(0, 0, 0, 0.1)',
-        xs: '0px -8px 12px rgba(0, 0, 0, 0.08)',
-        m: '0px -4px 8px rgba(0, 0, 0, 0.1)',
-        l: '0px 0px 6px rgba(0, 0, 0, 0.15)',
+        xxs: '0px 0px 4px rgba(0, 0, 0, 0.1)', // 기존보다 작게
+        xs: '0px -4px 6px rgba(0, 0, 0, 0.08)', // 기존보다 작게
+        m: '0px -2px 4px rgba(0, 0, 0, 0.1)', // 기존보다 작게
+        l: '0px 0px 4px rgba(0, 0, 0, 0.15)', // 기존보다 작게
       },
       keyframes: {
         main_marker_glow: {
-          '0%': { boxShadow: '0 0 5px 5px rgba(160, 229, 229, 0.5)' },
-          '50%': { boxShadow: '0 0 15px 15px rgba(0, 0, 0, 0.3)' },
-          '100%': { boxShadow: '0 0 5px 5px rgba(160, 229, 229, 0.5)' },
+          '0%': { boxShadow: '0 0 3px 3px rgba(160, 229, 229, 0.5)' }, // 크기 축소
+          '50%': { boxShadow: '0 0 8px 8px rgba(0, 0, 0, 0.3)' }, // 크기 축소
+          '100%': { boxShadow: '0 0 3px 3px rgba(160, 229, 229, 0.5)' }, // 크기 축소
         },
       },
       animation: {

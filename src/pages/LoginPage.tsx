@@ -20,6 +20,10 @@ const LoginPage: React.FC = () => {
           icon={<IconNaver />}
           text="네이버로 시작하기"
           className={'bg-[#03C75A] text-white'}
+          onClick={() => {
+            window.location.href =
+              'https://back.pathsnap.shop/oauth2/authorization/naver';
+          }}
         />
       </div>
     </div>
