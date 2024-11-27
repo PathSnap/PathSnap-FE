@@ -3,6 +3,8 @@ import useEditRecordStore from '../../../stores/EditRecordStore';
 import IconDrag from '../../../icons/BottomSheeet/IconDrag';
 import IconEdit from '../../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../../icons/BottomSheeet/IconTrash';
+import useDetailModalTypeStore from '../../../stores/DetailModalType';
+import useModalStore from '../../../stores/ModalStore';
 
 interface RecordWrapperProps {
   children: ReactNode;
@@ -16,6 +18,12 @@ const RecordWrapper: React.FC<RecordWrapperProps> = ({
 }) => {
   const { currentState } = useEditRecordStore();
 
+  const { setDetailModalType } = useDetailModalTypeStore();
+  const { openModal } = useModalStore();
+  const handleClickDelete = () => {
+    setDetailModalType('delete');
+    openModal('detailModal');
+  };
   return (
     <div
       className={`w-full h-[170px] rounded-2xl relative flex-shrink-0 ${className}`}
@@ -44,7 +52,7 @@ const RecordWrapper: React.FC<RecordWrapperProps> = ({
                 'w-[60px] aspect-square rounded-full border border-white grid place-items-center'
               }
             >
-              <IconTrash stroke="#FFFFFF" />
+              <IconTrash onClick={handleClickDelete} stroke="#FFFFFF" />
             </div>
           </div>
         </div>

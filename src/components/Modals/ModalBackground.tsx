@@ -23,7 +23,7 @@ const ModalBackground: React.FC<ModalBackgroundProps> = ({ children }) => {
 
   return (
     <div
-      className="max-w-[500px] min-w-[375px] w-full fixed inset-0 mx-auto bg-black/60 z-50 overflow-hidden"
+      className="max-w-[500px] min-w-[375px] w-full fixed inset-0 mx-auto bg-black/60 z-[70] overflow-hidden"
       onClick={() => {
         closeModal();
       }}
