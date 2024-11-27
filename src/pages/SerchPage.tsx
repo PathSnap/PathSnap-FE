@@ -4,10 +4,10 @@ import IconSearch from '../icons/SerchPage/IconSerch';
 import IconTime from '../icons/SerchPage/IconTime';
 import IconDelete from '../icons/SerchPage/IconDelete';
 import { useNavigate } from 'react-router';
+import { locations } from '../data/locationData';
 
 const SerchPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('recent'); // 상태 추가
-
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-grow flex flex-col text-second items-center px-0 py-5">
@@ -113,34 +113,105 @@ const Location: React.FC<LocationProps> = ({ locationName, date }) => {
 };
 
 const SelectLocation: React.FC = () => {
-  const locationBlocks = Array.from(
-    { length: 12 },
-    (_, index) => `Location ${index + 1}`
-  );
+  const [currentStep, setCurrentStep] = useState<
+    '시·도' | '시·군·구' | '동·읍·면·리'
+  >('시·도');
+  const [selectedLocation, setSelectedLocation] = useState<{
+    '시·도': string;
+    '시·군·구': string;
+    '동·읍·면·리': string;
+  }>({
+    '시·도': '',
+    '시·군·구': '',
+    '동·읍·면·리': '',
+  });
+
+  const locationBlocks: string[] = (() => {
+    if (currentStep === '시·도') {
+      return locations['시·도'].map((location) => location.name);
+    } else if (currentStep === '시·군·구' && selectedLocation['시·도']) {
+      return (locations['시·군·구'][selectedLocation['시·도']] || []).map(
+        (location) => location.name
+      );
+    } else if (currentStep === '동·읍·면·리' && selectedLocation['시·군·구']) {
+      return (locations['동·읍·면·리'][selectedLocation['시·군·구']] || []).map(
+        (location) => location.name
+      );
+    }
+    return [];
+  })();
+
+  const handleLocationClick = (locationName: string) => {
+    setSelectedLocation((prev) => ({
+      ...prev,
+      [currentStep]: locationName,
+    }));
+
+    if (currentStep === '시·도') {
+      setCurrentStep('시·군·구');
+    } else if (currentStep === '시·군·구') {
+      setCurrentStep('동·읍·면·리');
+    }
+  };
 
   return (
-    <div className="w-full h-[451px] flex flex-col justify-start items-center border-t border-gray-200 px-4">
-      <div className="flex flex-wrap justify-around items-center bg-[#77CEBD]/20 rounded-[20px] py-[12px] px-[40px] w-[95%] h-[15%] mt-[15px]">
-        {/* 서울 */}
-        <span className="text-[#595959]/100 text-[16px]">시·도</span>
+    <div className="w-full flex flex-col justify-start items-center border-t border-gray-200 px-4">
+      <div className="flex flex-wrap justify-around items-center bg-[#77CEBD]/20 rounded-[20px] py-[12px] px-[40px] w-[97%] h-[62px] mt-[37px]">
+        <span
+          className={`text-[16px] ${
+            selectedLocation['시·도']
+              ? 'text-[#595959]/100'
+              : 'text-[#595959]/30'
+          }`}
+          onClick={() => setCurrentStep('시·도')}
+        >
+          {selectedLocation['시·도'] || '시·도'}
+        </span>
         <IconArrow
           width={5.67}
           direction="right"
           className="mx-2 text-gray-400"
         />
-        {/* 강남구 */}
-        <span className="text-[#595959]/30 text-[16px]">시·군·구</span>
+        <span
+          className={`text-[16px] ${
+            selectedLocation['시·군·구']
+              ? 'text-[#595959]/100'
+              : 'text-[#595959]/30'
+          }`}
+          onClick={() => setCurrentStep('시·군·구')}
+        >
+          {selectedLocation['시·군·구'].split('-').pop() || '시·군·구'}
+        </span>
         <IconArrow
           width={5.67}
           direction="right"
           className="mx-2 text-gray-400"
         />
-        {/* 동읍면 */}
-        <span className="text-[#595959]/30 text-[16px]">동·읍·면</span>
+        <span
+          className={`text-[16px] ${
+            selectedLocation['동·읍·면·리']
+              ? 'text-[#595959]/100'
+              : 'text-[#595959]/30'
+          }`}
+          onClick={() => setCurrentStep('동·읍·면·리')}
+        >
+          {selectedLocation['동·읍·면·리'].split('-').pop() || '동·읍·면'}
+        </span>
       </div>
-      <div className="grid grid-cols-3 h-[272px] w-[384px] mt-4">
+      <div
+        className="grid grid-cols-3 mt-7"
+        style={{
+          gridAutoRows: '68px',
+          height: `${Math.ceil(locationBlocks.length / 3) * 68}px`,
+          width: '384px',
+        }}
+      >
         {locationBlocks.map((blockName, index) => (
-          <LocationBlock key={index} locationBlockName={blockName} />
+          <LocationBlock
+            key={index}
+            locationBlockName={blockName}
+            onClick={() => handleLocationClick(blockName)}
+          />
         ))}
       </div>
     </div>
@@ -149,12 +220,19 @@ const SelectLocation: React.FC = () => {
 
 interface LocationBlockProps {
   locationBlockName: string;
+  onClick: () => void;
 }
 
-const LocationBlock: React.FC<LocationBlockProps> = ({ locationBlockName }) => {
+const LocationBlock: React.FC<LocationBlockProps> = ({
+  locationBlockName,
+  onClick,
+}) => {
   return (
-    <div className="flex justify-center items-center border border-[#000000]/4 bg-white h-[68px] W-[128px]">
-      {locationBlockName}
+    <div
+      className="flex justify-center items-center border border-[#000000]/4 bg-white h-[68px] w-[128px] cursor-pointer hover:bg-[#77CEBD]/10"
+      onClick={onClick}
+    >
+      {locationBlockName.split('-').pop()}
     </div>
   );
 };
