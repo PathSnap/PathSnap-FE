@@ -47,7 +47,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({ headerText }) => {
   return (
     <div
       className={
-        'grid grid-cols-[24px_1fr_24px] px-[22px] items-center h-[68px] fixed top-0 w-full left-0 bg-white'
+        'grid grid-cols-[24px_1fr_24px] px-[22px] items-center h-[68px] fixed top-0 w-full left-0 bg-white z-10'
       }
     >
       <IconBack
