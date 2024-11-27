@@ -6,8 +6,8 @@ interface InputProps {
   type?: string;
   labelStyle?: string;
   inputStyle?: string;
-  value?: string;
-  setValue?: (value: string) => void;
+  value: string;
+  setValue: (value: string) => void;
   error?: boolean;
   errorStyle?: string;
   isSubmit?: boolean;
@@ -18,7 +18,7 @@ const Input: React.FC<InputProps> = ({
   placeholder,
   type = 'text',
   labelStyle = 'text-xs',
-  inputStyle = 'h-10',
+  inputStyle = 'h-10 text-xs',
   value = '',
   setValue = () => {},
   error = false,
