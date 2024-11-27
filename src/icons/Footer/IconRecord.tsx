@@ -1,8 +1,12 @@
 import React from 'react';
+interface IconProps {
+  onClick: () => void;
+}
 
-const IconStartRecord = () => {
+const IconStartRecord: React.FC<IconProps> = ({ onClick }) => {
   return (
     <svg
+      onClick={onClick}
       className="translate-x-0.5"
       width="21"
       height="24"
@@ -18,9 +22,10 @@ const IconStartRecord = () => {
   );
 };
 
-const IconStopRecord = () => {
+const IconStopRecord: React.FC<IconProps> = ({ onClick }) => {
   return (
     <svg
+      onClick={onClick}
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -34,10 +39,15 @@ const IconStopRecord = () => {
 
 interface IconRecordProps {
   isRecording: boolean;
+  onClick: () => void;
 }
 
-const IconRecord: React.FC<IconRecordProps> = ({ isRecording }) => {
-  return isRecording ? <IconStopRecord /> : <IconStartRecord />;
+const IconRecord: React.FC<IconRecordProps> = ({ isRecording, onClick }) => {
+  return isRecording ? (
+    <IconStopRecord onClick={onClick} />
+  ) : (
+    <IconStartRecord onClick={onClick} />
+  );
 };
 
 export default IconRecord;
