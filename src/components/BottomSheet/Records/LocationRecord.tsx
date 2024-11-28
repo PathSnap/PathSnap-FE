@@ -10,7 +10,7 @@ interface LocationRecordProps {
 const LocationRecord: React.FC<LocationRecordProps> = ({ isPhotoRecord }) => {
   return (
     <RecordWrapper
-      className={'shadow-l flex p-[14px] gap-5'}
+      className={'shadow-l p-[14px] grid grid-cols-[auto_1fr] gap-[30px]'}
       isPhotoRecord={isPhotoRecord}
     >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>

@@ -57,7 +57,7 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord }) => {
         <div className={'w-full absolute flex justify-between top-0 z-20 p-3'}>
           <div className={'text-white'}>
             <div className={'font-bold text-sm'}>장소이름</div>
-            <div className={'text-xs'}>2024.11.03</div>
+            <div className={'text-xs'}>18:20</div>
           </div>
           <IconContent
             onClick={() => {

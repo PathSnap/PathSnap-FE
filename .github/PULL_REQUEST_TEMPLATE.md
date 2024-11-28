@@ -13,7 +13,3 @@
 ## Images
 
 -
-
-## Check list
-
-- [ ] check 1 :
