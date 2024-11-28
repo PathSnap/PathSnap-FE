@@ -3,7 +3,7 @@ name: Deploy React App to EC2
 on:
   pull_request:
     branches:
-      - main  
+      - main
 
 jobs:
   build:
@@ -11,29 +11,36 @@ jobs:
 
     steps:
       # 1. 리포지토리 체크아웃
-      - name: Checkout repository
+      - name: 리포지토리 체크아웃
         uses: actions/checkout@v3
 
       # 2. Node.js 설치
-      - name: Set up Node.js
+      - name: Node.js 설정
         uses: actions/setup-node@v3
         with:
           node-version: '18'  # 사용 중인 Node.js 버전에 맞게 설정
 
-      # 3. Dependencies 설치
-      - name: Install dependencies
+      # 3. .env 파일 생성
+      - name: .env 파일 생성
+        run: echo "$ENV" > .env
+        env:
+          ENV: ${{ secrets.ENV }}
+
+      # 4. Dependencies 설치
+      - name: Dependencies 설치
         run: npm install
 
-      # 4. React 프로젝트 빌드
-      - name: Build project
+      # 5. React 프로젝트 빌드
+      - name: 프로젝트 빌드
         run: npm run build
 
-      # 5. EC2 서버로 배포 (SSH)
-      - name: Deploy to EC2
+      # 6. EC2 서버로 배포 (SSH)
+      - name: EC2로 배포
         run: |
           echo "$EC2_SSH_KEY" > ~/ec2_key
           chmod 600 ~/ec2_key
           scp -o StrictHostKeyChecking=no -i ~/ec2_key -r ./dist/* ubuntu@$MY_IP:/var/www/html/
+          scp -o StrictHostKeyChecking=no -i ~/ec2_key .env ubuntu@$MY_IP:/var/www/html/
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           MY_IP: ${{ secrets.MY_IP }}

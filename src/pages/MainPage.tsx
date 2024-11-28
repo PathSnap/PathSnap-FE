@@ -1,38 +1,23 @@
-// pages/MainPage.tsx
-
-import MapComponent from '../components/MainPage/Map/MapComponent';
-import CurrentLocationButton from '../icons/MainPage/CurrentLocationButton';
+import MapComponent from '../components/MainPage/Map/NaverMapComponent';
+import SelectBox from '../components/MainPage/SelectBox';
 import { useState } from 'react';
 
 const MainPage = () => {
-  const [currentPosition, setCurrentPosition] = useState<
-    [number, number] | null
-  >(null);
-
-  const goToCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentPosition([latitude, longitude]);
-        },
-        (error) => {
-          console.error('Error fetching location:', error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
-  };
+  const [selectedBoxIndex, setSelectedBoxIndex] = useState<number>(0); // 셀렉트 박스 상태 관리
 
   return (
     <div className="h-full w-full z-0 flex flex-col relative">
-      {/* 지도가 남은 화면 공간을 채우도록 flex-grow 적용 */}
+      {/* 지도 컴포넌트 */}
       <div className="flex-grow">
-        <MapComponent currentPosition={currentPosition} />
+        <MapComponent />
       </div>
-      {/* 현재 위치로 이동 버튼 */}
-      <CurrentLocationButton onClick={goToCurrentLocation} />
+      {/* 조회/기록 셀렉트 박스 */}
+      <SelectBox
+        leftText="조회"
+        rightText="기록"
+        selectedBoxIndex={selectedBoxIndex} // 선택 상태 전달
+        setSelectedBoxIndex={setSelectedBoxIndex} // 상태 업데이트
+      />
     </div>
   );
 };
