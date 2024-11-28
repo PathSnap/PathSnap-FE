@@ -4,10 +4,34 @@ import IconSearch from '../icons/SerchPage/IconSerch';
 import IconTime from '../icons/SerchPage/IconTime';
 import IconDelete from '../icons/SerchPage/IconDelete';
 import { useNavigate } from 'react-router';
-import { locations } from '../data/locationData';
+import { Locations } from '../data/LocationData';
+
+interface SelectLocationProps {
+  selectedLocation: {
+    '시·도': LocationsData;
+    '시·군·구': LocationsData;
+    '동·읍·면·리': LocationsData;
+  };
+  setSelectedLocation: React.Dispatch<
+    React.SetStateAction<{
+      '시·도': LocationsData;
+      '시·군·구': LocationsData;
+      '동·읍·면·리': LocationsData;
+    }>
+  >;
+}
 
 const SerchPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('recent'); // 상태 추가
+  const [selectedLocation, setSelectedLocation] = useState<{
+    '시·도': LocationsData;
+    '시·군·구': LocationsData;
+    '동·읍·면·리': LocationsData;
+  }>({
+    '시·도': { name: '', x: 0, y: 0 },
+    '시·군·구': { name: '', x: 0, y: 0 },
+    '동·읍·면·리': { name: '', x: 0, y: 0 },
+  });
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-grow flex flex-col text-second items-center px-0 py-5">
@@ -15,12 +39,20 @@ const SerchPage: React.FC = () => {
         <TabMenu activeTab={activeTab} setActiveTab={setActiveTab} />
         {/* 조건부 렌더링 */}
         {activeTab === 'recent' && <LocationList />}
-        {activeTab === 'regional' && <SelectLocation />}
+        {activeTab === 'regional' && (
+          <SelectLocation
+            selectedLocation={selectedLocation}
+            setSelectedLocation={setSelectedLocation}
+          />
+        )}
       </div>
       {/* 조건부 버튼 렌더링 */}
       {activeTab === 'regional' && (
         <div className="w-full py-10 px-0 flex gap-4 text-lg">
-          <Buttons />
+          <Buttons
+            selectedLocation={selectedLocation}
+            setSelectedLocation={setSelectedLocation}
+          />
         </div>
       )}
     </div>
@@ -116,39 +148,42 @@ const Location: React.FC<LocationProps> = ({ locationName, date }) => {
   );
 };
 
-const SelectLocation: React.FC = () => {
+interface LocationsData {
+  name: string;
+  x: number;
+  y: number;
+}
+
+const SelectLocation: React.FC<SelectLocationProps> = ({
+  selectedLocation,
+  setSelectedLocation,
+}) => {
   const [currentStep, setCurrentStep] = useState<
     '시·도' | '시·군·구' | '동·읍·면·리'
   >('시·도');
-  const [selectedLocation, setSelectedLocation] = useState<{
-    '시·도': string;
-    '시·군·구': string;
-    '동·읍·면·리': string;
-  }>({
-    '시·도': '',
-    '시·군·구': '',
-    '동·읍·면·리': '',
-  });
 
-  const locationBlocks: string[] = (() => {
+  const locationBlocks: LocationsData[] = (() => {
     if (currentStep === '시·도') {
-      return locations['시·도'].map((location) => location.name);
-    } else if (currentStep === '시·군·구' && selectedLocation['시·도']) {
-      return (locations['시·군·구'][selectedLocation['시·도']] || []).map(
-        (location) => location.name
-      );
-    } else if (currentStep === '동·읍·면·리' && selectedLocation['시·군·구']) {
-      return (locations['동·읍·면·리'][selectedLocation['시·군·구']] || []).map(
-        (location) => location.name
-      );
+      return Locations['시·도'];
+    } else if (currentStep === '시·군·구' && selectedLocation['시·도'].name) {
+      return Locations['시·군·구'][selectedLocation['시·도'].name] || [];
+    } else if (
+      currentStep === '동·읍·면·리' &&
+      selectedLocation['시·군·구'].name
+    ) {
+      return Locations['동·읍·면·리'][selectedLocation['시·군·구'].name] || [];
     }
     return [];
   })();
 
-  const handleLocationClick = (locationName: string) => {
+  const handleLocationClick = (location: LocationsData) => {
     setSelectedLocation((prev) => ({
       ...prev,
-      [currentStep]: locationName,
+      [currentStep]: {
+        name: location.name,
+        x: location.x,
+        y: location.y,
+      },
     }));
 
     if (currentStep === '시·도') {
@@ -160,16 +195,21 @@ const SelectLocation: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col justify-start items-center border-t border-gray-200 px-4">
-      <div className="flex flex-wrap justify-around items-center bg-[#77CEBD]/20 rounded-[20px] py-[12px] px-[40px] w-[97%] h-[62px] mt-[37px]">
+      <div className="flex flex-wrap justify-around items-center gap-1 bg-[#77CEBD]/20 rounded-[20px] py-[12px] px-[40px] w-[97%] h-[62px] mt-[37px]">
         <span
           className={`text-[16px] ${
-            selectedLocation['시·도']
+            selectedLocation['시·도'].name
               ? 'text-[#595959]/100'
               : 'text-[#595959]/30'
-          }`}
-          onClick={() => setCurrentStep('시·도')}
+          }  w-[80px] text-center whitespace-nowrap`}
+          onClick={() => {
+            setCurrentStep('시·도');
+            selectedLocation['시·도'].name = '';
+            selectedLocation['시·군·구'].name = '';
+            selectedLocation['동·읍·면·리'].name = '';
+          }}
         >
-          {selectedLocation['시·도'] || '시·도'}
+          {selectedLocation['시·도'].name || '시·도'}
         </span>
         <IconArrow
           width={5.67}
@@ -178,13 +218,17 @@ const SelectLocation: React.FC = () => {
         />
         <span
           className={`text-[16px] ${
-            selectedLocation['시·군·구']
+            selectedLocation['시·군·구'].name
               ? 'text-[#595959]/100'
               : 'text-[#595959]/30'
-          }`}
-          onClick={() => setCurrentStep('시·군·구')}
+          }  w-[80px] text-center whitespace-nowrap`}
+          onClick={() => {
+            setCurrentStep('시·군·구');
+            selectedLocation['시·군·구'].name = '';
+            selectedLocation['동·읍·면·리'].name = '';
+          }}
         >
-          {selectedLocation['시·군·구'].split('-').pop() || '시·군·구'}
+          {selectedLocation['시·군·구'].name.split('-').pop() || '시·군·구'}
         </span>
         <IconArrow
           width={5.67}
@@ -193,13 +237,12 @@ const SelectLocation: React.FC = () => {
         />
         <span
           className={`text-[16px] ${
-            selectedLocation['동·읍·면·리']
+            selectedLocation['동·읍·면·리'].name
               ? 'text-[#595959]/100'
               : 'text-[#595959]/30'
-          }`}
-          onClick={() => setCurrentStep('동·읍·면·리')}
+          }  w-[80px] text-center whitespace-nowrap`}
         >
-          {selectedLocation['동·읍·면·리'].split('-').pop() || '동·읍·면'}
+          {selectedLocation['동·읍·면·리'].name.split('-').pop() || '동·읍·면'}
         </span>
       </div>
       <div
@@ -210,11 +253,11 @@ const SelectLocation: React.FC = () => {
           width: '384px',
         }}
       >
-        {locationBlocks.map((blockName, index) => (
+        {locationBlocks.map((block, index) => (
           <LocationBlock
             key={index}
-            locationBlockName={blockName}
-            onClick={() => handleLocationClick(blockName)}
+            locationBlockName={block.name}
+            onClick={() => handleLocationClick(block)}
           />
         ))}
       </div>
@@ -241,21 +284,52 @@ const LocationBlock: React.FC<LocationBlockProps> = ({
   );
 };
 
-const Buttons = () => {
+const Buttons: React.FC<SelectLocationProps> = ({ selectedLocation }) => {
   const [isActive, _] = useState(false);
   const router = useNavigate();
+
   return (
     <>
       <button
         onClick={() => {
-          router('/');
+          router('/'); // 메인 페이지로 이동
         }}
         className={'w-full h-[58px] gray-button'}
       >
         취소
       </button>
       <button
-        className={`w-full h-[58px] ${isActive ? 'is-active-green-button' : 'non-active-green-button'}`}
+        className={`w-full h-[58px] ${
+          isActive ? 'is-active-green-button' : 'non-active-green-button'
+        }`}
+        onClick={() => {
+          // x 좌표 계산
+          const centerLat =
+            selectedLocation['동·읍·면·리'].x !== 0
+              ? selectedLocation['동·읍·면·리'].x
+              : selectedLocation['시·군·구'].x !== 0
+                ? selectedLocation['시·군·구'].x
+                : selectedLocation['시·도'].x;
+
+          // y 좌표 계산
+          const centerLng =
+            selectedLocation['동·읍·면·리'].y !== 0
+              ? selectedLocation['동·읍·면·리'].y
+              : selectedLocation['시·군·구'].y !== 0
+                ? selectedLocation['시·군·구'].y
+                : selectedLocation['시·도'].y;
+
+          const adjustedCenterLat = centerLat / 100000;
+          const adjustedCenterLng = centerLng / 10000;
+
+          // 페이지 이동
+          router('/', {
+            state: {
+              adjustedCenterLat,
+              adjustedCenterLng,
+            },
+          });
+        }}
       >
         저장
       </button>

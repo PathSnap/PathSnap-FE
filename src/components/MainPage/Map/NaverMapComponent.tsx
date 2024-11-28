@@ -63,14 +63,29 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         setCurrentPosition(defaultLatLng);
       };
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(setInitialLocation, (err) => {
-          console.error('Failed to retrieve location:', err);
-          setDefaultLocation();
-        });
+      if (centerLat && centerlng) {
+        const mapOptions = {
+          center: new naver.maps.LatLng(centerLat, centerlng), // 현재 위치로 초기화
+          zoom: 15,
+        };
+
+        mapInstance.current = new naver.maps.Map(
+          mapElement.current,
+          mapOptions
+        );
       } else {
-        console.error('Geolocation is not supported by this browser.');
-        setDefaultLocation();
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            setInitialLocation,
+            (err) => {
+              console.error('Failed to retrieve location:', err);
+              setDefaultLocation();
+            }
+          );
+        } else {
+          console.error('Geolocation is not supported by this browser.');
+          setDefaultLocation();
+        }
       }
     };
 
