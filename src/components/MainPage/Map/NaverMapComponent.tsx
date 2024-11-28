@@ -5,7 +5,15 @@ import CurrentLocationButton from '../CurrentLocationButton';
 import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import SerchButton from '../SerchButton';
 
-const NaverMapComponent: React.FC = () => {
+interface CenterLocationProps {
+  centerLat?: number;
+  centerlng?: number;
+}
+
+const NaverMapComponent: React.FC<CenterLocationProps> = ({
+  centerLat,
+  centerlng,
+}) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
   const [currentPosition, setCurrentPosition] = useState<{

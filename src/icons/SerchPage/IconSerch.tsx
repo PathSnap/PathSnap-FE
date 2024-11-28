@@ -5,6 +5,7 @@ interface IconSearchProps {
   height?: number;
   color?: string;
   className?: string;
+  onClick?: () => void; // 선택적 속성으로 추가
 }
 
 const IconSearch: React.FC<IconSearchProps> = ({
@@ -12,6 +13,7 @@ const IconSearch: React.FC<IconSearchProps> = ({
   height = 24,
   color = 'black',
   className,
+  onClick,
 }) => {
   return (
     <svg
@@ -21,6 +23,7 @@ const IconSearch: React.FC<IconSearchProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      onClick={onClick} // onClick 이벤트 바인딩
     >
       <rect width="24" height="24" fill="white" />
       <circle

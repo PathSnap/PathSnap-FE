@@ -30,6 +30,7 @@ const SerchPage: React.FC = () => {
 export default SerchPage;
 
 const SearchBar: React.FC = () => {
+  const router = useNavigate(); // useNavigate 훅으로 router 생성
   return (
     <div className="w-[89%] relative h-14">
       <input
@@ -39,6 +40,9 @@ const SearchBar: React.FC = () => {
       <IconArrow
         direction="left"
         className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+        onClick={() => {
+          router('/'); // '/' 경로로 이동
+        }}
       />
       <IconSearch className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
     </div>
@@ -240,13 +244,12 @@ const LocationBlock: React.FC<LocationBlockProps> = ({
 const Buttons = () => {
   const [isActive, _] = useState(false);
   const router = useNavigate();
-  const handleClickCancel = () => {
-    router('/');
-  };
   return (
     <>
       <button
-        onClick={handleClickCancel}
+        onClick={() => {
+          router('/');
+        }}
         className={'w-full h-[58px] gray-button'}
       >
         취소
