@@ -7,7 +7,6 @@ const RegisterPage: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const handleClickSaveBtn = () => {
-    console.log('click');
     setIsSubmit(true);
   };
 
