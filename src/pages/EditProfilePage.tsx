@@ -16,7 +16,11 @@ const EditProfilePage: React.FC = () => {
       <HeaderBar headerText="프로필 수정" />
       <div className={'pt-24 gap-[30px] flex flex-col relative'}>
         <ProfileImage />
-        <ProfileForm setIsFill={setIsFill} isSubmit={isSubmit} />
+        <ProfileForm
+          setIsFill={setIsFill}
+          isSubmit={isSubmit}
+          setIsSubmit={setIsSubmit}
+        />
       </div>
       {/* 버튼 */}
       <div className={'flex gap-4 py-[50px]'}>

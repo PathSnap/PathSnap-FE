@@ -12,6 +12,9 @@ const OAuth2Callback = () => {
 
     if (access) {
       // 토큰 저장
+      if (localStorage.getItem('accessToken')) {
+        localStorage.removeItem('accessToken');
+      }
       localStorage.setItem('accessToken', access);
     }
     if (userId) {

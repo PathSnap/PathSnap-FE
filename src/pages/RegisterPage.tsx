@@ -9,6 +9,11 @@ const RegisterPage: React.FC = () => {
   const handleClickSaveBtn = () => {
     setIsSubmit(true);
   };
+  const router = useNavigate();
+
+  const handleClickSkipBtn = () => {
+    router('/');
+  };
 
   return (
     <div className={'w-full h-full px-9 relative text-second flex flex-col'}>
@@ -17,10 +22,14 @@ const RegisterPage: React.FC = () => {
         isRegisterPage={true}
         setIsFill={setIsFill}
         isSubmit={isSubmit}
+        setIsSubmit={setIsSubmit}
       />
       {/* 버튼 */}
       <div className={'flex gap-4 py-10'}>
-        <button className={'w-1/3 h-[58px] text-lg gray-button'}>
+        <button
+          onClick={handleClickSkipBtn}
+          className={'w-1/3 h-[58px] text-lg gray-button'}
+        >
           건너뛰기
         </button>
         <button

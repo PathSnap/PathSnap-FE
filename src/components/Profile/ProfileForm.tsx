@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Input from '../Input';
 import AddressInput from './AddressInput';
+import useUserInfoStore from '../../stores/UserInfo';
+import { useNavigate } from 'react-router';
 
 interface ProfileFormProps {
   isRegisterPage?: boolean;
   setIsFill: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmit: boolean;
+  setIsSubmit: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
   isRegisterPage = false,
   setIsFill,
   isSubmit,
+  setIsSubmit,
 }) => {
   const labelStyle = 'text-base font-semibold';
   const inputStyle = 'h-[54px]';
@@ -21,6 +25,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     birth: '',
     phoneNum: '',
     address: '',
+    imageId: '',
   });
 
   const [errors, setErrors] = useState({
@@ -44,11 +49,29 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     return Object.values(newErrors).some((error) => error);
   };
 
-  const handleSubmit = () => {
-    const hasErrors = validateFields();
+  const { updateUserInfo } = useUserInfoStore();
+  const router = useNavigate();
 
-    if (!hasErrors) {
-      // 회원가입 api 또는 프로필 수정 api 호출
+  const handleSubmit = async () => {
+    const hasErrors = validateFields();
+    console.log(hasErrors, isSubmit);
+
+    if (!hasErrors && isSubmit) {
+      setIsSubmit(false);
+      try {
+        await updateUserInfo({
+          userName: info.name,
+          birthDate: info.birth,
+          phoneNumber: info.phoneNum,
+          address: info.address,
+          imageId: info.imageId,
+        });
+        if (isRegisterPage) {
+          router('/');
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
