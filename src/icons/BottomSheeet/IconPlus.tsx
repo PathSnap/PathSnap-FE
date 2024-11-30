@@ -3,11 +3,17 @@ import React from 'react';
 interface IconPlusProps {
   width: number;
   height: number;
+  className?: string;
 }
 
-const IconPlus: React.FC<IconPlusProps> = ({ width, height }) => {
+const IconPlus: React.FC<IconPlusProps> = ({
+  width,
+  height,
+  className = '',
+}) => {
   return (
     <svg
+      className={className}
       width={width}
       height={height}
       viewBox="0 0 26 26"
