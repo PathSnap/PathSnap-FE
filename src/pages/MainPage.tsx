@@ -8,8 +8,8 @@ const MainPage = () => {
   const location = useLocation(); // 현재 페이지로 전달된 데이터 가져오기
 
   // 전달받은 위도와 경도
-  const centerLat = location.state?.adjustedCenterLat || null;
-  const centerlng = location.state?.adjustedCenterLng || null;
+  const centerLat = location.state?.centerLatState || null;
+  const centerlng = location.state?.centerLngState || null;
 
   return (
     <div className="h-full w-full z-0 flex flex-col relative">

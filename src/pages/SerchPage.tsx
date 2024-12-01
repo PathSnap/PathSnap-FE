@@ -304,7 +304,7 @@ const Buttons: React.FC<SelectLocationProps> = ({ selectedLocation }) => {
         }`}
         onClick={() => {
           // x 좌표 계산
-          const centerLat =
+          const centerLatState =
             selectedLocation['동·읍·면·리'].x !== 0
               ? selectedLocation['동·읍·면·리'].x
               : selectedLocation['시·군·구'].x !== 0
@@ -312,21 +312,17 @@ const Buttons: React.FC<SelectLocationProps> = ({ selectedLocation }) => {
                 : selectedLocation['시·도'].x;
 
           // y 좌표 계산
-          const centerLng =
+          const centerLngState =
             selectedLocation['동·읍·면·리'].y !== 0
               ? selectedLocation['동·읍·면·리'].y
               : selectedLocation['시·군·구'].y !== 0
                 ? selectedLocation['시·군·구'].y
                 : selectedLocation['시·도'].y;
-
-          const adjustedCenterLat = centerLat / 100000;
-          const adjustedCenterLng = centerLng / 10000;
-
           // 페이지 이동
           router('/', {
             state: {
-              adjustedCenterLat,
-              adjustedCenterLng,
+              centerLatState,
+              centerLngState,
             },
           });
         }}
