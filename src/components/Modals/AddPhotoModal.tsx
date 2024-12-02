@@ -4,11 +4,14 @@ import useModalStore from '../../stores/ModalStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import Input from '../Input';
 import useUploadImg from '../../hooks/BottomSheet/useUploadImg';
+import { api } from '../../utils/api';
+import uploadS3 from '../../apis/Photos/uploadS3';
 
 const AddPhotoModal: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
   const { closeModal } = useModalStore();
   const [isSubmit, setIsSubmit] = useState(false);
+  const [formData, setFormData] = useState<FormData | null>(null);
   const errorStyle = 'text-xxs';
 
   type recordInfo = {
@@ -50,11 +53,34 @@ const AddPhotoModal: React.FC = () => {
     return Object.values(newErrors).some((error) => error);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const hasErrors = validateFields();
 
-    if (!hasErrors) {
-      // 회원가입 api 또는 프로필 수정 api 호출
+    if (!hasErrors && isFill && isSubmit) {
+      //S3에 이미지 업로드
+      const imgData = await uploadS3(formData);
+      const imageIds = imgData.images.map((image: any) => ({
+        imageId: image.imageId,
+      }));
+      console.log('imageIds : ', imageIds);
+
+      //나중에 recordId는 기록시작으로부터 받아오기
+      const recordId = '57d661d0-8394-404c-862d-124b03e0c90b';
+      //나중에 순서에 맞게 수정하기
+      const seq = 0;
+      const lat = 0;
+      const lng = 0;
+      const res = await api.post(`photos/create/${recordId}`, {
+        seq,
+        images: imageIds,
+        photoTitle: recordInfo.title,
+        photoContent: recordInfo.content,
+        photoDate: recordInfo.date,
+        lat,
+        lng,
+      });
+
+      console.log(res);
     }
   };
 
@@ -66,7 +92,7 @@ const AddPhotoModal: React.FC = () => {
       if (field === 'photos') {
         return {
           ...prev,
-          photos: Array.isArray(value) ? value : [value], // 새로운 값으로 덮어쓰기 (value가 배열일 경우 그대로 사용)
+          photos: Array.isArray(value) ? value : [value],
         };
       }
       return { ...prev, [field]: value };
@@ -80,9 +106,6 @@ const AddPhotoModal: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(recordInfo.photos);
-  }, [recordInfo.photos]);
   useEffect(() => {
     if (isSubmit) {
       handleSubmit();
@@ -121,6 +144,7 @@ const AddPhotoModal: React.FC = () => {
           setValue={(value) => handleInputChange('photos', value)}
           error={errors.photos}
           isSubmit={isSubmit}
+          setFormData={setFormData}
         />
         <Input
           label="제목"
@@ -185,6 +209,7 @@ interface AddPhotoProps {
   setValue: (value: string[]) => void;
   error: boolean;
   isSubmit: boolean;
+  setFormData: (value: FormData) => void;
 }
 
 const AddPhoto: React.FC<AddPhotoProps> = ({
@@ -192,6 +217,7 @@ const AddPhoto: React.FC<AddPhotoProps> = ({
   isSubmit,
   setValue,
   value,
+  setFormData,
 }) => {
   return (
     <>
@@ -201,7 +227,7 @@ const AddPhoto: React.FC<AddPhotoProps> = ({
           <div>사진</div>
           <div className={'text-[10px]'}>(최대 5장)</div>
         </div>
-        <Photos setValue={setValue} value={value} />
+        <Photos setValue={setValue} value={value} setFormData={setFormData} />
         {isSubmit && error && (
           <div
             className={`absolute top-full pt-0.5 text-error font-semibold text-xxs`}
@@ -217,15 +243,22 @@ const AddPhoto: React.FC<AddPhotoProps> = ({
 interface PhotosProps {
   setValue: (value: string[]) => void;
   value: string[];
+  setFormData: (value: FormData) => void;
 }
-const Photos: React.FC<PhotosProps> = ({ setValue, value }) => {
+const Photos: React.FC<PhotosProps> = ({ setValue, value, setFormData }) => {
   const uploadRef = useRef<HTMLInputElement | null>(null);
 
-  const { photoUrls, handleFileChange, setPhotoUrls } = useUploadImg(
+  const { photoUrls, handleFileChange, setPhotoUrls, formData } = useUploadImg(
     (imageData) => {
       setValue(imageData);
     }
   );
+
+  useEffect(() => {
+    if (formData) {
+      setFormData(formData);
+    }
+  }, [formData, setFormData]);
 
   const deletePhoto = (index: number) => {
     const newPhotos = value.filter((_, i) => i !== index);
