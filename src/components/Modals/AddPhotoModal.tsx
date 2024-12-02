@@ -1,16 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ModalWrapper from './ModalWrapper';
 import useModalStore from '../../stores/ModalStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import Input from '../Input';
+import useUploadImg from '../../hooks/BottomSheet/useUploadImg';
+import { api } from '../../utils/api';
+import uploadS3 from '../../apis/Photos/uploadS3';
 
 const AddPhotoModal: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
   const { closeModal } = useModalStore();
   const [isSubmit, setIsSubmit] = useState(false);
+  const [formData, setFormData] = useState<FormData | null>(null);
   const errorStyle = 'text-xxs';
 
-  const [recordInfo, setRecordInfo] = useState({
+  type recordInfo = {
+    photos: string[];
+    title: string;
+    date: string;
+    location: string;
+    content: string;
+  };
+
+  const [recordInfo, setRecordInfo] = useState<recordInfo>({
     photos: [],
     title: '',
     date: '',
@@ -41,16 +53,51 @@ const AddPhotoModal: React.FC = () => {
     return Object.values(newErrors).some((error) => error);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const hasErrors = validateFields();
 
-    if (!hasErrors) {
-      // 회원가입 api 또는 프로필 수정 api 호출
+    if (!hasErrors && isFill && isSubmit) {
+      //S3에 이미지 업로드
+      const imgData = await uploadS3(formData);
+      const imageIds = imgData.images.map((image: any) => ({
+        imageId: image.imageId,
+      }));
+      console.log('imageIds : ', imageIds);
+
+      //나중에 recordId는 기록시작으로부터 받아오기
+      const recordId = '57d661d0-8394-404c-862d-124b03e0c90b';
+      //나중에 순서에 맞게 수정하기
+      const seq = 0;
+      const lat = 0;
+      const lng = 0;
+      const res = await api.post(`photos/create/${recordId}`, {
+        seq,
+        images: imageIds,
+        photoTitle: recordInfo.title,
+        photoContent: recordInfo.content,
+        photoDate: recordInfo.date,
+        lat,
+        lng,
+      });
+
+      console.log(res);
     }
   };
 
-  const handleInputChange = (field: keyof typeof recordInfo, value: string) => {
-    setRecordInfo((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof typeof recordInfo,
+    value: string | string[]
+  ) => {
+    setRecordInfo((prev) => {
+      if (field === 'photos') {
+        return {
+          ...prev,
+          photos: Array.isArray(value) ? value : [value],
+        };
+      }
+      return { ...prev, [field]: value };
+    });
+
     // 입력값 변경 시 에러 제거
     if (value) {
       setErrors((prev) => ({ ...prev, [field]: false }));
@@ -93,10 +140,11 @@ const AddPhotoModal: React.FC = () => {
         }
       >
         <AddPhoto
-          photos={recordInfo.photos}
+          value={recordInfo.photos}
           setValue={(value) => handleInputChange('photos', value)}
           error={errors.photos}
           isSubmit={isSubmit}
+          setFormData={setFormData}
         />
         <Input
           label="제목"
@@ -145,7 +193,6 @@ const AddPhotoModal: React.FC = () => {
         <button
           onClick={() => {
             setIsSubmit(true);
-            console.log(recordInfo);
           }}
           type="submit"
           className={`w-[127px] h-11 rounded-2xl  ${isFill ? 'is-active-green-button' : 'non-active-green-button'}`}
@@ -158,13 +205,20 @@ const AddPhotoModal: React.FC = () => {
 };
 
 interface AddPhotoProps {
-  photos: string[];
-  setValue: (value: string) => void;
+  value: string[];
+  setValue: (value: string[]) => void;
   error: boolean;
   isSubmit: boolean;
+  setFormData: (value: FormData) => void;
 }
 
-const AddPhoto: React.FC<AddPhotoProps> = ({ photos, error, isSubmit }) => {
+const AddPhoto: React.FC<AddPhotoProps> = ({
+  error,
+  isSubmit,
+  setValue,
+  value,
+  setFormData,
+}) => {
   return (
     <>
       <div className={'font-semibold pb-0.5'}>사진추가</div>
@@ -173,7 +227,7 @@ const AddPhoto: React.FC<AddPhotoProps> = ({ photos, error, isSubmit }) => {
           <div>사진</div>
           <div className={'text-[10px]'}>(최대 5장)</div>
         </div>
-        <Photos photoUrls={photos} />
+        <Photos setValue={setValue} value={value} setFormData={setFormData} />
         {isSubmit && error && (
           <div
             className={`absolute top-full pt-0.5 text-error font-semibold text-xxs`}
@@ -187,20 +241,60 @@ const AddPhoto: React.FC<AddPhotoProps> = ({ photos, error, isSubmit }) => {
 };
 
 interface PhotosProps {
-  photoUrls: string[];
+  setValue: (value: string[]) => void;
+  value: string[];
+  setFormData: (value: FormData) => void;
 }
-const Photos: React.FC<PhotosProps> = ({ photoUrls }) => {
+const Photos: React.FC<PhotosProps> = ({ setValue, value, setFormData }) => {
+  const uploadRef = useRef<HTMLInputElement | null>(null);
+
+  const { photoUrls, handleFileChange, setPhotoUrls, formData } = useUploadImg(
+    (imageData) => {
+      setValue(imageData);
+    }
+  );
+
+  useEffect(() => {
+    if (formData) {
+      setFormData(formData);
+    }
+  }, [formData, setFormData]);
+
+  const deletePhoto = (index: number) => {
+    const newPhotos = value.filter((_, i) => i !== index);
+    setPhotoUrls(newPhotos);
+  };
+
   return (
     <div className={'flex gap-3 overflow-x-auto w-full p-1'}>
-      {photoUrls.map((photoUrl) => (
-        <Photo key={photoUrl} photoSrc={photoUrl} />
+      {photoUrls.map((photoUrl, index) => (
+        <Photo
+          key={Date.now() + index}
+          index={index}
+          photoSrc={photoUrl}
+          deletePhoto={deletePhoto}
+        />
       ))}
-      <div
-        className={
-          'w-20 aspect-square rounded-[10px] grid place-items-center shadow-xxs'
-        }
-      >
-        <IconPlus width={13.33} height={13.33} />
+      <div className={'relative shadow-xxs rounded-[10px]'}>
+        {/* 사진추가 아이콘 */}
+        <input
+          ref={uploadRef}
+          className={
+            'relative w-20 aspect-square rounded-[10px] grid place-items-center focus:outline-none opacity-0 cursor-pointer'
+          }
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={(e) => {
+            handleFileChange(e);
+            setValue(photoUrls);
+          }}
+        />
+        <IconPlus
+          width={13.33}
+          height={13.33}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        />
       </div>
     </div>
   );
@@ -208,15 +302,21 @@ const Photos: React.FC<PhotosProps> = ({ photoUrls }) => {
 
 interface PhotoProps {
   photoSrc: string;
+  deletePhoto: (index: number) => void;
+  index: number;
 }
-const Photo: React.FC<PhotoProps> = ({ photoSrc }) => {
+const Photo: React.FC<PhotoProps> = ({ photoSrc, deletePhoto, index }) => {
   return (
-    <div className={'relative'}>
+    <div className={'relative flex-shrink-0'}>
       <img
         src={photoSrc}
-        className={'w-20 aspect-square rounded-[10px] border-2 border-primary'}
+        className={'w-20 aspect-square rounded-[10px] border-2 border-primary '}
       />
+      {/* 사진 삭제하는 버튼 */}
       <div
+        onClick={() => {
+          deletePhoto(index);
+        }}
         className={
           'absolute w-4 aspect-square rounded-full bg-primary grid place-items-center -top-1 -right-0.5'
         }

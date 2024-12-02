@@ -12,13 +12,14 @@ const OAuth2Callback = () => {
 
     if (access) {
       // 토큰 저장
+      if (localStorage.getItem('accessToken')) {
+        localStorage.removeItem('accessToken');
+      }
       localStorage.setItem('accessToken', access);
-      console.log(`Access Token: ${access}`);
     }
     if (userId) {
       // 사용자 정보 저장
       localStorage.setItem('userId', userId);
-      console.log(`User ID: ${userId}`);
     }
 
     // 리다이렉트
