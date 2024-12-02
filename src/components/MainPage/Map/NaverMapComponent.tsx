@@ -5,7 +5,15 @@ import CurrentLocationButton from '../CurrentLocationButton';
 import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import SerchButton from '../SerchButton';
 
-const NaverMapComponent: React.FC = () => {
+interface CenterLocationProps {
+  centerLat?: number;
+  centerlng?: number;
+}
+
+const NaverMapComponent: React.FC<CenterLocationProps> = ({
+  centerLat,
+  centerlng,
+}) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
   const [currentPosition, setCurrentPosition] = useState<{
@@ -55,14 +63,29 @@ const NaverMapComponent: React.FC = () => {
         setCurrentPosition(defaultLatLng);
       };
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(setInitialLocation, (err) => {
-          console.error('Failed to retrieve location:', err);
-          setDefaultLocation();
-        });
+      if (centerLat && centerlng) {
+        const mapOptions = {
+          center: new naver.maps.LatLng(centerLat, centerlng), // 현재 위치로 초기화
+          zoom: 15,
+        };
+
+        mapInstance.current = new naver.maps.Map(
+          mapElement.current,
+          mapOptions
+        );
       } else {
-        console.error('Geolocation is not supported by this browser.');
-        setDefaultLocation();
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            setInitialLocation,
+            (err) => {
+              console.error('Failed to retrieve location:', err);
+              setDefaultLocation();
+            }
+          );
+        } else {
+          console.error('Geolocation is not supported by this browser.');
+          setDefaultLocation();
+        }
       }
     };
 
