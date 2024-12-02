@@ -33,6 +33,13 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         const mapOptions = {
           center: new naver.maps.LatLng(latitude, longitude), // 현재 위치로 초기화
           zoom: 15,
+
+          scaleControl: false,
+          mapDataControl: false,
+          logoControl: true,
+          logoControlOptions: {
+            position: naver.maps.Position.TOP_RIGHT,
+          },
         };
 
         // 지도 인스턴스 생성
@@ -53,6 +60,13 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         const mapOptions = {
           center: new naver.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng),
           zoom: 15,
+
+          scaleControl: false,
+          mapDataControl: false,
+          logoControl: true,
+          logoControlOptions: {
+            position: naver.maps.Position.TOP_RIGHT,
+          },
         };
 
         mapInstance.current = new naver.maps.Map(
@@ -67,6 +81,13 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         const mapOptions = {
           center: new naver.maps.LatLng(centerLat, centerlng), // 현재 위치로 초기화
           zoom: 15,
+
+          scaleControl: false,
+          mapDataControl: false,
+          logoControl: true,
+          logoControlOptions: {
+            position: naver.maps.Position.TOP_RIGHT,
+          },
         };
 
         mapInstance.current = new naver.maps.Map(

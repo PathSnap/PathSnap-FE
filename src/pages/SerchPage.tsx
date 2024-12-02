@@ -5,8 +5,6 @@ import IconTime from '../icons/SerchPage/IconTime';
 import IconDelete from '../icons/SerchPage/IconDelete';
 import { useNavigate } from 'react-router';
 import { Locations } from '../data/LocationData';
-import axios from 'axios';
-import { useEffect, useRef } from 'react';
 
 interface SelectLocationProps {
   selectedLocation: {
@@ -24,32 +22,6 @@ interface SelectLocationProps {
 }
 
 const SerchPage: React.FC = () => {
-  const isFetched = useRef(false); // 요청 여부 추적
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (isFetched.current) return; // 이미 요청이 실행되었다면 종료
-
-      const baseUrl = import.meta.env.VITE_API_URL;
-      try {
-        const res = await axios.post(
-          `${baseUrl}/reissue`,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        console.log(res);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        isFetched.current = true; // 요청 상태를 업데이트
-      }
-    };
-
-    fetchData();
-  }, []); // 빈 의존성 배열로 한 번만 실행
-
   const [activeTab, setActiveTab] = useState('recent'); // 상태 추가
   const [selectedLocation, setSelectedLocation] = useState<{
     '시·도': LocationsData;
