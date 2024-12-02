@@ -5,6 +5,8 @@ import IconTime from '../icons/SerchPage/IconTime';
 import IconDelete from '../icons/SerchPage/IconDelete';
 import { useNavigate } from 'react-router';
 import { Locations } from '../data/LocationData';
+import axios from 'axios';
+import { useEffect, useRef } from 'react';
 
 interface SelectLocationProps {
   selectedLocation: {
@@ -22,6 +24,32 @@ interface SelectLocationProps {
 }
 
 const SerchPage: React.FC = () => {
+  const isFetched = useRef(false); // 요청 여부 추적
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isFetched.current) return; // 이미 요청이 실행되었다면 종료
+
+      const baseUrl = import.meta.env.VITE_API_URL;
+      try {
+        const res = await axios.post(
+          `${baseUrl}/reissue`,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        console.log(res);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        isFetched.current = true; // 요청 상태를 업데이트
+      }
+    };
+
+    fetchData();
+  }, []); // 빈 의존성 배열로 한 번만 실행
+
   const [activeTab, setActiveTab] = useState('recent'); // 상태 추가
   const [selectedLocation, setSelectedLocation] = useState<{
     '시·도': LocationsData;
@@ -250,7 +278,7 @@ const SelectLocation: React.FC<SelectLocationProps> = ({
         style={{
           gridAutoRows: '68px',
           height: `${Math.ceil(locationBlocks.length / 3) * 68}px`,
-          width: '384px',
+          width: '95%',
         }}
       >
         {locationBlocks.map((block, index) => (
@@ -276,7 +304,7 @@ const LocationBlock: React.FC<LocationBlockProps> = ({
 }) => {
   return (
     <div
-      className="flex justify-center items-center border border-[#000000]/4 bg-white h-[68px] w-[128px] cursor-pointer hover:bg-[#77CEBD]/10"
+      className="flex justify-center items-center border border-[#000000]/4 bg-white h-[68px] w-[100%] cursor-pointer hover:bg-[#77CEBD]/10"
       onClick={onClick}
     >
       {locationBlockName.split('-').pop()}
@@ -294,12 +322,12 @@ const Buttons: React.FC<SelectLocationProps> = ({ selectedLocation }) => {
         onClick={() => {
           router('/'); // 메인 페이지로 이동
         }}
-        className={'w-full h-[58px] gray-button'}
+        className={'w-full h-[58px] px-2 gray-button'}
       >
         취소
       </button>
       <button
-        className={`w-full h-[58px] ${
+        className={`w-full h-[58px] px-2 ${
           isActive ? 'is-active-green-button' : 'non-active-green-button'
         }`}
         onClick={() => {
