@@ -6,7 +6,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../css/PhotoSlider.css';
 import IconCancel from '../../icons/IconCancel';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 
 const PhotoDetailModal: React.FC = () => {
   const { closeModal } = useModalStore();

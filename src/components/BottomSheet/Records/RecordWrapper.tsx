@@ -3,8 +3,8 @@ import useEditRecordStore from '../../../stores/EditRecordStore';
 import IconDrag from '../../../icons/BottomSheeet/IconDrag';
 import IconEdit from '../../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../../icons/BottomSheeet/IconTrash';
-import useDetailModalTypeStore from '../../../stores/DetailModalType';
-import useModalStore from '../../../stores/ModalStore';
+import useDetailModalTypeStore from '../../../stores/Modals/DetailModalType';
+import useModalStore from '../../../stores/Modals/ModalStore';
 
 interface RecordWrapperProps {
   children: ReactNode;

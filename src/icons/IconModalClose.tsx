@@ -1,4 +1,4 @@
-import useModalStore from '../stores/ModalStore';
+import useModalStore from '../stores/Modals/ModalStore';
 
 const IconModalClose = () => {
   const { closeModal } = useModalStore();

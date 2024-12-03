@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 
 interface ModalBackgroundProps {
   children: React.ReactNode;

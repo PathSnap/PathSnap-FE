@@ -5,7 +5,7 @@ import PhotoRecord from './Records/PhotoRecord';
 import SelectBox from './SelectBox';
 import useRecordStore from '../../stores/RecordStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 import LocationRecord from './Records/LocationRecord';
 import { useNavigate } from 'react-router';
 import IconMenu from '../../icons/BottomSheeet/IconMenu';

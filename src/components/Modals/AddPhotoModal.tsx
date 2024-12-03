@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ModalWrapper from './ModalWrapper';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import Input from '../Input';
 import useUploadImg from '../../hooks/BottomSheet/useUploadImg';

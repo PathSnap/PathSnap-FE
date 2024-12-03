@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../../css/PhotoSlider.css';
 import IconContent from '../../../icons/BottomSheeet/IconContent';
-import useModalStore from '../../../stores/ModalStore';
+import useModalStore from '../../../stores/Modals/ModalStore';
 interface PhotoRecordProps {
   isPhotoRecord?: boolean;
   record: any;
