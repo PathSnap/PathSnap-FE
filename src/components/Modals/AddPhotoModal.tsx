@@ -6,6 +6,7 @@ import Input from '../Input';
 import useUploadImg from '../../hooks/BottomSheet/useUploadImg';
 import { api } from '../../utils/api';
 import uploadS3 from '../../apis/Photos/uploadS3';
+import { formattedDate } from '../../utils/formatDate';
 
 const AddPhotoModal: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
@@ -29,6 +30,10 @@ const AddPhotoModal: React.FC = () => {
     location: '',
     content: '',
   });
+
+  useEffect(() => {
+    console.log(recordInfo.date);
+  }, [recordInfo.date]);
 
   const [errors, setErrors] = useState({
     photos: false,
@@ -62,25 +67,28 @@ const AddPhotoModal: React.FC = () => {
       const imageIds = imgData.images.map((image: any) => ({
         imageId: image.imageId,
       }));
-      console.log('imageIds : ', imageIds);
 
-      //나중에 recordId는 기록시작으로부터 받아오기
-      const recordId = '57d661d0-8394-404c-862d-124b03e0c90b';
-      //나중에 순서에 맞게 수정하기
+      //TODO : recordId는 기록시작으로부터 받아오기
+      const recordId = 'fbb03cad-ef8e-47a5-862e-936ee72b61ad';
+      //TODO : 순서에 맞게 수정하기
       const seq = 0;
       const lat = 0;
       const lng = 0;
-      const res = await api.post(`photos/create/${recordId}`, {
-        seq,
-        images: imageIds,
-        photoTitle: recordInfo.title,
-        photoContent: recordInfo.content,
-        photoDate: recordInfo.date,
-        lat,
-        lng,
-      });
-
-      console.log(res);
+      try {
+        const res = await api.post(`photos/create/${recordId}`, {
+          seq,
+          images: imageIds,
+          photoTitle: recordInfo.title,
+          photoContent: recordInfo.content,
+          photoDate: formattedDate() + ' ' + recordInfo.date + ':00',
+          lat,
+          lng,
+        });
+        console.log(res);
+        closeModal();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -158,7 +166,7 @@ const AddPhotoModal: React.FC = () => {
         <Input
           label="날짜"
           placeholder="날짜를 입력해주세요."
-          type="date"
+          type="time"
           value={recordInfo.date}
           setValue={(value) => handleInputChange('date', value)}
           error={errors.date}

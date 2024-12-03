@@ -45,3 +45,15 @@ input[type='date']::-webkit-calendar-picker-indicator {
   background: transparent;
   color: transparent;
 }
+
+input[type='time']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  /* //왼쪽위에 위치시키고 클릭 영역을 부모(input)의 크기만큼 가짐 */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* // 배경과 글자를 투명하게 하여 기존의 아이콘이 없는 것처럼 보여줌 */
+  background: transparent;
+  color: transparent;
+}
