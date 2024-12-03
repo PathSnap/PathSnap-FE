@@ -10,7 +10,7 @@ type record = {
   group: boolean;
 };
 // photoRecord
-type photoRecord = {
+export type photoRecord = {
   photoId: string;
   seq: number;
   images: image[];

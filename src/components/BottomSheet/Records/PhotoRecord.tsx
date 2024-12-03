@@ -6,6 +6,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import '../../../css/PhotoSlider.css';
 import IconContent from '../../../icons/BottomSheeet/IconContent';
 import useModalStore from '../../../stores/Modals/ModalStore';
+import useSelectedPhotoStore from '../../../stores/Modals/SelectedPhotoStore';
 interface PhotoRecordProps {
   isPhotoRecord?: boolean;
   record: any;
@@ -13,19 +14,34 @@ interface PhotoRecordProps {
 
 const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
   var settings = {
-    // dots: true,
     dots: record.images.length > 1 ? true : false,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: false,
+    appendDots: (dots: any) => (
+      <div
+        style={{
+          width: '100%',
+          position: 'absolute',
+          bottom: '0px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ul> {dots} </ul>
+      </div>
+    ),
+    dotsClass: 'dots_custom',
   };
   useEffect(() => {
     console.log(record);
   }, []);
 
   const { openModal } = useModalStore();
+  const { setSelectedRecord } = useSelectedPhotoStore();
 
   return (
     <RecordWrapper isPhotoRecord={isPhotoRecord}>
@@ -43,7 +59,7 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
             <div
               key={image.url}
               className={
-                'grid place-items-center relative rounded-2xl overflow-hidden'
+                'grid place-items-center relative rounded-2xl overflow-hidden focus:outline-none'
               }
             >
               <div
@@ -70,6 +86,8 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
           <IconContent
             onClick={() => {
               openModal('photoDetailModal');
+              setSelectedRecord(record);
+              console.log(record);
             }}
           />
         </div>
