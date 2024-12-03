@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import RecordWrapper from './RecordWrapper';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -7,9 +7,10 @@ import '../../../css/PhotoSlider.css';
 import IconContent from '../../../icons/BottomSheeet/IconContent';
 import useModalStore from '../../../stores/Modals/ModalStore';
 import useSelectedPhotoStore from '../../../stores/Modals/SelectedPhotoStore';
+import { photoRecord } from '../../../stores/RecordStore';
 interface PhotoRecordProps {
   isPhotoRecord?: boolean;
-  record: any;
+  record: photoRecord;
 }
 
 const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
@@ -36,9 +37,6 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
     ),
     dotsClass: 'dots_custom',
   };
-  useEffect(() => {
-    console.log(record);
-  }, []);
 
   const { openModal } = useModalStore();
   const { setSelectedRecord } = useSelectedPhotoStore();
@@ -87,7 +85,6 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
             onClick={() => {
               openModal('photoDetailModal');
               setSelectedRecord(record);
-              console.log(record);
             }}
           />
         </div>

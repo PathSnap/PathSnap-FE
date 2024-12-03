@@ -26,7 +26,7 @@ type image = {
   url: string;
 };
 // routeRecord
-type routeRecord = {
+export type routeRecord = {
   routeId: string;
   seq: number;
   transportMode: string | null;
@@ -52,7 +52,6 @@ interface RecordStoreState {
   setRecordDate: (recordDate?: string) => void;
 }
 
-// Zustand store 생성
 const useRecordStore = create<RecordStoreState>((set, get) => ({
   recordId: 'aa0119ab-4301-4dfa-9fd3-0541e40ea25a',
   record: {
@@ -64,7 +63,6 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
   },
   setRecord: (record: record) => set({ record }),
   setRecordId: (recordId: string) => set({ recordId }),
-
   searchRecord: async () => {
     const recordId = get().recordId;
     try {
@@ -90,7 +88,6 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
     } else if (routeRecords && routeRecords.length > 0) {
       date = routeRecords[0].startDate.slice(0, 10);
     }
-    console.log('recordDate :', date);
 
     set({ recordDate: date });
   },

@@ -294,7 +294,11 @@ const Content: React.FC = () => {
             record={record}
           />
         ) : (
-          <LocationRecord key={record.routeId} isPhotoRecord={false} />
+          <LocationRecord
+            key={record.routeId}
+            isPhotoRecord={false}
+            record={record}
+          />
         )
       )}
       <AddPhoto />
