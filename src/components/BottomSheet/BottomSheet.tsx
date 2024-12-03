@@ -14,11 +14,13 @@ import IconTrash from '../../icons/BottomSheeet/IconTrash';
 import useEditRecordStore from '../../stores/EditRecordStore';
 import IconClose from '../../icons/IconClose';
 import Dropdown from './Dropdown';
+import useFriendStore from '../../stores/FriendStore';
 
 const BottomSheet2: React.FC = () => {
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore();
   const { searchRecord } = useRecordStore();
+
   useEffect(() => {
     searchRecord();
   }, []);
@@ -221,6 +223,7 @@ const Profile: React.FC<ProfileProps> = ({
 };
 
 const PeopleWithTravel: React.FC = () => {
+  const { friends } = useFriendStore();
   return (
     <div className={'pb-5 w-screen pl-[10px]'}>
       <div className={'font-semibold text-second'}>함께 여행한 사람들</div>
@@ -231,11 +234,14 @@ const PeopleWithTravel: React.FC = () => {
       >
         <AddPerson />
         {/* 프로필들 나열될 부분 */}
-        <Profile name="김람운" isLeader={true} />
+        {friends.map((friend) => (
+          <Profile key={friend.friendId} name={friend.name} isLeader={false} />
+        ))}
+        {/* <Profile name="김람운" isLeader={true} />
 
         {[0, 1, 2, 3, 4, 5].map((item) => {
           return <Profile name="이희연" isLeader={false} key={item} />;
-        })}
+        })} */}
       </div>
     </div>
   );
@@ -268,6 +274,14 @@ interface ContentWrapperProps {
 }
 const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
   const isGroupRecord = useRecordStore((state) => state.record.group);
+  const { searchFriends } = useFriendStore();
+  const { recordId } = useRecordStore();
+
+  useEffect(() => {
+    if (isGroupRecord) {
+      searchFriends(recordId);
+    }
+  }, [isGroupRecord]);
   return (
     <div className={'h-full px-3 overflow-y-auto overflow-x-hidden'}>
       {isGroupRecord ? <PeopleWithTravel /> : null}
