@@ -31,5 +31,5 @@ tsconfig.node.tsbuildinfo
 
 
 .env
-vite.config.ts
+
 localhost*
