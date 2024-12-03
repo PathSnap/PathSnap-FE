@@ -7,12 +7,15 @@ import useUploadImg from '../../hooks/BottomSheet/useUploadImg';
 import { api } from '../../utils/api';
 import uploadS3 from '../../apis/Photos/uploadS3';
 import { formattedDate } from '../../utils/formatDate';
+import useRecordStore from '../../stores/RecordStore';
 
 const AddPhotoModal: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
   const { closeModal } = useModalStore();
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
+  const recordId = useRecordStore((state) => state.recordId);
+
   const errorStyle = 'text-xxs';
 
   type recordInfo = {
@@ -30,10 +33,6 @@ const AddPhotoModal: React.FC = () => {
     location: '',
     content: '',
   });
-
-  useEffect(() => {
-    console.log(recordInfo.date);
-  }, [recordInfo.date]);
 
   const [errors, setErrors] = useState({
     photos: false,
@@ -62,19 +61,24 @@ const AddPhotoModal: React.FC = () => {
     const hasErrors = validateFields();
 
     if (!hasErrors && isFill && isSubmit) {
-      //S3에 이미지 업로드
-      const imgData = await uploadS3(formData);
-      const imageIds = imgData.images.map((image: any) => ({
-        imageId: image.imageId,
-      }));
-
-      //TODO : recordId는 기록시작으로부터 받아오기
-      const recordId = 'fbb03cad-ef8e-47a5-862e-936ee72b61ad';
-      //TODO : 순서에 맞게 수정하기
-      const seq = 0;
-      const lat = 0;
-      const lng = 0;
       try {
+        // S3에 이미지 업로드
+        const imgData = await uploadS3(formData);
+        if (!imgData || !imgData.images) {
+          throw new Error('S3 업로드 실패');
+        }
+
+        // S3 업로드 결과 처리
+        const imageIds = imgData.images.map((image: any) => ({
+          imageId: image.imageId,
+        }));
+
+        // TODO: 순서에 맞게 수정하기
+        const seq = 0;
+        const lat = 0;
+        const lng = 0;
+
+        // 이미지 정보 저장 요청
         const res = await api.post(`photos/create/${recordId}`, {
           seq,
           images: imageIds,
@@ -84,10 +88,13 @@ const AddPhotoModal: React.FC = () => {
           lat,
           lng,
         });
-        console.log(res);
+
+        console.log('이미지 정보 저장 성공:', res);
+
+        // 모달 닫기
         closeModal();
       } catch (error) {
-        console.error(error);
+        console.error('요청 중 오류 발생:', error);
       }
     }
   };
