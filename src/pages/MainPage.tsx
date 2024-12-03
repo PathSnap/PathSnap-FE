@@ -15,7 +15,7 @@ const MainPage = () => {
     <div className="h-full w-full z-0 flex flex-col relative">
       {/* 지도 컴포넌트 */}
       <div className="flex-grow">
-        <MapComponent centerLat={centerLat} centerlng={centerlng} />
+        <MapComponent centerLat={centerLat} centerLng={centerlng} />
         {/* <MapComponent centerLat={37.5665} centerlng={126.978} /> */}
         {/* props 전달 */}
       </div>
