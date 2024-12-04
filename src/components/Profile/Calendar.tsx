@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BoxWrapper } from '../../pages/ProfilePage';
 import IconLeft from '../../icons/ProfilePage/IconLeft';
 import IconRight from '../../icons/ProfilePage/IconRight';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 
 const Calendar: React.FC = () => {
   const [dateInfo, setDateInfo] = React.useState({
