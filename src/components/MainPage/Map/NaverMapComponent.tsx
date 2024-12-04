@@ -4,6 +4,7 @@ import ImageMarker from './marker/CustomImageMarker';
 import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
 import SerchButton from '../SerchButton';
+import { map } from 'leaflet';
 
 interface CenterLocationProps {
   centerLat?: number;
@@ -16,13 +17,12 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
+
+  // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
-  const intervalId = useRef<NodeJS.Timeout | null>(null);
-
-  // 현재 위치 저장 함수
   const saveCurrentPosition = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -34,7 +34,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
           });
 
           // 위치 저장 로직 (API 호출 등)
-          console.log('Position saved:', { lat: latitude, lng: longitude });
+          // console.log('Position saved:', { lat: latitude, lng: longitude });
         },
         (err) => {
           console.error('Failed to retrieve location:', err);
@@ -66,11 +66,14 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     });
   };
 
+  const intervalId = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
+    //현재위치 상태 저장 타이머
     intervalId.current = setInterval(() => {
       saveCurrentPosition();
     }, 3000);
 
+    //지도 초기화 함수
     const initializeMap = async () => {
       if (!mapElement.current) return;
 
@@ -96,8 +99,17 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 
       mapInstance.current = new naver.maps.Map(mapElement.current, mapOptions);
       setCurrentPosition(defaultLatLng);
+
+      // 중심 위치 변경 이벤트 리스너 등록
+      mapInstance.current.addListener('center_changed', () => {
+        const center = mapInstance.current.getCenter();
+        const lat = center.lat();
+        const lng = center.lng();
+        handleCenterChange({ lat, lng });
+      });
     };
 
+    //네이버 지도 API 스크립트 로드
     if (!(window as any).naver) {
       const script = document.createElement('script');
       const apiKey = import.meta.env.VITE_MAP_API_KEY;
@@ -110,6 +122,21 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     }
   }, []); // 첫 렌더링 시 실행
 
+  // 중심 위치 변경 이벤트 핸들러
+  let CenterChangeTimeout: NodeJS.Timeout | null = null; // 타이머 저장용 변수
+  const handleCenterChange = (newCenter: { lat: number; lng: number }) => {
+    if (CenterChangeTimeout) {
+      // 3초 동안 로그가 이미 제한되어 있다면 바로 리턴
+      return;
+    }
+    console.log('Center changed to:', newCenter);
+    // 중심 위치 변경에 따른 추가 로직 작성 (API 호출 등)
+
+    CenterChangeTimeout = setTimeout(() => {
+      CenterChangeTimeout = null; // 3초 후 제한 해제
+    }, 500);
+  };
+
   //현재위치 이동 버튼 클릭 시
   const moveToCurrentLocation = async () => {
     const currentLatLng = await getCurrentLocation();
@@ -120,6 +147,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     setCurrentPosition(currentLatLng);
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
+      // mapInstance.current.setCenter(newCenter); // 중심 이동
     }
   };
 
