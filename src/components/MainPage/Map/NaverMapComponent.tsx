@@ -4,7 +4,7 @@ import ImageMarker from './marker/CustomImageMarker';
 import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
 import SerchButton from '../SerchButton';
-import { map } from 'leaflet';
+import usePhotoStore from '../../../stores/PhotoStore';
 
 interface CenterLocationProps {
   centerLat?: number;
@@ -17,6 +17,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
+  const { searchPhotos, photos } = usePhotoStore();
 
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
@@ -105,7 +106,8 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         const center = mapInstance.current.getCenter();
         const lat = center.lat();
         const lng = center.lng();
-        handleCenterChange({ lat, lng });
+        const zoom = mapInstance.current.getZoom(); // 현재 줌 레벨 가져오기
+        handleCenterChange({ lat, lng, zoom });
       });
     };
 
@@ -124,13 +126,17 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 
   // 중심 위치 변경 이벤트 핸들러
   let CenterChangeTimeout: NodeJS.Timeout | null = null; // 타이머 저장용 변수
-  const handleCenterChange = (newCenter: { lat: number; lng: number }) => {
+  const handleCenterChange = (newCenter: {
+    lat: number;
+    lng: number;
+    zoom: number;
+  }) => {
     if (CenterChangeTimeout) {
       // 3초 동안 로그가 이미 제한되어 있다면 바로 리턴
       return;
     }
     console.log('Center changed to:', newCenter);
-    // 중심 위치 변경에 따른 추가 로직 작성 (API 호출 등)
+    searchPhotos(newCenter.lng, newCenter.lat, 1000); // lon, lat, radius
 
     CenterChangeTimeout = setTimeout(() => {
       CenterChangeTimeout = null; // 3초 후 제한 해제
@@ -147,7 +153,6 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     setCurrentPosition(currentLatLng);
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
-      // mapInstance.current.setCenter(newCenter); // 중심 이동
     }
   };
 
@@ -164,6 +169,16 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
               position={currentPosition}
               mapInstance={mapInstance.current}
             />
+            {/* 이미지 마커 */}
+            {photos.map((photo) => (
+              <ImageMarker
+                key={photo.photoId} // 고유한 key 추가
+                position={{ lat: photo.lat, lng: photo.lng }}
+                mapInstance={mapInstance.current}
+                imageSrc={photo.url} // 테스트 이미지 경로
+                isSelect={false} // 선택된 상태 아님
+              />
+            ))}
           </>
         )}
       </div>
