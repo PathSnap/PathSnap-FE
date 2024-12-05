@@ -18,6 +18,8 @@ interface FriendStore {
   searchResults: Friend[];
   setSearchResults: (friends: Friend[]) => void;
   searchFriends: (name: string) => Promise<Friend[]>;
+  // 유저 삭제
+  deleteFriend: (friendId: string) => void;
 }
 
 const useFriendStore = create<FriendStore>((set, get) => ({
@@ -38,12 +40,17 @@ const useFriendStore = create<FriendStore>((set, get) => ({
     try {
       const res: any = await api.get(`/friends/search/${name}`);
       get().setSearchResults(res);
-      // console.log(res);
-      // console.log('friends : ', get().friends);
+
       return res;
     } catch (error) {
       console.error(error);
     }
+  },
+  deleteFriend: async (friendId: string) => {
+    try {
+      const res = api.delete(`/friends/delete/${friendId}`);
+      console.log(res);
+    } catch (error) {}
   },
 }));
 
