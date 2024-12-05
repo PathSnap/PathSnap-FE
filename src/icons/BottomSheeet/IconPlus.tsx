@@ -4,15 +4,18 @@ interface IconPlusProps {
   width: number;
   height: number;
   className?: string;
+  onClick?: () => void;
 }
 
 const IconPlus: React.FC<IconPlusProps> = ({
   width,
   height,
   className = '',
+  onClick,
 }) => {
   return (
     <svg
+      onClick={onClick}
       className={className}
       width={width}
       height={height}

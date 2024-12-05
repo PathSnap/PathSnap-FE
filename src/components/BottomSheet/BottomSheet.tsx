@@ -274,12 +274,12 @@ interface ContentWrapperProps {
 }
 const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
   const isGroupRecord = useRecordStore((state) => state.record.group);
-  const { searchFriends } = useFriendStore();
+  const { searchFriendsAtRecord } = useFriendStore();
   const { recordId } = useRecordStore();
 
   useEffect(() => {
     if (isGroupRecord) {
-      searchFriends(recordId);
+      searchFriendsAtRecord(recordId);
     }
   }, [isGroupRecord]);
   return (
