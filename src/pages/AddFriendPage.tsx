@@ -100,7 +100,10 @@ const Profile: React.FC<ProfileProps> = ({ info, setAddFriends }) => {
       >
         <div className={'w-2 h-0.5 rounded-full bg-white'}></div>
       </div>
-      <img src={info.url || ''} className={'rounded-full w-12 aspect-square'} />
+      <img
+        src={info.url || ''}
+        className={'rounded-full w-12 aspect-square object-cover'}
+      />
       <div className={'text-sm'}>{info.name}</div>
     </div>
   );
@@ -196,7 +199,7 @@ const Person: React.FC<PersonProps> = ({ info, setAddFriends }) => {
     >
       <img
         src={info.url || ''}
-        className={'rounded-full w-12 aspect-square '}
+        className={'rounded-full w-12 aspect-square object-cover'}
       />
       <div className={'flex flex-col py-2 justify-between flex-grow gap-0.5'}>
         <div className={'text-sm '}>{info.name}</div>

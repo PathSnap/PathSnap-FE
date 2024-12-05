@@ -9,8 +9,16 @@ export type Friend = {
   phoneNumber?: string;
 };
 
+type Leader = {
+  userId: string;
+  userName: string;
+  imageId: string;
+  url: string;
+};
+
 interface FriendStore {
   // 기록에 속한 유저 조회
+  leader: Leader;
   friends: Friend[];
   setFriends: (friends: Friend[]) => void;
   searchFriendsAtRecord: (recordId: string) => void;
@@ -24,11 +32,19 @@ interface FriendStore {
 }
 
 const useFriendStore = create<FriendStore>((set, get) => ({
+  leader: {
+    userId: '',
+    userName: '',
+    imageId: '',
+    url: '',
+  },
   friends: [],
   setFriends: (friends) => set({ friends }),
   searchFriendsAtRecord: async (recordId: string) => {
     try {
       const res: any = await api.get(`/friends/${recordId}`);
+      console.log(res);
+      set({ leader: res.user });
       set({ friends: res.friends });
     } catch (error) {
       console.error(error);
@@ -41,7 +57,7 @@ const useFriendStore = create<FriendStore>((set, get) => ({
       const res: any = await api.get(`/friends/search/${name}`);
       const friends = res.map((friend: any) => ({
         ...friend,
-        friendId: friend.userId, // userId를 friendId로 변경
+        friendId: friend.userId,
       }));
 
       get().setSearchResults(friends);

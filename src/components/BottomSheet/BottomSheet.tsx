@@ -14,7 +14,8 @@ import IconTrash from '../../icons/BottomSheeet/IconTrash';
 import useEditRecordStore from '../../stores/EditRecordStore';
 import IconClose from '../../icons/IconClose';
 import Dropdown from './Dropdown';
-import useFriendStore from '../../stores/FriendStore';
+import useFriendStore, { Friend } from '../../stores/FriendStore';
+import _ from 'lodash';
 
 const BottomSheet2: React.FC = () => {
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
@@ -183,48 +184,20 @@ const ContentHeader: React.FC = () => {
   );
 };
 
-//  단체 기록일때 함께 여행한 사람들을 나타내는 컴포넌트
-interface ProfileProps {
-  photoSrc?: string;
-  name: string;
-  isLeader: boolean;
-}
-const Profile: React.FC<ProfileProps> = ({
-  photoSrc = '/icons/apple-icon-180.png',
-  name,
-  isLeader,
-}) => {
-  const { currentState } = useEditRecordStore();
-  return (
-    <div
-      className={
-        'flex flex-col items-center flex-shrink-0 relative gap-2 last:mr-[22px]'
-      }
-    >
-      <img src={photoSrc} className={'w-14 rounded-full aspect-square '} />
-      <div className={'text-sm text-second'}>
-        {name}
-        {isLeader && <span> | 리더</span>}
-      </div>
-      {/* 리더라면 강조표시 */}
-      {isLeader && (
-        <div className="absolute rounded-full w-[60px] aspect-square border-2 -translate-y-0.5 border-primary"></div>
-      )}
-      {currentState === 'EDIT' && (
-        <div
-          className={
-            'absolute w-4 aspect-square grid place-items-center bg-[#AFD8D7] rounded-full right-0 top-0'
-          }
-        >
-          <div className={'w-2 h-0.5 rounded-full bg-white'}></div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const PeopleWithTravel: React.FC = () => {
-  const { friends } = useFriendStore();
+  const { friends, leader } = useFriendStore();
+  const { currentState } = useEditRecordStore();
+  const [copyFriends, setCopyFriends] = useState<Friend[]>([]);
+
+  useEffect(() => {
+    setCopyFriends(_.cloneDeep(friends));
+  }, [friends]);
+
+  const handleClickDelete = (profileId: string) => {
+    setCopyFriends((prev) =>
+      prev.filter((friend) => friend.friendId !== profileId)
+    );
+  };
   return (
     <div className={'pb-5 w-screen pl-[10px]'}>
       <div className={'font-semibold text-second'}>함께 여행한 사람들</div>
@@ -234,16 +207,74 @@ const PeopleWithTravel: React.FC = () => {
         }
       >
         <AddPerson />
+        {/* 리더 프로필 */}
+        <Profile
+          info={{ ...leader, name: leader.userName, friendId: leader.userId }}
+          isLeader={true}
+        />
         {/* 프로필들 나열될 부분 */}
-        {friends.map((friend) => (
-          <Profile key={friend.friendId} name={friend.name} isLeader={false} />
-        ))}
-        {/* <Profile name="김람운" isLeader={true} />
 
-        {[0, 1, 2, 3, 4, 5].map((item) => {
-          return <Profile name="이희연" isLeader={false} key={item} />;
-        })} */}
+        {currentState === 'EDIT'
+          ? copyFriends.map((friend) => (
+              <div className={'relative last:mr-[22px]'} key={friend.friendId}>
+                <Profile
+                  info={friend}
+                  isLeader={false}
+                  setCopyFriends={setCopyFriends}
+                />
+                {/* 프로필 삭제 아이콘 */}
+                <div
+                  onClick={() => {
+                    handleClickDelete(friend.friendId);
+                  }}
+                  className={
+                    'absolute w-4 aspect-square grid place-items-center bg-[#AFD8D7] rounded-full right-0 top-0 shadow-xxs'
+                  }
+                >
+                  <div className={'w-2 h-0.5 rounded-full bg-white'}></div>
+                </div>
+              </div>
+            ))
+          : friends.map((friend) => (
+              <div className={'relative last:mr-[22px]'} key={friend.friendId}>
+                <Profile
+                  key={friend.friendId}
+                  info={friend}
+                  isLeader={false}
+                  setCopyFriends={setCopyFriends}
+                />
+              </div>
+            ))}
       </div>
+    </div>
+  );
+};
+
+//  단체 기록일때 함께 여행한 사람들을 나타내는 컴포넌트
+interface ProfileProps {
+  info: Friend;
+  isLeader: boolean;
+  setCopyFriends?: React.Dispatch<React.SetStateAction<Friend[]>>;
+}
+const Profile: React.FC<ProfileProps> = ({ info, isLeader }) => {
+  return (
+    <div
+      className={
+        'flex flex-col items-center flex-shrink-0 relative gap-2 min-w-14'
+      }
+    >
+      <img
+        src={info.url || ''}
+        className={'w-14 rounded-full aspect-square object-cover'}
+      />
+      <div className={'text-sm text-second'}>
+        {info.name}
+        {isLeader && <span> | 리더</span>}
+      </div>
+      {/* 리더라면 강조표시 */}
+      {isLeader && (
+        <div className="absolute rounded-full w-[64px] aspect-square border-2 -translate-y-1 border-primary"></div>
+      )}
     </div>
   );
 };
