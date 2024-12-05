@@ -5,6 +5,7 @@ interface CustomImageMarkerProps {
   imageSrc: string; // 마커 이미지 경로
   mapInstance: any; // Naver 지도 인스턴스
   isSelect?: boolean; // 선택 여부
+  ClickImageMarker: () => void; // 마커 클릭 시 호출할 콜백
 }
 
 const CustomImageMarker: React.FC<CustomImageMarkerProps> = ({
@@ -12,6 +13,7 @@ const CustomImageMarker: React.FC<CustomImageMarkerProps> = ({
   imageSrc,
   mapInstance,
   isSelect = false, // 기본값 false
+  ClickImageMarker,
 }) => {
   const overlayRef = useRef<any>(null);
 
@@ -38,6 +40,11 @@ const CustomImageMarker: React.FC<CustomImageMarkerProps> = ({
         } border-l-transparent border-r-transparent"></div>
       </div>
     `;
+
+    // **클릭 이벤트 추가**
+    element.addEventListener('click', () => {
+      ClickImageMarker(); // 전달된 콜백 호출
+    });
 
     // OverlayView 생성
     const overlay = new naver.maps.OverlayView();

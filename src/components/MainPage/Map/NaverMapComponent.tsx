@@ -9,15 +9,17 @@ import usePhotoStore from '../../../stores/PhotoStore';
 interface CenterLocationProps {
   centerLat?: number;
   centerLng?: number;
+  mainZoom?: number;
 }
 
 const NaverMapComponent: React.FC<CenterLocationProps> = ({
   centerLat,
   centerLng,
+  mainZoom,
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
-  const { searchPhotos, photos } = usePhotoStore();
+  const { togglePhotoSelection, searchPhotos, photos } = usePhotoStore();
 
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
@@ -81,14 +83,16 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       const naver = (window as any).naver;
 
       let defaultLatLng = { lat: 37.5665, lng: 126.978 }; // 서울로 기본값 설정
-      if (centerLat && centerLng) {
+      let zoom = 15;
+      if (centerLat && centerLng && mainZoom) {
         defaultLatLng = { lat: centerLat, lng: centerLng }; // 서울로 기본값 설정
+        zoom = mainZoom;
       } else {
         defaultLatLng = await getCurrentLocation(); // 서울로 기본값 설정
       }
       const mapOptions = {
         center: new naver.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng), // 현재 위치로 초기화
-        zoom: 15,
+        zoom: zoom,
 
         scaleControl: false,
         mapDataControl: false,
@@ -100,6 +104,12 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 
       mapInstance.current = new naver.maps.Map(mapElement.current, mapOptions);
       setCurrentPosition(defaultLatLng);
+      const defaultZoom = zoom;
+      handleCenterChange({
+        lat: defaultLatLng.lat,
+        lng: defaultLatLng.lng,
+        zoom: defaultZoom,
+      });
 
       // 중심 위치 변경 이벤트 리스너 등록
       mapInstance.current.addListener('center_changed', () => {
@@ -107,7 +117,8 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         const lat = center.lat();
         const lng = center.lng();
         const zoom = mapInstance.current.getZoom(); // 현재 줌 레벨 가져오기
-        handleCenterChange({ lat, lng, zoom });
+        const defaultZoom = zoom;
+        handleCenterChange({ lat, lng, zoom: defaultZoom });
       });
     };
 
@@ -136,7 +147,15 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       return;
     }
     console.log('Center changed to:', newCenter);
-    searchPhotos(newCenter.lng, newCenter.lat, 1000); // lon, lat, radius
+    // 최대 반경 (줌 레벨 6)과 최소 반경 (줌 레벨 21) 정의
+    const maxRadius = 6; // 줌 레벨 6
+    const minRadius = 0.0002; // 줌 레벨 21
+
+    // 기하급수적으로 줄어드는 비율 계산
+    const scaleFactor = Math.pow(minRadius / maxRadius, 1 / 15); // 15 단계로 스케일링
+    const radius = maxRadius * Math.pow(scaleFactor, newCenter.zoom - 6);
+
+    searchPhotos(newCenter.lng, newCenter.lat, radius); // lon, lat, radius
 
     CenterChangeTimeout = setTimeout(() => {
       CenterChangeTimeout = null; // 3초 후 제한 해제
@@ -154,6 +173,11 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
     }
+  };
+
+  const ClickImageMarker = (recordId: string) => {
+    // 선택된 이미지 마커의 photoId를 받아와서 처리하는 함수
+    console.log('Click Image Marker:', recordId);
   };
 
   return (
@@ -176,7 +200,11 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                 position={{ lat: photo.lat, lng: photo.lng }}
                 mapInstance={mapInstance.current}
                 imageSrc={photo.url} // 테스트 이미지 경로
-                isSelect={false} // 선택된 상태 아님
+                isSelect={photo.isSelect} // 선택된 상태 아님
+                ClickImageMarker={() => {
+                  ClickImageMarker(photo.recordId);
+                  togglePhotoSelection(photo.photoId);
+                }} // 클릭 이벤트 추가
               />
             ))}
           </>
