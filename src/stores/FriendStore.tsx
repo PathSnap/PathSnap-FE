@@ -5,7 +5,7 @@ export type Friend = {
   friendId: string;
   name: string;
   imageId: string;
-  url: string;
+  url?: string;
   phoneNumber?: string;
 };
 
@@ -20,6 +20,7 @@ interface FriendStore {
   searchFriends: (name: string) => Promise<Friend[]>;
   // 유저 삭제
   deleteFriend: (friendId: string) => void;
+  addFriend: (userId: string, recordId: string) => void;
 }
 
 const useFriendStore = create<FriendStore>((set, get) => ({
@@ -28,7 +29,6 @@ const useFriendStore = create<FriendStore>((set, get) => ({
   searchFriendsAtRecord: async (recordId: string) => {
     try {
       const res: any = await api.get(`/friends/${recordId}`);
-      console.log(res.friends);
       set({ friends: res.friends });
     } catch (error) {
       console.error(error);
@@ -39,18 +39,32 @@ const useFriendStore = create<FriendStore>((set, get) => ({
   searchFriends: async (name: string) => {
     try {
       const res: any = await api.get(`/friends/search/${name}`);
-      get().setSearchResults(res);
+      const friends = res.map((friend: any) => ({
+        ...friend,
+        friendId: friend.userId, // userId를 friendId로 변경
+      }));
 
-      return res;
+      get().setSearchResults(friends);
+      return friends;
     } catch (error) {
       console.error(error);
     }
   },
+
   deleteFriend: async (friendId: string) => {
     try {
       const res = api.delete(`/friends/delete/${friendId}`);
       console.log(res);
     } catch (error) {}
+  },
+  addFriend: async (userId: string, recordId: string) => {
+    try {
+      const res = await api.post(`/friends/${userId}/${recordId}`);
+      console.log(res);
+      return res;
+    } catch (error) {
+      console.error(error);
+    }
   },
 }));
 

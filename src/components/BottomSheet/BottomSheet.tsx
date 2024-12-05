@@ -24,6 +24,7 @@ const BottomSheet2: React.FC = () => {
   useEffect(() => {
     searchRecord();
   }, []);
+
   return (
     <>
       <div
