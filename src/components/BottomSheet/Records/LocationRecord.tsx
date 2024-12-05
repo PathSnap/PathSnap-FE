@@ -17,6 +17,7 @@ const LocationRecord: React.FC<LocationRecordProps> = ({
     <RecordWrapper
       className={'shadow-l p-[14px] grid grid-cols-[auto_1fr] gap-[30px]'}
       isPhotoRecord={isPhotoRecord}
+      record={record}
     >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
         {/* TODO :  */}

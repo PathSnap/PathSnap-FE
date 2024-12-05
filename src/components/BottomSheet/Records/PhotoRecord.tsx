@@ -42,7 +42,7 @@ const PhotoRecord: React.FC<PhotoRecordProps> = ({ isPhotoRecord, record }) => {
   const { setSelectedRecord } = useSelectedPhotoStore();
 
   return (
-    <RecordWrapper isPhotoRecord={isPhotoRecord}>
+    <RecordWrapper isPhotoRecord={isPhotoRecord} record={record}>
       <div className={'w-full h-[170px] rounded-2xl relative'}>
         {/* 오버레이 */}
         <div

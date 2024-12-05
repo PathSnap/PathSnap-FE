@@ -20,11 +20,52 @@ import _ from 'lodash';
 const BottomSheet2: React.FC = () => {
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore();
-  const { searchRecord } = useRecordStore();
+  const {
+    searchRecord,
+    recordId,
+    record,
+    recordDate,
+    editRecord,
+    setCopyRecord,
+  } = useRecordStore();
+  const { searchFriendsAtRecord, friends, deleteFriend } = useFriendStore();
+  const isGroupRecord = useRecordStore((state) => state.record.group);
+
+  const [copyFriends, setCopyFriends] = useState<Friend[]>([]);
+
+  const [title, setTitle] = useState<string>(record.recordName);
+  const [travelDate, setTravelDate] = useState<string>(recordDate);
+
+  const handleClickSaveBtn = async () => {
+    if (!title || !travelDate) return;
+    const removedFriends = friends.filter(
+      (friend) => !copyFriends.some((copy) => copy.friendId === friend.friendId)
+    );
+    try {
+      const requests = removedFriends.map((friend) =>
+        deleteFriend(friend.friendId)
+      );
+
+      requests.push(editRecord(recordId, title));
+
+      await Promise.all(requests);
+      setState('NONE');
+    } catch (error) {
+      console.error('Error saving bottomsheet edit:', error);
+    }
+  };
 
   useEffect(() => {
     searchRecord();
+    searchFriendsAtRecord(recordId);
   }, []);
+
+  useEffect(() => {
+    setTitle(record.recordName);
+    setTravelDate(recordDate);
+    setCopyFriends(_.cloneDeep(friends));
+    setCopyRecord(_.cloneDeep(record));
+  }, [record, recordDate]);
 
   return (
     <>
@@ -34,9 +75,21 @@ const BottomSheet2: React.FC = () => {
         ref={sheetRef}
       >
         <BottomSheetHeader headerRef={headerRef} />
-        <ContentHeader />
         <ContentWrapper>
-          <Content />
+          <ContentHeader
+            title={title}
+            setTitle={setTitle}
+            travelDate={travelDate}
+            setTravelDate={setTravelDate}
+          />
+          {isGroupRecord && (
+            <PeopleWithTravel
+              currentState={currentState}
+              copyFriends={copyFriends}
+              setCopyFriends={setCopyFriends}
+            />
+          )}
+          <Content currentState={currentState} record={record} />
         </ContentWrapper>
       </div>
       {currentState === 'EDIT' && isBottomSheetOpen && (
@@ -47,7 +100,7 @@ const BottomSheet2: React.FC = () => {
         >
           <button
             className={'is-active-green-button w-full h-[58px] text-lg'}
-            onClick={() => setState('NONE')}
+            onClick={() => handleClickSaveBtn()}
           >
             완료
           </button>
@@ -74,24 +127,30 @@ const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({ headerRef }) => {
   );
 };
 
-const ContentHeader: React.FC = () => {
-  const { record, recordDate } = useRecordStore((state) => state);
+interface ContentWrapperProps {
+  children?: React.ReactNode;
+}
+const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
+  return (
+    <div className={'h-full px-[22px] overflow-y-auto overflow-x-hidden'}>
+      {children}
+    </div>
+  );
+};
 
-  const selectedBoxIndex = record.group ? 1 : 0;
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const handleClickMenu = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
-  const { currentState } = useEditRecordStore();
-  const [title, setTitle] = useState<string>(record.recordName);
-  const [travelDate, setTravelDate] = useState<string>(recordDate);
-  const { setState } = useEditRecordStore();
+interface ContentHeaderProps {
+  title: string;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  travelDate: string;
+  setTravelDate: React.Dispatch<React.SetStateAction<string>>;
+}
 
-  useEffect(() => {
-    setTitle(record.recordName);
-    setTravelDate(recordDate);
-  }, [record, recordDate]);
-
+const ContentHeader: React.FC<ContentHeaderProps> = ({
+  title,
+  setTitle,
+  travelDate,
+  setTravelDate,
+}) => {
   // 드롭다운을 위한 아이템들
   const dropdownItems = [
     {
@@ -112,12 +171,20 @@ const ContentHeader: React.FC = () => {
     },
   ];
 
+  const { record, recordDate } = useRecordStore();
+  const { currentState, setState } = useEditRecordStore();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const handleClickMenu = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
   return (
-    <div className={'flex flex-col w-full gap-5 px-[22px] pb-5 text-second'}>
+    <div className={'flex flex-col w-full gap-5 pb-5 text-second mt-0.5'}>
       <SelectBox
         leftText="내 기록"
         rightText="단체"
-        selectedBoxIndex={selectedBoxIndex}
+        selectedBoxIndex={record.group ? 1 : 0}
       />
       {/* 여행 제목 */}
       <div
@@ -184,14 +251,19 @@ const ContentHeader: React.FC = () => {
   );
 };
 
-const PeopleWithTravel: React.FC = () => {
-  const { friends, leader } = useFriendStore();
-  const { currentState } = useEditRecordStore();
-  const [copyFriends, setCopyFriends] = useState<Friend[]>([]);
+interface PeopleWithTravelProps {
+  currentState: string;
+  copyFriends: Friend[];
+  setCopyFriends: React.Dispatch<React.SetStateAction<Friend[]>>;
+}
 
-  useEffect(() => {
-    setCopyFriends(_.cloneDeep(friends));
-  }, [friends]);
+const PeopleWithTravel: React.FC<PeopleWithTravelProps> = ({
+  currentState,
+  setCopyFriends,
+  copyFriends,
+}) => {
+  const { friends, leader } = useFriendStore();
+  const friendsToRender = currentState === 'EDIT' ? copyFriends : friends;
 
   const handleClickDelete = (profileId: string) => {
     setCopyFriends((prev) =>
@@ -199,7 +271,7 @@ const PeopleWithTravel: React.FC = () => {
     );
   };
   return (
-    <div className={'pb-5 w-screen pl-[10px]'}>
+    <div className={'pb-5 w-screen'}>
       <div className={'font-semibold text-second'}>함께 여행한 사람들</div>
       <div
         className={
@@ -214,37 +286,27 @@ const PeopleWithTravel: React.FC = () => {
         />
         {/* 프로필들 나열될 부분 */}
 
-        {currentState === 'EDIT'
-          ? copyFriends.map((friend) => (
-              <div className={'relative last:mr-[22px]'} key={friend.friendId}>
-                <Profile
-                  info={friend}
-                  isLeader={false}
-                  setCopyFriends={setCopyFriends}
-                />
-                {/* 프로필 삭제 아이콘 */}
-                <div
-                  onClick={() => {
-                    handleClickDelete(friend.friendId);
-                  }}
-                  className={
-                    'absolute w-4 aspect-square grid place-items-center bg-[#AFD8D7] rounded-full right-0 top-0 shadow-xxs'
-                  }
-                >
-                  <div className={'w-2 h-0.5 rounded-full bg-white'}></div>
-                </div>
+        {friendsToRender.map((friend) => (
+          <div className={'relative last:mr-11'} key={friend.friendId}>
+            <Profile
+              info={friend}
+              isLeader={false}
+              setCopyFriends={setCopyFriends}
+            />
+            {currentState === 'EDIT' && (
+              <div
+                onClick={() => {
+                  handleClickDelete(friend.friendId);
+                }}
+                className={
+                  'absolute w-4 aspect-square grid place-items-center bg-[#AFD8D7] rounded-full right-0 top-0 shadow-xxs'
+                }
+              >
+                <div className={'w-2 h-0.5 rounded-full bg-white'}></div>
               </div>
-            ))
-          : friends.map((friend) => (
-              <div className={'relative last:mr-[22px]'} key={friend.friendId}>
-                <Profile
-                  key={friend.friendId}
-                  info={friend}
-                  isLeader={false}
-                  setCopyFriends={setCopyFriends}
-                />
-              </div>
-            ))}
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -301,37 +363,29 @@ const AddPerson = () => {
   );
 };
 
-interface ContentWrapperProps {
-  children?: React.ReactNode;
+interface ContentProps {
+  currentState: string;
+  record: any;
 }
-const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
-  const isGroupRecord = useRecordStore((state) => state.record.group);
-  const { searchFriendsAtRecord } = useFriendStore();
-  const { recordId } = useRecordStore();
 
-  useEffect(() => {
-    if (isGroupRecord) {
-      searchFriendsAtRecord(recordId);
-    }
-  }, [isGroupRecord]);
-  return (
-    <div className={'h-full px-3 overflow-y-auto overflow-x-hidden'}>
-      {isGroupRecord ? <PeopleWithTravel /> : null}
-      {children}
-    </div>
-  );
-};
-
-const Content: React.FC = () => {
-  const { record } = useRecordStore((state) => state);
+const Content: React.FC<ContentProps> = ({ currentState, record }) => {
+  const { copyRecord } = useRecordStore();
   const mergedRecords = [
     ...(record.photoRecords || []),
     ...(record.routeRecords || []),
   ].sort((a, b) => a.seq - b.seq);
 
+  const mergedCopyRecords = [
+    ...(copyRecord.photoRecords || []),
+    ...(copyRecord.routeRecords || []),
+  ].sort((a, b) => a.seq - b.seq);
+
+  const recordsToRender =
+    currentState === 'EDIT' ? mergedCopyRecords : mergedRecords;
+
   return (
-    <div className={'px-[10px] flex flex-col gap-5 pb-10'}>
-      {mergedRecords.map((record) =>
+    <div className={'flex flex-col gap-5 pb-10'}>
+      {recordsToRender.map((record) =>
         'photoId' in record ? (
           // 사진 기록인 경우
           <PhotoRecord

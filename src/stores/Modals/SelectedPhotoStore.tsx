@@ -1,23 +1,14 @@
 import { create } from 'zustand';
-import { photoRecord } from '../RecordStore';
+import { photoRecord, routeRecord } from '../RecordStore';
 
 interface SelectedPhotoStoreState {
-  selectedRecord: photoRecord;
-  setSelectedRecord: (record: photoRecord) => void;
+  selectedRecord: photoRecord | routeRecord | null; // 초기값을 null로 설정
+  setSelectedRecord: (record: photoRecord | routeRecord) => void;
 }
 
 const useSelectedPhotoStore = create<SelectedPhotoStoreState>((set) => ({
-  selectedRecord: {
-    photoId: '',
-    seq: 0,
-    images: [],
-    photoTitle: '',
-    photoContent: '',
-    photoDate: '',
-    lat: 0,
-    lng: 0,
-  },
-  setSelectedRecord: (record: photoRecord) => {
+  selectedRecord: null, // 초기값을 null로 설정
+  setSelectedRecord: (record: photoRecord | routeRecord) => {
     set({ selectedRecord: record });
   },
 }));

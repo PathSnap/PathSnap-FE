@@ -5,22 +5,28 @@ import IconEdit from '../../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../../icons/BottomSheeet/IconTrash';
 import useDetailModalTypeStore from '../../../stores/Modals/DetailModalType';
 import useModalStore from '../../../stores/Modals/ModalStore';
+import { photoRecord, routeRecord } from '../../../stores/RecordStore';
+import useSelectedPhotoStore from '../../../stores/Modals/SelectedPhotoStore';
 
 interface RecordWrapperProps {
   children: ReactNode;
   className?: string;
   isPhotoRecord?: boolean;
+  record: photoRecord | routeRecord;
 }
 const RecordWrapper: React.FC<RecordWrapperProps> = ({
   children,
   className,
   isPhotoRecord,
+  record,
 }) => {
   const { currentState } = useEditRecordStore();
 
   const { setDetailModalType } = useDetailModalTypeStore();
   const { openModal } = useModalStore();
+  const { setSelectedRecord } = useSelectedPhotoStore();
   const handleClickDelete = () => {
+    setSelectedRecord(record);
     setDetailModalType('delete');
     openModal('detailModal');
   };
