@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MainMarker from './marker/CustomMainMarker';
 import ImageMarker from './marker/CustomImageMarker';
-import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
+// import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
 import SerchButton from '../SerchButton';
 import usePhotoStore from '../../../stores/PhotoStore';
