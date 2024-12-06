@@ -31,5 +31,4 @@ tsconfig.node.tsbuildinfo
 
 
 .env
-
 localhost*
