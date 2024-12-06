@@ -54,6 +54,7 @@ interface RecordStoreState {
   copyRecord: Record;
   setCopyRecord: (record: Record) => void;
   deleteCopyRecord: (photoId: string) => void;
+  deleteRecord: (photoId: string) => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
@@ -127,6 +128,14 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
         photoRecords: filteredRecords,
       },
     }));
+  },
+  deleteRecord: async (photoId: string) => {
+    try {
+      const res = await api.delete(`/photos/delete/${photoId}`);
+      console.log(res);
+    } catch (error) {
+      console.error('Error deleting record:', error);
+    }
   },
 }));
 

@@ -5,19 +5,19 @@ import IconEdit from '../../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../../icons/BottomSheeet/IconTrash';
 import useDetailModalTypeStore from '../../../stores/Modals/DetailModalType';
 import useModalStore from '../../../stores/Modals/ModalStore';
-import { photoRecord, routeRecord } from '../../../stores/RecordStore';
+import { photoRecord } from '../../../stores/RecordStore';
 import useSelectedPhotoStore from '../../../stores/Modals/SelectedPhotoStore';
 
 interface RecordWrapperProps {
   children: ReactNode;
   className?: string;
   isPhotoRecord?: boolean;
-  record: photoRecord | routeRecord;
+  record?: photoRecord;
 }
 const RecordWrapper: React.FC<RecordWrapperProps> = ({
   children,
   className,
-  isPhotoRecord,
+  isPhotoRecord = false,
   record,
 }) => {
   const { currentState } = useEditRecordStore();
@@ -26,10 +26,15 @@ const RecordWrapper: React.FC<RecordWrapperProps> = ({
   const { openModal } = useModalStore();
   const { setSelectedRecord } = useSelectedPhotoStore();
   const handleClickDelete = () => {
+    if (!isPhotoRecord || !record) return;
     setSelectedRecord(record);
     setDetailModalType('delete');
     openModal('detailModal');
   };
+
+  const IconWrapperStyle =
+    'w-[60px] aspect-square rounded-full border border-white grid place-items-center';
+
   return (
     <div
       className={`w-full h-[170px] rounded-2xl relative flex-shrink-0 ${className}`}
@@ -44,22 +49,14 @@ const RecordWrapper: React.FC<RecordWrapperProps> = ({
           <div className={'flex gap-10 justify-center items-center h-full'}>
             {isPhotoRecord && (
               <>
-                <div
-                  className={
-                    'w-[60px] aspect-square rounded-full border border-white grid place-items-center'
-                  }
-                >
+                <div className={IconWrapperStyle}>
                   <IconEdit stroke="#FFFFFF" />
+                </div>
+                <div className={IconWrapperStyle}>
+                  <IconTrash onClick={handleClickDelete} stroke="#FFFFFF" />
                 </div>
               </>
             )}
-            <div
-              className={
-                'w-[60px] aspect-square rounded-full border border-white grid place-items-center'
-              }
-            >
-              <IconTrash onClick={handleClickDelete} stroke="#FFFFFF" />
-            </div>
           </div>
         </div>
       )}

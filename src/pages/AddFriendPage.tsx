@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import useFriendStore, { Friend } from '../stores/FriendStore';
 import _ from 'lodash';
 import useRecordStore from '../stores/RecordStore';
+import useInitBottomSheet from '../hooks/BottomSheet/useInitBottomSheet';
 
 const AddFriend: React.FC = () => {
   const [addFriends, setAddFriends] = useState<Friend[]>([]);
@@ -14,10 +15,6 @@ const AddFriend: React.FC = () => {
     setFriendsNum(addFriends.length);
   }, [addFriends]);
 
-  // delete
-  useEffect(() => {
-    console.log(addFriends);
-  }, [addFriends]);
   return (
     <>
       <div className="flex-grow flex flex-col gap-[30px] text-second items-center px-[30px] py-5">
@@ -236,6 +233,7 @@ const Buttons: React.FC<ButtonsProps> = ({ addFriends }) => {
       });
 
       await Promise.all(requests).then(() => {
+        useInitBottomSheet();
         router('/');
       });
     } catch (error) {

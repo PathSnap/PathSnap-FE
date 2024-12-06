@@ -6,7 +6,7 @@ import SelectBox from './SelectBox';
 import useRecordStore from '../../stores/RecordStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import useModalStore from '../../stores/Modals/ModalStore';
-import LocationRecord from './Records/LocationRecord';
+import RouteRecord from './Records/RouteRecord';
 import { useNavigate } from 'react-router';
 import IconMenu from '../../icons/BottomSheeet/IconMenu';
 import IconEdit from '../../icons/BottomSheeet/IconEdit';
@@ -16,19 +16,22 @@ import IconClose from '../../icons/IconClose';
 import Dropdown from './Dropdown';
 import useFriendStore, { Friend } from '../../stores/FriendStore';
 import _ from 'lodash';
+import useInitBottomSheet from '../../hooks/BottomSheet/useInitBottomSheet';
 
 const BottomSheet2: React.FC = () => {
+  useInitBottomSheet();
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore();
   const {
-    searchRecord,
     recordId,
     record,
     recordDate,
     editRecord,
     setCopyRecord,
+    copyRecord,
+    deleteRecord,
   } = useRecordStore();
-  const { searchFriendsAtRecord, friends, deleteFriend } = useFriendStore();
+  const { friends, deleteFriend } = useFriendStore();
   const isGroupRecord = useRecordStore((state) => state.record.group);
 
   const [copyFriends, setCopyFriends] = useState<Friend[]>([]);
@@ -48,17 +51,27 @@ const BottomSheet2: React.FC = () => {
 
       requests.push(editRecord(recordId, title));
 
-      await Promise.all(requests);
+      const deletedRecords = record.photoRecords?.filter((photoRecord) => {
+        return !copyRecord?.photoRecords?.some(
+          (copyPhotoRecord) => copyPhotoRecord.photoId === photoRecord.photoId
+        );
+      });
+
+      if (deletedRecords) {
+        deletedRecords.forEach((record) => {
+          requests.push(deleteRecord(record.photoId));
+        });
+      }
+      console.log(requests);
+
+      await Promise.all(requests).then(() => {
+        useInitBottomSheet();
+      });
       setState('NONE');
     } catch (error) {
       console.error('Error saving bottomsheet edit:', error);
     }
   };
-
-  useEffect(() => {
-    searchRecord();
-    searchFriendsAtRecord(recordId);
-  }, []);
 
   useEffect(() => {
     setTitle(record.recordName);
@@ -171,7 +184,9 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
     },
   ];
 
-  const { record, recordDate } = useRecordStore();
+  // const { record, recordDate } = useRecordStore();
+  const { record } = useRecordStore();
+
   const { currentState, setState } = useEditRecordStore();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -394,11 +409,7 @@ const Content: React.FC<ContentProps> = ({ currentState, record }) => {
             record={record}
           />
         ) : (
-          <LocationRecord
-            key={record.routeId}
-            isPhotoRecord={false}
-            record={record}
-          />
+          <RouteRecord key={record.routeId} record={record} />
         )
       )}
       <AddPhoto />
