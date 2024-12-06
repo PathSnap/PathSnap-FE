@@ -1,5 +1,7 @@
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
+import useSelectedPhotoStore from '../../stores/Modals/SelectedPhotoStore';
+import useRecordStore from '../../stores/RecordStore';
 import ModalWrapper from './ModalWrapper';
 
 const DetailModal = () => {
@@ -45,6 +47,19 @@ const Content = () => {
 const Buttons = () => {
   const { detailModalType } = useDetailModalTypeStore();
   const { closeModal } = useModalStore();
+  const { deleteCopyRecord, deleteRecord, recordId } = useRecordStore();
+  const { selectedRecord } = useSelectedPhotoStore();
+
+  const handleClickDelete = () => {
+    if (detailModalType === 'deletePhotoRecord') {
+      deleteCopyRecord(selectedRecord.photoId);
+    }
+    if (detailModalType === 'deleteRecord') {
+      deleteRecord(recordId);
+    }
+
+    closeModal();
+  };
   return (
     <div className={'w-full flex justify-between gap-4 pt-[22px]'}>
       {detailModalType === 'recordType' ? (
@@ -69,7 +84,14 @@ const Buttons = () => {
           <button onClick={closeModal} className={'w-full h-11 gray-button'}>
             취소
           </button>
-          <button className={'w-full h-11 is-active-green-button'}>삭제</button>
+          <button
+            onClick={() => {
+              handleClickDelete();
+            }}
+            className={'w-full h-11 is-active-green-button'}
+          >
+            삭제
+          </button>
         </>
       )}
     </div>

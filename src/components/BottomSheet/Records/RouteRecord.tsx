@@ -4,19 +4,14 @@ import RecordWrapper from './RecordWrapper';
 import { routeRecord } from '../../../stores/RecordStore';
 import { calculateTime, formattedTime } from '../../../utils/formatDate';
 
-interface LocationRecordProps {
-  isPhotoRecord: boolean;
+interface RouteRecordProps {
   record: routeRecord;
 }
 
-const LocationRecord: React.FC<LocationRecordProps> = ({
-  isPhotoRecord,
-  record,
-}) => {
+const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
   return (
     <RecordWrapper
       className={'shadow-l p-[14px] grid grid-cols-[auto_1fr] gap-[30px]'}
-      isPhotoRecord={isPhotoRecord}
     >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
         {/* TODO :  */}
@@ -46,4 +41,4 @@ const LocationRecord: React.FC<LocationRecordProps> = ({
   );
 };
 
-export default LocationRecord;
+export default RouteRecord;
