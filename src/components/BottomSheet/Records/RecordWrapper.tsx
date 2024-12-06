@@ -28,7 +28,7 @@ const RecordWrapper: React.FC<RecordWrapperProps> = ({
   const handleClickDelete = () => {
     if (!isPhotoRecord || !record) return;
     setSelectedRecord(record);
-    setDetailModalType('delete');
+    setDetailModalType('deletePhotoRecord');
     openModal('detailModal');
   };
 

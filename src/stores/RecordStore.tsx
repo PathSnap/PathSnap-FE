@@ -54,11 +54,12 @@ interface RecordStoreState {
   copyRecord: Record;
   setCopyRecord: (record: Record) => void;
   deleteCopyRecord: (photoId: string) => void;
-  deleteRecord: (photoId: string) => void;
+  deletePhotoRecord: (photoId: string) => void;
+  deleteRecord: (reocrdId: string) => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
-  recordId: 'aa0119ab-4301-4dfa-9fd3-0541e40ea25a',
+  recordId: '8c53fd9d-0493-4439-854e-9df7a658f69d',
   record: {
     recordId: '',
     recordName: '',
@@ -129,9 +130,17 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       },
     }));
   },
-  deleteRecord: async (photoId: string) => {
+  deletePhotoRecord: async (photoId: string) => {
     try {
       const res = await api.delete(`/photos/delete/${photoId}`);
+      console.log(res);
+    } catch (error) {
+      console.error('Error deleting photoRecord:', error);
+    }
+  },
+  deleteRecord: async (recordId: string) => {
+    try {
+      const res = await api.delete(`/records/delete/${recordId}`);
       console.log(res);
     } catch (error) {
       console.error('Error deleting record:', error);

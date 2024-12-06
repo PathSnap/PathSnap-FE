@@ -17,6 +17,7 @@ import Dropdown from './Dropdown';
 import useFriendStore, { Friend } from '../../stores/FriendStore';
 import _ from 'lodash';
 import useInitBottomSheet from '../../hooks/BottomSheet/useInitBottomSheet';
+import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 
 const BottomSheet2: React.FC = () => {
   useInitBottomSheet();
@@ -29,7 +30,7 @@ const BottomSheet2: React.FC = () => {
     editRecord,
     setCopyRecord,
     copyRecord,
-    deleteRecord,
+    deletePhotoRecord,
   } = useRecordStore();
   const { friends, deleteFriend } = useFriendStore();
   const isGroupRecord = useRecordStore((state) => state.record.group);
@@ -59,7 +60,7 @@ const BottomSheet2: React.FC = () => {
 
       if (deletedRecords) {
         deletedRecords.forEach((record) => {
-          requests.push(deleteRecord(record.photoId));
+          requests.push(deletePhotoRecord(record.photoId));
         });
       }
       console.log(requests);
@@ -164,6 +165,8 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
   travelDate,
   setTravelDate,
 }) => {
+  const { setDetailModalType } = useDetailModalTypeStore();
+  const { openModal } = useModalStore();
   // 드롭다운을 위한 아이템들
   const dropdownItems = [
     {
@@ -177,14 +180,14 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
     {
       name: '여행 삭제',
       onClick: () => {
-        setState('DELETE');
+        setDetailModalType('deleteRecord');
+        openModal('detailModal');
         setIsDropdownOpen(false);
       },
       component: IconTrash,
     },
   ];
 
-  // const { record, recordDate } = useRecordStore();
   const { record } = useRecordStore();
 
   const { currentState, setState } = useEditRecordStore();

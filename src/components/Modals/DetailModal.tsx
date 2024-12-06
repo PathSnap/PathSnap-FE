@@ -47,14 +47,17 @@ const Content = () => {
 const Buttons = () => {
   const { detailModalType } = useDetailModalTypeStore();
   const { closeModal } = useModalStore();
-  const { deleteCopyRecord } = useRecordStore();
+  const { deleteCopyRecord, deleteRecord, recordId } = useRecordStore();
   const { selectedRecord } = useSelectedPhotoStore();
 
   const handleClickDelete = () => {
-    // TODO : 경로 기록 삭제 API 추가되면 수정
-    if (selectedRecord !== null && 'photoId' in selectedRecord) {
+    if (detailModalType === 'deletePhotoRecord') {
       deleteCopyRecord(selectedRecord.photoId);
     }
+    if (detailModalType === 'deleteRecord') {
+      deleteRecord(recordId);
+    }
+
     closeModal();
   };
   return (
