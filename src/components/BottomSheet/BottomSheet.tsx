@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BOTTOM_SHEET_HEIGHT, MAX_Y } from '../../utils/BottomSheetOption';
 import { useBottomSheet } from '../../hooks/BottomSheet/useBottomSheet';
 import PhotoRecord from './Records/PhotoRecord';
 import SelectBox from './SelectBox';
 import useRecordStore from '../../stores/RecordStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 import LocationRecord from './Records/LocationRecord';
 import { useNavigate } from 'react-router';
 import IconMenu from '../../icons/BottomSheeet/IconMenu';
@@ -14,10 +14,16 @@ import IconTrash from '../../icons/BottomSheeet/IconTrash';
 import useEditRecordStore from '../../stores/EditRecordStore';
 import IconClose from '../../icons/IconClose';
 import Dropdown from './Dropdown';
+import useFriendStore from '../../stores/FriendStore';
 
 const BottomSheet2: React.FC = () => {
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore();
+  const { searchRecord } = useRecordStore();
+
+  useEffect(() => {
+    searchRecord();
+  }, []);
   return (
     <>
       <div
@@ -67,16 +73,22 @@ const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({ headerRef }) => {
 };
 
 const ContentHeader: React.FC = () => {
-  const { isGroupRecord } = useRecordStore();
-  const selectedBoxIndex = isGroupRecord ? 1 : 0;
+  const { record, recordDate } = useRecordStore((state) => state);
+
+  const selectedBoxIndex = record.group ? 1 : 0;
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const handleClickMenu = () => {
     setIsDropdownOpen((prev) => !prev);
   };
   const { currentState } = useEditRecordStore();
-  const [title, setTitle] = useState<string>('여행 제목 없음');
-  const [travelDate, setTravelDate] = useState<string>('2024-10-10');
+  const [title, setTitle] = useState<string>(record.recordName);
+  const [travelDate, setTravelDate] = useState<string>(recordDate);
   const { setState } = useEditRecordStore();
+
+  useEffect(() => {
+    setTitle(record.recordName);
+    setTravelDate(recordDate);
+  }, [record, recordDate]);
 
   // 드롭다운을 위한 아이템들
   const dropdownItems = [
@@ -151,7 +163,7 @@ const ContentHeader: React.FC = () => {
           {currentState === 'EDIT' ? (
             <>
               <input
-                type="text"
+                type="date"
                 value={travelDate}
                 onChange={(e) => setTravelDate(e.target.value)}
                 className="w-full h-full focus:outline-none text-end pr-8"
@@ -211,6 +223,7 @@ const Profile: React.FC<ProfileProps> = ({
 };
 
 const PeopleWithTravel: React.FC = () => {
+  const { friends } = useFriendStore();
   return (
     <div className={'pb-5 w-screen pl-[10px]'}>
       <div className={'font-semibold text-second'}>함께 여행한 사람들</div>
@@ -221,11 +234,14 @@ const PeopleWithTravel: React.FC = () => {
       >
         <AddPerson />
         {/* 프로필들 나열될 부분 */}
-        <Profile name="김람운" isLeader={true} />
+        {friends.map((friend) => (
+          <Profile key={friend.friendId} name={friend.name} isLeader={false} />
+        ))}
+        {/* <Profile name="김람운" isLeader={true} />
 
         {[0, 1, 2, 3, 4, 5].map((item) => {
           return <Profile name="이희연" isLeader={false} key={item} />;
-        })}
+        })} */}
       </div>
     </div>
   );
@@ -257,7 +273,15 @@ interface ContentWrapperProps {
   children?: React.ReactNode;
 }
 const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
-  const isGroupRecord = useRecordStore((state) => state.isGroupRecord);
+  const isGroupRecord = useRecordStore((state) => state.record.group);
+  const { searchFriends } = useFriendStore();
+  const { recordId } = useRecordStore();
+
+  useEffect(() => {
+    if (isGroupRecord) {
+      searchFriends(recordId);
+    }
+  }, [isGroupRecord]);
   return (
     <div className={'h-full px-3 overflow-y-auto overflow-x-hidden'}>
       {isGroupRecord ? <PeopleWithTravel /> : null}
@@ -267,12 +291,30 @@ const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
 };
 
 const Content: React.FC = () => {
+  const { record } = useRecordStore((state) => state);
+  const mergedRecords = [
+    ...(record.photoRecords || []),
+    ...(record.routeRecords || []),
+  ].sort((a, b) => a.seq - b.seq);
+
   return (
     <div className={'px-[10px] flex flex-col gap-5 pb-10'}>
-      <PhotoRecord isPhotoRecord={true} />
-      <PhotoRecord isPhotoRecord={true} />
-      <PhotoRecord isPhotoRecord={true} />
-      <LocationRecord isPhotoRecord={false} />
+      {mergedRecords.map((record) =>
+        'photoId' in record ? (
+          // 사진 기록인 경우
+          <PhotoRecord
+            key={record.photoId}
+            isPhotoRecord={true}
+            record={record}
+          />
+        ) : (
+          <LocationRecord
+            key={record.routeId}
+            isPhotoRecord={false}
+            record={record}
+          />
+        )
+      )}
       <AddPhoto />
     </div>
   );
