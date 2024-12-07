@@ -53,8 +53,13 @@ const Content = () => {
 const Buttons = () => {
   const { detailModalType } = useDetailModalTypeStore();
   const { closeModal } = useModalStore();
-  const { deleteCopyRecord, deleteRecord, recordId, startRecord } =
-    useRecordStore();
+  const {
+    deleteCopyRecord,
+    deleteRecord,
+    recordId,
+    startRecord,
+    setIsRecording,
+  } = useRecordStore();
   const { selectedRecord } = useSelectedPhotoStore();
 
   const handleClickDelete = () => {
@@ -70,6 +75,7 @@ const Buttons = () => {
 
   const handleClickRecordType = (recordIsGroup: boolean) => {
     startRecord(recordIsGroup);
+    setIsRecording(true);
     closeModal();
   };
   return (

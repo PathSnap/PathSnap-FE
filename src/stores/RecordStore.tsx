@@ -57,6 +57,8 @@ interface RecordStoreState {
   deletePhotoRecord: (photoId: string) => void;
   deleteRecord: (reocrdId: string) => void;
   startRecord: (recordIsGroup: boolean) => void;
+  isRecording: boolean;
+  setIsRecording: (isRecording: boolean) => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
@@ -162,6 +164,8 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       console.error('Error starting record:', error);
     }
   },
+  isRecording: false,
+  setIsRecording: (isRecording: boolean) => set({ isRecording }),
 }));
 
 export default useRecordStore;
