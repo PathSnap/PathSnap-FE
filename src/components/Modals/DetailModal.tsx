@@ -3,6 +3,7 @@ import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
 import useSelectedPhotoStore from '../../stores/Modals/SelectedPhotoStore';
 import useRecordStore from '../../stores/RecordStore';
+import useRouteRecordStore from '../../stores/RouteRecord';
 import ModalWrapper from './ModalWrapper';
 
 const DetailModal = () => {
@@ -53,30 +54,36 @@ const Content = () => {
 const Buttons = () => {
   const { detailModalType } = useDetailModalTypeStore();
   const { closeModal } = useModalStore();
-  const {
-    deleteCopyRecord,
-    deleteRecord,
-    recordId,
-    startRecord,
-    setIsRecording,
-  } = useRecordStore();
+  const { deleteCopyRecord } = useRecordStore();
   const { selectedRecord } = useSelectedPhotoStore();
+  const { startRecord, saveStartRouteRecord, deleteRecord } =
+    useRouteRecordStore();
 
   const handleClickDelete = () => {
     if (detailModalType === 'deletePhotoRecord') {
       deleteCopyRecord(selectedRecord.photoId);
     }
     if (detailModalType === 'deleteRecord') {
-      deleteRecord(recordId);
+      deleteRecord();
     }
 
     closeModal();
   };
 
-  const handleClickRecordType = (recordIsGroup: boolean) => {
-    startRecord(recordIsGroup);
-    setIsRecording(true);
-    closeModal();
+  const handleClickRecordType = async (recordIsGroup: boolean) => {
+    try {
+      const recordId = await startRecord(recordIsGroup);
+
+      if (recordId) {
+        await saveStartRouteRecord(recordId, 0);
+        console.log('Route record saved successfully!');
+      } else {
+        console.error('Failed to retrieve recordId.');
+      }
+      closeModal();
+    } catch (error) {
+      console.error('Error in handleClickRecordType:', error);
+    }
   };
   return (
     <div className={'w-full flex justify-between gap-4 pt-[22px]'}>

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router';
 import IconRecord from '../icons/Footer/IconRecord';
 import useModalStore from '../stores/Modals/ModalStore';
 import useDetailModalTypeStore from '../stores/Modals/DetailModalType';
-import useRecordStore from '../stores/RecordStore';
+import useRouteRecordStore from '../stores/RouteRecord';
 
 interface MenuItem {
   component: React.FC<{ isActive: boolean }>;
@@ -34,14 +34,16 @@ const Footer: React.FC = () => {
 
   const { openModal } = useModalStore();
   const { setDetailModalType } = useDetailModalTypeStore();
-  const { isRecording, setIsRecording } = useRecordStore();
+  const { recordingInfo, saveRouteRecord } = useRouteRecordStore();
 
   const handleClickRecord = () => {
-    if (!isRecording) {
+    // 기록중이 아님
+    if (!recordingInfo.isRecording) {
       setDetailModalType('recordType');
       openModal('detailModal');
     } else {
-      setIsRecording(false);
+      // 기록중 -> 기록 중단
+      saveRouteRecord();
     }
   };
 
@@ -53,7 +55,7 @@ const Footer: React.FC = () => {
         }
       >
         <IconRecord
-          isRecording={isRecording}
+          isRecording={recordingInfo.isRecording}
           onClick={() => handleClickRecord()}
         />
       </div>

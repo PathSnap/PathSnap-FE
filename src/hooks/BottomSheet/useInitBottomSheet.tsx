@@ -3,12 +3,15 @@ import useRecordStore from '../../stores/RecordStore';
 import useFriendStore from '../../stores/FriendStore';
 
 const useInitBottomSheet = () => {
-  const { searchRecord, recordId } = useRecordStore();
+  const recordId = localStorage.getItem('recordId');
+  const { searchRecord } = useRecordStore();
   const { searchFriendsAtRecord } = useFriendStore();
 
   useEffect(() => {
-    searchRecord();
-    searchFriendsAtRecord(recordId);
+    if (recordId) {
+      searchRecord(recordId);
+      searchFriendsAtRecord(recordId);
+    }
   }, [recordId]);
 };
 

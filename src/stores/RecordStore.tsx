@@ -43,11 +43,11 @@ type coordinate = {
 
 // 상태 타입 정의
 interface RecordStoreState {
-  recordId: string;
+  // recordId: string;
   record: Record;
   setRecord(record: Record): void;
-  setRecordId: (recordId: string) => void;
-  searchRecord: () => void;
+  // setRecordId: (recordId: string) => void;
+  searchRecord: (recordId: string) => void;
   recordDate: string;
   setRecordDate: (recordDate?: string) => void;
   editRecord: (recordId: string, recordName: string) => void;
@@ -55,14 +55,16 @@ interface RecordStoreState {
   setCopyRecord: (record: Record) => void;
   deleteCopyRecord: (photoId: string) => void;
   deletePhotoRecord: (photoId: string) => void;
-  deleteRecord: (reocrdId: string) => void;
-  startRecord: (recordIsGroup: boolean) => void;
-  isRecording: boolean;
-  setIsRecording: (isRecording: boolean) => void;
+  // deleteRecord: (reocrdId: string) => void;
+  seq: number;
+  setSeq: (seq: number) => void;
+  // startRecord: (recordIsGroup: boolean) => void;
+  // isRecording: boolean;
+  // setIsRecording: (isRecording: boolean) => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
-  recordId: '',
+  // recordId: '',
   record: {
     recordId: '',
     recordName: '',
@@ -70,15 +72,16 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
     routeRecords: [],
     group: true,
   },
+  seq: 0,
+  setSeq: (seq: number) => set({ seq }),
   setRecord: (record: Record) => {
     set({ record });
   },
-  setRecordId: (recordId: string) => {
-    set({ recordId });
-    localStorage.setItem('recordId', recordId);
-  },
-  searchRecord: async () => {
-    const recordId = get().recordId;
+  // setRecordId: (recordId: string) => {
+  //   set({ recordId });
+  //   localStorage.setItem('recordId', recordId);
+  // },
+  searchRecord: async (recordId: string) => {
     try {
       const res: Record = await api.get(`/records/detail/${recordId}`);
       set({ record: res });
@@ -144,28 +147,28 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       console.error('Error deleting photoRecord:', error);
     }
   },
-  deleteRecord: async (recordId: string) => {
-    try {
-      const res = await api.delete(`/records/delete/${recordId}`);
-      console.log(res);
-    } catch (error) {
-      console.error('Error deleting record:', error);
-    }
-  },
-  startRecord: async (recordIsGroup: boolean) => {
-    try {
-      const userId = localStorage.getItem('userId');
-      const res: any = await api.get(
-        `/records/start/${userId}/${recordIsGroup}`
-      );
-      get().setRecordId(res.recordId);
-      console.log(res);
-    } catch (error) {
-      console.error('Error starting record:', error);
-    }
-  },
-  isRecording: false,
-  setIsRecording: (isRecording: boolean) => set({ isRecording }),
+  // deleteRecord: async (recordId: string) => {
+  //   try {
+  //     const res = await api.delete(`/records/delete/${recordId}`);
+  //     console.log(res);
+  //   } catch (error) {
+  //     console.error('Error deleting record:', error);
+  //   }
+  // },
+  // startRecord: async (recordIsGroup: boolean) => {
+  //   try {
+  //     const userId = localStorage.getItem('userId');
+  //     const res: any = await api.get(
+  //       `/records/start/${userId}/${recordIsGroup}`
+  //     );
+  //     get().setRecordId(res.recordId);
+  //     console.log(res);
+  //   } catch (error) {
+  //     console.error('Error starting record:', error);
+  //   }
+  // },
+  // isRecording: false,
+  // setIsRecording: (isRecording: boolean) => set({ isRecording }),
 }));
 
 export default useRecordStore;

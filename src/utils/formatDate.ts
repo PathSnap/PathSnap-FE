@@ -37,3 +37,20 @@ export const formattedTime = (time: string): string => {
 
   return `${period} ${formattedHour}:${minute.toString().padStart(2, '0')}`;
 };
+
+export const formattedRealTime = (): string => {
+  const timeStamp = new Date();
+  const formattedTimeStamp = `${timeStamp.getFullYear()}-${String(
+    timeStamp.getMonth() + 1
+  ).padStart(2, '0')}-${String(timeStamp.getDate()).padStart(2, '0')} ${String(
+    timeStamp.getHours()
+  ).padStart(
+    2,
+    '0'
+  )}:${String(timeStamp.getMinutes()).padStart(2, '0')}:${String(
+    timeStamp.getSeconds()
+  ).padStart(2, '0')}`;
+
+  console.log(formattedTimeStamp);
+  return formattedTimeStamp;
+};
