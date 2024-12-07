@@ -56,10 +56,11 @@ interface RecordStoreState {
   deleteCopyRecord: (photoId: string) => void;
   deletePhotoRecord: (photoId: string) => void;
   deleteRecord: (reocrdId: string) => void;
+  startRecord: (recordIsGroup: boolean) => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
-  recordId: '8c53fd9d-0493-4439-854e-9df7a658f69d',
+  recordId: '',
   record: {
     recordId: '',
     recordName: '',
@@ -144,6 +145,18 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       console.log(res);
     } catch (error) {
       console.error('Error deleting record:', error);
+    }
+  },
+  startRecord: async (recordIsGroup: boolean) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const res: any = await api.get(
+        `/records/start/${userId}/${recordIsGroup}`
+      );
+      get().setRecordId(res.recordId);
+      console.log(res);
+    } catch (error) {
+      console.error('Error starting record:', error);
     }
   },
 }));

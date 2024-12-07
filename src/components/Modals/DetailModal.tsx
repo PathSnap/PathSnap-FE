@@ -47,7 +47,8 @@ const Content = () => {
 const Buttons = () => {
   const { detailModalType } = useDetailModalTypeStore();
   const { closeModal } = useModalStore();
-  const { deleteCopyRecord, deleteRecord, recordId } = useRecordStore();
+  const { deleteCopyRecord, deleteRecord, recordId, startRecord } =
+    useRecordStore();
   const { selectedRecord } = useSelectedPhotoStore();
 
   const handleClickDelete = () => {
@@ -60,11 +61,19 @@ const Buttons = () => {
 
     closeModal();
   };
+
+  const handleClickRecordType = (recordIsGroup: boolean) => {
+    startRecord(recordIsGroup);
+    closeModal();
+  };
   return (
     <div className={'w-full flex justify-between gap-4 pt-[22px]'}>
       {detailModalType === 'recordType' ? (
         <>
           <button
+            onClick={() => {
+              handleClickRecordType(false);
+            }}
             className={
               'w-full h-11 rounded-2xl border border-primary bg-white text-primary font-semibold'
             }
@@ -72,6 +81,9 @@ const Buttons = () => {
             개인 여행
           </button>
           <button
+            onClick={() => {
+              handleClickRecordType(true);
+            }}
             className={
               'w-full h-11 rounded-2xl border border-primary bg-white text-primary font-semibold'
             }
