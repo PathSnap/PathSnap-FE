@@ -71,7 +71,10 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
   setRecord: (record: Record) => {
     set({ record });
   },
-  setRecordId: (recordId: string) => set({ recordId }),
+  setRecordId: (recordId: string) => {
+    set({ recordId });
+    localStorage.setItem('recordId', recordId);
+  },
   searchRecord: async () => {
     const recordId = get().recordId;
     try {

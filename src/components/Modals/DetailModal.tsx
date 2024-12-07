@@ -1,3 +1,4 @@
+import IconCancel from '../../icons/IconCancel';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
 import useSelectedPhotoStore from '../../stores/Modals/SelectedPhotoStore';
@@ -5,8 +6,13 @@ import useRecordStore from '../../stores/RecordStore';
 import ModalWrapper from './ModalWrapper';
 
 const DetailModal = () => {
+  const { closeModal } = useModalStore();
   return (
     <ModalWrapper classProp="w-[330px] h-fit bg-white rounded-[20px] px-7 py-[30px] gap-2 text-second text-center">
+      <IconCancel
+        onClick={closeModal}
+        className="absolute bottom-full -translate-y-5 right-0"
+      />
       <Title />
       <Content />
       <Buttons />
