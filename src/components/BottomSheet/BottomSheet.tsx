@@ -18,13 +18,13 @@ import useFriendStore, { Friend } from '../../stores/FriendStore';
 import _ from 'lodash';
 import useInitBottomSheet from '../../hooks/BottomSheet/useInitBottomSheet';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
+import useRouteRecordStore from '../../stores/RouteRecord';
 
 const BottomSheet2: React.FC = () => {
   useInitBottomSheet();
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore();
   const {
-    recordId,
     record,
     recordDate,
     editRecord,
@@ -32,6 +32,7 @@ const BottomSheet2: React.FC = () => {
     copyRecord,
     deletePhotoRecord,
   } = useRecordStore();
+  const { recordingInfo } = useRouteRecordStore();
   const { friends, deleteFriend } = useFriendStore();
   const isGroupRecord = useRecordStore((state) => state.record.group);
 
@@ -50,7 +51,7 @@ const BottomSheet2: React.FC = () => {
         deleteFriend(friend.friendId)
       );
 
-      requests.push(editRecord(recordId, title));
+      requests.push(editRecord(recordingInfo.recordId, title));
 
       const deletedRecords = record.photoRecords?.filter((photoRecord) => {
         return !copyRecord?.photoRecords?.some(

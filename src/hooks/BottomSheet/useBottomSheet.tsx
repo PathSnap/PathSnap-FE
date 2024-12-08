@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { MAX_Y, MIN_Y } from '../../utils/BottomSheetOption';
+import useRouteRecordStore from '../../stores/RouteRecord';
 
 interface BottomSheetMetrics {
   touchStart: {
@@ -16,6 +17,7 @@ export function useBottomSheet() {
   const sheetRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
+  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
 
   const metrics = useRef<BottomSheetMetrics>({
     touchStart: {
@@ -29,6 +31,8 @@ export function useBottomSheet() {
   });
 
   useEffect(() => {
+    // 기록 중일 때만 바텀시트 열리도록
+    if (!recordingInfo.isRecording) return;
     const handleTouchStart = (e: TouchEvent) => {
       const { touchStart } = metrics.current;
 
@@ -112,7 +116,7 @@ export function useBottomSheet() {
       headerRef.current?.removeEventListener('touchmove', handleTouchMove);
       headerRef.current?.removeEventListener('touchend', handleTouchEnd);
     };
-  }, []);
+  }, [recordingInfo.isRecording]);
 
   return { sheetRef, headerRef, isBottomSheetOpen };
 }
