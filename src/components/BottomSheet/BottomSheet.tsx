@@ -16,14 +16,12 @@ import IconClose from '../../icons/IconClose';
 import Dropdown from './Dropdown';
 import useFriendStore, { Friend } from '../../stores/FriendStore';
 import _ from 'lodash';
-import useInitBottomSheet from '../../hooks/BottomSheet/useInitBottomSheet';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useRouteRecordStore from '../../stores/RouteRecord';
 
 const BottomSheet2: React.FC = () => {
-  useInitBottomSheet();
   const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
-  const { currentState, setState } = useEditRecordStore();
+  const { currentState, setState } = useEditRecordStore((state) => state);
   const {
     record,
     recordDate,
@@ -31,15 +29,26 @@ const BottomSheet2: React.FC = () => {
     setCopyRecord,
     copyRecord,
     deletePhotoRecord,
-  } = useRecordStore();
-  const { recordingInfo } = useRouteRecordStore();
-  const { friends, deleteFriend } = useFriendStore();
+  } = useRecordStore((state) => state);
+  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
+  const { friends, deleteFriend, searchFriendsAtRecord } = useFriendStore(
+    (state) => state
+  );
+
   const isGroupRecord = useRecordStore((state) => state.record.group);
 
   const [copyFriends, setCopyFriends] = useState<Friend[]>([]);
 
   const [title, setTitle] = useState<string>(record.recordName);
   const [travelDate, setTravelDate] = useState<string>(recordDate);
+  const { searchRecord } = useRecordStore();
+
+  const getRecordInfo = async () => {
+    if (recordingInfo.recordId) {
+      const res = await searchRecord(recordingInfo.recordId);
+      if (res?.group) searchFriendsAtRecord(recordingInfo.recordId);
+    }
+  };
 
   const handleClickSaveBtn = async () => {
     if (!title || !travelDate) return;
@@ -67,13 +76,19 @@ const BottomSheet2: React.FC = () => {
       console.log(requests);
 
       await Promise.all(requests).then(() => {
-        useInitBottomSheet();
+        console.log('완료');
       });
+
+      getRecordInfo();
       setState('NONE');
     } catch (error) {
       console.error('Error saving bottomsheet edit:', error);
     }
   };
+
+  useEffect(() => {
+    getRecordInfo();
+  }, []);
 
   useEffect(() => {
     setTitle(record.recordName);

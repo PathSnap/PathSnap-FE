@@ -1,4 +1,5 @@
 import IconCancel from '../../icons/IconCancel';
+import useFriendStore from '../../stores/FriendStore';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
 import useSelectedPhotoStore from '../../stores/Modals/SelectedPhotoStore';
@@ -24,7 +25,7 @@ const DetailModal = () => {
 export default DetailModal;
 
 const Title = () => {
-  const { detailModalType } = useDetailModalTypeStore();
+  const { detailModalType } = useDetailModalTypeStore((state) => state);
   return (
     <div className="w-full text-lg font-semibold ">
       {detailModalType === 'recordType'
@@ -35,7 +36,7 @@ const Title = () => {
 };
 
 const Content = () => {
-  const { detailModalType } = useDetailModalTypeStore();
+  const { detailModalType } = useDetailModalTypeStore((state) => state);
   return (
     <div className="w-full text-xs">
       {detailModalType === 'recordType' ? (
@@ -52,12 +53,23 @@ const Content = () => {
 };
 
 const Buttons = () => {
-  const { detailModalType } = useDetailModalTypeStore();
+  const { detailModalType } = useDetailModalTypeStore((state) => state);
   const { closeModal } = useModalStore();
-  const { deleteCopyRecord } = useRecordStore();
-  const { selectedRecord } = useSelectedPhotoStore();
+  const { deleteCopyRecord, searchRecord, seq, setSeq } = useRecordStore(
+    (state) => state
+  );
+  const { selectedRecord } = useSelectedPhotoStore((state) => state);
   const { startRecord, saveStartRouteRecord, deleteRecord } =
     useRouteRecordStore();
+
+  const { searchFriendsAtRecord } = useFriendStore();
+
+  const getRecordInfo = async (recordId: string) => {
+    if (recordId) {
+      const res = await searchRecord(recordId);
+      if (res?.group) searchFriendsAtRecord(recordId);
+    }
+  };
 
   const handleClickDelete = () => {
     if (detailModalType === 'deletePhotoRecord') {
@@ -75,7 +87,9 @@ const Buttons = () => {
       const recordId = await startRecord(recordIsGroup);
 
       if (recordId) {
-        await saveStartRouteRecord(recordId, 0);
+        await saveStartRouteRecord(recordId, seq);
+        setSeq(seq + 1);
+        await getRecordInfo(recordId);
         console.log('Route record saved successfully!');
       } else {
         console.error('Failed to retrieve recordId.');
