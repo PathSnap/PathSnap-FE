@@ -7,6 +7,7 @@ import useUploadImg from '../../hooks/BottomSheet/useUploadImg';
 import { api } from '../../utils/api';
 import uploadS3 from '../../apis/Photos/uploadS3';
 import { formattedDate } from '../../utils/formatDate';
+import useRouteRecordStore from '../../stores/RouteRecord';
 import useRecordStore from '../../stores/RecordStore';
 
 const AddPhotoModal: React.FC = () => {
@@ -14,7 +15,8 @@ const AddPhotoModal: React.FC = () => {
   const { closeModal } = useModalStore();
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const recordId = useRecordStore((state) => state.recordId);
+  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
+  const { seq, setSeq, searchRecord } = useRecordStore((state) => state);
 
   const errorStyle = 'text-xxs';
 
@@ -61,10 +63,12 @@ const AddPhotoModal: React.FC = () => {
     const hasErrors = validateFields();
 
     if (!hasErrors && isFill && isSubmit) {
+      setIsSubmit(false);
       try {
         // S3에 이미지 업로드
         const imgData = await uploadS3(formData);
         if (!imgData || !imgData.images) {
+          closeModal();
           throw new Error('S3 업로드 실패');
         }
 
@@ -74,12 +78,10 @@ const AddPhotoModal: React.FC = () => {
         }));
 
         // TODO: 순서에 맞게 수정하기
-        const seq = 0;
         const lat = 0;
         const lng = 0;
 
-        // 이미지 정보 저장 요청
-        const res = await api.post(`photos/create/${recordId}`, {
+        const res = await api.post(`photos/create/${recordingInfo.recordId}`, {
           seq,
           images: imageIds,
           photoTitle: recordInfo.title,
@@ -90,8 +92,10 @@ const AddPhotoModal: React.FC = () => {
         });
 
         console.log('이미지 정보 저장 성공:', res);
+        setSeq(seq + 1);
 
         // 모달 닫기
+        searchRecord(recordingInfo.recordId);
         closeModal();
       } catch (error) {
         console.error('요청 중 오류 발생:', error);
@@ -171,8 +175,8 @@ const AddPhotoModal: React.FC = () => {
           isSubmit={isSubmit}
         />
         <Input
-          label="날짜"
-          placeholder="날짜를 입력해주세요."
+          label="시간"
+          placeholder="시간을 입력해주세요."
           type="time"
           value={recordInfo.date}
           setValue={(value) => handleInputChange('date', value)}
@@ -325,7 +329,9 @@ const Photo: React.FC<PhotoProps> = ({ photoSrc, deletePhoto, index }) => {
     <div className={'relative flex-shrink-0'}>
       <img
         src={photoSrc}
-        className={'w-20 aspect-square rounded-[10px] border-2 border-primary '}
+        className={
+          'w-20 aspect-square rounded-[10px] border-2 border-primary object-cover'
+        }
       />
       {/* 사진 삭제하는 버튼 */}
       <div

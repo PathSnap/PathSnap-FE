@@ -43,11 +43,9 @@ type coordinate = {
 
 // 상태 타입 정의
 interface RecordStoreState {
-  recordId: string;
   record: Record;
   setRecord(record: Record): void;
-  setRecordId: (recordId: string) => void;
-  searchRecord: () => void;
+  searchRecord: (recordId: string) => Promise<Record | undefined>;
   recordDate: string;
   setRecordDate: (recordDate?: string) => void;
   editRecord: (recordId: string, recordName: string) => void;
@@ -55,28 +53,33 @@ interface RecordStoreState {
   setCopyRecord: (record: Record) => void;
   deleteCopyRecord: (photoId: string) => void;
   deletePhotoRecord: (photoId: string) => void;
-  deleteRecord: (reocrdId: string) => void;
+  seq: number;
+  setSeq: (seq: number) => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
-  recordId: '8c53fd9d-0493-4439-854e-9df7a658f69d',
   record: {
     recordId: '',
     recordName: '',
     photoRecords: [],
     routeRecords: [],
-    group: true,
+    group: false,
   },
+  seq: 0,
+  setSeq: (seq: number) => set({ seq }),
   setRecord: (record: Record) => {
     set({ record });
   },
-  setRecordId: (recordId: string) => set({ recordId }),
-  searchRecord: async () => {
-    const recordId = get().recordId;
+  searchRecord: async (recordId: string) => {
     try {
       const res: Record = await api.get(`/records/detail/${recordId}`);
-      set({ record: res });
+      get().setRecord(res);
       get().setRecordDate();
+
+      const recordNum =
+        (res.photoRecords?.length ?? 0) + (res.routeRecords?.length ?? 1);
+      set({ seq: recordNum });
+      return res;
     } catch (error) {
       console.error('Error fetching record:', error);
     }
@@ -84,6 +87,7 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
   recordDate: '',
   setRecordDate: (recordDate?: string) => {
     const { record } = get();
+
     const photoRecords: any = record.photoRecords;
     const routeRecords: any = record.routeRecords;
 
@@ -95,7 +99,10 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       date = photoRecords[0].photoDate.slice(0, 10);
     } else if (routeRecords && routeRecords.length > 0) {
       date = routeRecords[0].startDate.slice(0, 10);
+    } else {
+      date = new Date().toISOString().slice(0, 10);
     }
+    console.log(date);
 
     set({ recordDate: date });
   },
@@ -136,14 +143,6 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       console.log(res);
     } catch (error) {
       console.error('Error deleting photoRecord:', error);
-    }
-  },
-  deleteRecord: async (recordId: string) => {
-    try {
-      const res = await api.delete(`/records/delete/${recordId}`);
-      console.log(res);
-    } catch (error) {
-      console.error('Error deleting record:', error);
     }
   },
 }));

@@ -1,12 +1,20 @@
+import IconCancel from '../../icons/IconCancel';
+import useFriendStore from '../../stores/FriendStore';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
 import useSelectedPhotoStore from '../../stores/Modals/SelectedPhotoStore';
 import useRecordStore from '../../stores/RecordStore';
+import useRouteRecordStore from '../../stores/RouteRecord';
 import ModalWrapper from './ModalWrapper';
 
 const DetailModal = () => {
+  const { closeModal } = useModalStore();
   return (
     <ModalWrapper classProp="w-[330px] h-fit bg-white rounded-[20px] px-7 py-[30px] gap-2 text-second text-center">
+      <IconCancel
+        onClick={closeModal}
+        className="absolute bottom-full -translate-y-5 right-0"
+      />
       <Title />
       <Content />
       <Buttons />
@@ -17,7 +25,7 @@ const DetailModal = () => {
 export default DetailModal;
 
 const Title = () => {
-  const { detailModalType } = useDetailModalTypeStore();
+  const { detailModalType } = useDetailModalTypeStore((state) => state);
   return (
     <div className="w-full text-lg font-semibold ">
       {detailModalType === 'recordType'
@@ -28,7 +36,7 @@ const Title = () => {
 };
 
 const Content = () => {
-  const { detailModalType } = useDetailModalTypeStore();
+  const { detailModalType } = useDetailModalTypeStore((state) => state);
   return (
     <div className="w-full text-xs">
       {detailModalType === 'recordType' ? (
@@ -45,26 +53,60 @@ const Content = () => {
 };
 
 const Buttons = () => {
-  const { detailModalType } = useDetailModalTypeStore();
+  const { detailModalType } = useDetailModalTypeStore((state) => state);
   const { closeModal } = useModalStore();
-  const { deleteCopyRecord, deleteRecord, recordId } = useRecordStore();
-  const { selectedRecord } = useSelectedPhotoStore();
+  const { deleteCopyRecord, searchRecord, seq, setSeq } = useRecordStore(
+    (state) => state
+  );
+  const { selectedRecord } = useSelectedPhotoStore((state) => state);
+  const { startRecord, saveStartRouteRecord, deleteRecord } =
+    useRouteRecordStore();
+
+  const { searchFriendsAtRecord } = useFriendStore();
+
+  const getRecordInfo = async (recordId: string) => {
+    if (recordId) {
+      const res = await searchRecord(recordId);
+      if (res?.group) searchFriendsAtRecord(recordId);
+    }
+  };
 
   const handleClickDelete = () => {
     if (detailModalType === 'deletePhotoRecord') {
       deleteCopyRecord(selectedRecord.photoId);
     }
     if (detailModalType === 'deleteRecord') {
-      deleteRecord(recordId);
+      deleteRecord();
     }
 
     closeModal();
+  };
+
+  const handleClickRecordType = async (recordIsGroup: boolean) => {
+    try {
+      const recordId = await startRecord(recordIsGroup);
+
+      if (recordId) {
+        await saveStartRouteRecord(recordId, seq);
+        setSeq(seq + 1);
+        await getRecordInfo(recordId);
+        console.log('Route record saved successfully!');
+      } else {
+        console.error('Failed to retrieve recordId.');
+      }
+      closeModal();
+    } catch (error) {
+      console.error('Error in handleClickRecordType:', error);
+    }
   };
   return (
     <div className={'w-full flex justify-between gap-4 pt-[22px]'}>
       {detailModalType === 'recordType' ? (
         <>
           <button
+            onClick={() => {
+              handleClickRecordType(false);
+            }}
             className={
               'w-full h-11 rounded-2xl border border-primary bg-white text-primary font-semibold'
             }
@@ -72,6 +114,9 @@ const Buttons = () => {
             개인 여행
           </button>
           <button
+            onClick={() => {
+              handleClickRecordType(true);
+            }}
             className={
               'w-full h-11 rounded-2xl border border-primary bg-white text-primary font-semibold'
             }

@@ -4,8 +4,8 @@ import IconPlus from '../icons/BottomSheeet/IconPlus';
 import { useNavigate } from 'react-router';
 import useFriendStore, { Friend } from '../stores/FriendStore';
 import _ from 'lodash';
-import useRecordStore from '../stores/RecordStore';
-import useInitBottomSheet from '../hooks/BottomSheet/useInitBottomSheet';
+import { InitBottomSheet } from '../hooks/BottomSheet/InitBottomSheet';
+import useRouteRecordStore from '../stores/RouteRecord';
 
 const AddFriend: React.FC = () => {
   const [addFriends, setAddFriends] = useState<Friend[]>([]);
@@ -138,8 +138,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ addFriends }) => {
   // 검색어 변경 시 필터링 함수 호출
   useEffect(() => {
     debouncedFilterSearchResult(searchValue);
-    return () => debouncedFilterSearchResult.cancel(); // cleanup
+    return () => debouncedFilterSearchResult.cancel();
   }, [searchValue, addFriends]);
+
   return (
     <div className={'w-full relative h-fit'}>
       <input
@@ -147,7 +148,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ addFriends }) => {
           'w-full h-14 rounded-full border border-[#E5E5E5] focus:outline-primary pl-5 pr-[60px] text-lg'
         }
         placeholder="이름 검색"
-        // TODO : API 추가되면 수정
         value={searchValue}
         onChange={(e) => {
           setSearchValue(e.target.value);
@@ -218,7 +218,7 @@ interface ButtonsProps {
 }
 const Buttons: React.FC<ButtonsProps> = ({ addFriends }) => {
   const { addFriend } = useFriendStore();
-  const { recordId } = useRecordStore();
+  const { recordingInfo } = useRouteRecordStore((state) => state);
   const [isActive, setIsActive] = useState(false);
   const router = useNavigate();
   const handleClickCancel = () => {
@@ -229,12 +229,12 @@ const Buttons: React.FC<ButtonsProps> = ({ addFriends }) => {
     if (!isActive) return;
     try {
       const requests = addFriends.map((friend) => {
-        addFriend(friend.friendId, recordId);
+        addFriend(friend.friendId, recordingInfo.recordId);
       });
 
       await Promise.all(requests).then(() => {
-        useInitBottomSheet();
         router('/');
+        InitBottomSheet();
       });
     } catch (error) {
       console.error('요청 중 하나 이상 실패:', error);
