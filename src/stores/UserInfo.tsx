@@ -6,11 +6,19 @@ interface userInfo {
   birthDate: string;
   phoneNumber: string;
   address: string;
-  imageId?: string;
+  lat: number;
+  lng: number;
+  images?: [
+    {
+      imageId: string;
+      url: string;
+    },
+  ];
 }
 interface UserInfoStoreState {
   userInfo: userInfo;
   setUserInfo: (userInfo: userInfo) => void;
+  getUserInfo: () => Promise<void>;
   updateUserInfo: (userInfo: userInfo) => Promise<void>;
 }
 
@@ -20,17 +28,34 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
     birthDate: '',
     phoneNumber: '',
     address: '',
-    imageId: '',
+    lat: 0,
+    lng: 0,
+    images: [
+      {
+        imageId: '',
+        url: '',
+      },
+    ],
   },
   setUserInfo: (userInfo) => {
     set({ userInfo });
+  },
+  getUserInfo: async (): Promise<void> => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const res: any = await api.get(`/profiles/${userId}`);
+
+      set({ userInfo: res });
+    } catch (error) {
+      console.error('프로필 불러오기 실패:', error);
+    }
   },
   updateUserInfo: async (userInfo: userInfo): Promise<void> => {
     try {
       const filteredUserInfo = { ...userInfo };
       // imageId 없을 경우 빼서 요청 보내기
-      if (!filteredUserInfo.imageId) {
-        delete filteredUserInfo.imageId;
+      if (!filteredUserInfo.images || !filteredUserInfo.images[0].imageId) {
+        delete filteredUserInfo.images;
       }
 
       const res: any = await api.patch('/profiles', {
