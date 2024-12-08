@@ -1,19 +1,20 @@
 import React from 'react';
-
 import IconCar from '../../../icons/BottomSheeet/IconCar';
 import RecordWrapper from './RecordWrapper';
+import { routeRecord } from '../../../stores/RecordStore';
+import { calculateTime, formattedTime } from '../../../utils/formatDate';
 
-interface LocationRecordProps {
-  isPhotoRecord: boolean;
+interface RouteRecordProps {
+  record: routeRecord;
 }
 
-const LocationRecord: React.FC<LocationRecordProps> = ({ isPhotoRecord }) => {
+const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
   return (
     <RecordWrapper
       className={'shadow-l p-[14px] grid grid-cols-[auto_1fr] gap-[30px]'}
-      isPhotoRecord={isPhotoRecord}
     >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
+        {/* TODO :  */}
         <div className={'font-semibold'}>전주로 이동</div>
         <div
           className={
@@ -22,15 +23,15 @@ const LocationRecord: React.FC<LocationRecordProps> = ({ isPhotoRecord }) => {
         >
           <div className={'row-span-2 self-center'}>
             <div className={'w-2 h-2 rounded-full bg-[#FF936B]'}></div>
-            <div className="w-[5px] h-[30px] border-r-2 border-dashed border-[#D6D6D6] "></div>
+            <div className="w-[5px] h-[30px] border-r-2 border-dashed border-[#D6D6D6]"></div>
             <div className={'w-2 h-2 rounded-full bg-[#77CEBD]'}></div>
           </div>
-          <div>부천시 | 7:30</div>
-          <div>강원도 | 15:30</div>
+          <div>{formattedTime(record.startDate.slice(10, 16))}</div>
+          <div>{formattedTime(record.endDate.slice(10, 16))}</div>
         </div>
         <div className={'text-sm flex gap-2.5 items-center'}>
           <IconCar />
-          <div>26분 | 3.5km</div>
+          <div>{calculateTime(record.startDate, record.endDate)} | 3.5km</div>
         </div>
       </div>
       <div className={'w-full rounded-2xl border-2 border-gray-200'}>
@@ -40,4 +41,4 @@ const LocationRecord: React.FC<LocationRecordProps> = ({ isPhotoRecord }) => {
   );
 };
 
-export default LocationRecord;
+export default RouteRecord;

@@ -1,17 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ModalWrapper from './ModalWrapper';
-import useModalStore from '../../stores/ModalStore';
+import useModalStore from '../../stores/Modals/ModalStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import Input from '../Input';
 import useUploadImg from '../../hooks/BottomSheet/useUploadImg';
 import { api } from '../../utils/api';
 import uploadS3 from '../../apis/Photos/uploadS3';
+import { formattedDate } from '../../utils/formatDate';
+import useRouteRecordStore from '../../stores/RouteRecord';
+import useRecordStore from '../../stores/RecordStore';
 
 const AddPhotoModal: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
   const { closeModal } = useModalStore();
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
+  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
+  const { seq, setSeq, searchRecord } = useRecordStore((state) => state);
+
   const errorStyle = 'text-xxs';
 
   type recordInfo = {
@@ -57,30 +63,43 @@ const AddPhotoModal: React.FC = () => {
     const hasErrors = validateFields();
 
     if (!hasErrors && isFill && isSubmit) {
-      //S3에 이미지 업로드
-      const imgData = await uploadS3(formData);
-      const imageIds = imgData.images.map((image: any) => ({
-        imageId: image.imageId,
-      }));
-      console.log('imageIds : ', imageIds);
+      setIsSubmit(false);
+      try {
+        // S3에 이미지 업로드
+        const imgData = await uploadS3(formData);
+        if (!imgData || !imgData.images) {
+          closeModal();
+          throw new Error('S3 업로드 실패');
+        }
 
-      //나중에 recordId는 기록시작으로부터 받아오기
-      const recordId = '57d661d0-8394-404c-862d-124b03e0c90b';
-      //나중에 순서에 맞게 수정하기
-      const seq = 0;
-      const lat = 0;
-      const lng = 0;
-      const res = await api.post(`photos/create/${recordId}`, {
-        seq,
-        images: imageIds,
-        photoTitle: recordInfo.title,
-        photoContent: recordInfo.content,
-        photoDate: recordInfo.date,
-        lat,
-        lng,
-      });
+        // S3 업로드 결과 처리
+        const imageIds = imgData.images.map((image: any) => ({
+          imageId: image.imageId,
+        }));
 
-      console.log(res);
+        // TODO: 순서에 맞게 수정하기
+        const lat = 0;
+        const lng = 0;
+
+        const res = await api.post(`photos/create/${recordingInfo.recordId}`, {
+          seq,
+          images: imageIds,
+          photoTitle: recordInfo.title,
+          photoContent: recordInfo.content,
+          photoDate: formattedDate() + ' ' + recordInfo.date + ':00',
+          lat,
+          lng,
+        });
+
+        console.log('이미지 정보 저장 성공:', res);
+        setSeq(seq + 1);
+
+        // 모달 닫기
+        searchRecord(recordingInfo.recordId);
+        closeModal();
+      } catch (error) {
+        console.error('요청 중 오류 발생:', error);
+      }
     }
   };
 
@@ -156,9 +175,9 @@ const AddPhotoModal: React.FC = () => {
           isSubmit={isSubmit}
         />
         <Input
-          label="날짜"
-          placeholder="날짜를 입력해주세요."
-          type="date"
+          label="시간"
+          placeholder="시간을 입력해주세요."
+          type="time"
           value={recordInfo.date}
           setValue={(value) => handleInputChange('date', value)}
           error={errors.date}
@@ -310,7 +329,9 @@ const Photo: React.FC<PhotoProps> = ({ photoSrc, deletePhoto, index }) => {
     <div className={'relative flex-shrink-0'}>
       <img
         src={photoSrc}
-        className={'w-20 aspect-square rounded-[10px] border-2 border-primary '}
+        className={
+          'w-20 aspect-square rounded-[10px] border-2 border-primary object-cover'
+        }
       />
       {/* 사진 삭제하는 버튼 */}
       <div

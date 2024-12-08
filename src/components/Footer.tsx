@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import IconHome from '../icons/Footer/IconHome';
 import IconPerson from '../icons/Footer/IconPerson';
 import { useLocation, useNavigate } from 'react-router';
 import IconRecord from '../icons/Footer/IconRecord';
-import useModalStore from '../stores/ModalStore';
-import useDetailModalTypeStore from '../stores/DetailModalType';
+import useModalStore from '../stores/Modals/ModalStore';
+import useDetailModalTypeStore from '../stores/Modals/DetailModalType';
+import useRouteRecordStore from '../stores/RouteRecord';
 
 interface MenuItem {
   component: React.FC<{ isActive: boolean }>;
@@ -33,25 +34,28 @@ const Footer: React.FC = () => {
 
   const { openModal } = useModalStore();
   const { setDetailModalType } = useDetailModalTypeStore();
+  const { recordingInfo, saveRouteRecord } = useRouteRecordStore();
 
   const handleClickRecord = () => {
-    if (!isRecording) {
+    // 기록중이 아님
+    if (!recordingInfo.isRecording) {
       setDetailModalType('recordType');
       openModal('detailModal');
+    } else {
+      // 기록중 -> 기록 중단
+      saveRouteRecord();
     }
   };
 
-  const [isRecording, setIsRecording] = useState<boolean>(false);
   return (
     <div className="max-w-[500px] w-full fixed h-20 bottom-0 flex justify-around items-center shadow-xs rounded-t-2xl z-50 bg-white">
       <div
-        onClick={() => setIsRecording(!isRecording)}
         className={
           'absolute bg-primary w-[68px] h-[68px] rounded-full bottom-[42px] z-40 grid place-items-center'
         }
       >
         <IconRecord
-          isRecording={isRecording}
+          isRecording={recordingInfo.isRecording}
           onClick={() => handleClickRecord()}
         />
       </div>

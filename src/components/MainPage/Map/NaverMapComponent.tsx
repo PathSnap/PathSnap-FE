@@ -1,94 +1,128 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MainMarker from './marker/CustomMainMarker';
 import ImageMarker from './marker/CustomImageMarker';
+// import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
-import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import SerchButton from '../SerchButton';
+import usePhotoStore from '../../../stores/PhotoStore';
 
 interface CenterLocationProps {
   centerLat?: number;
-  centerlng?: number;
+  centerLng?: number;
+  mainZoom?: number;
 }
 
 const NaverMapComponent: React.FC<CenterLocationProps> = ({
   centerLat,
-  centerlng,
+  centerLng,
+  mainZoom,
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
+  const { togglePhotoSelection, searchPhotos, photos } = usePhotoStore();
+
+  // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
+  const saveCurrentPosition = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentPosition({
+            lat: latitude,
+            lng: longitude,
+          });
 
+          // 위치 저장 로직 (API 호출 등)
+          // console.log('Position saved:', { lat: latitude, lng: longitude });
+        },
+        (err) => {
+          console.error('Failed to retrieve location:', err);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  };
+
+  //현재 위치 가져오는 함수
+  const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        // Geolocation API가 브라우저에서 지원되지 않는 경우
+        reject(new Error('Geolocation is not supported by this browser.'));
+        return { lat: 37.5665, lng: 126.978 };
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          resolve({ lat: latitude, lng: longitude }); // 성공 시 위도와 경도를 반환
+        },
+        (error) => {
+          reject(new Error('Failed to retrieve location: ' + error.message)); // 실패 시 에러 반환
+        }
+      );
+    });
+  };
+
+  const intervalId = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    const initializeMap = () => {
+    //현재위치 상태 저장 타이머
+    intervalId.current = setInterval(() => {
+      saveCurrentPosition();
+    }, 3000);
+
+    //지도 초기화 함수
+    const initializeMap = async () => {
       if (!mapElement.current) return;
 
       const naver = (window as any).naver;
 
-      const setInitialLocation = (position: GeolocationPosition) => {
-        const { latitude, longitude } = position.coords;
-
-        const mapOptions = {
-          center: new naver.maps.LatLng(latitude, longitude), // 현재 위치로 초기화
-          zoom: 15,
-        };
-
-        // 지도 인스턴스 생성
-        mapInstance.current = new naver.maps.Map(
-          mapElement.current,
-          mapOptions
-        );
-
-        // 현재 위치 저장
-        setCurrentPosition({
-          lat: latitude,
-          lng: longitude,
-        });
-      };
-
-      const setDefaultLocation = () => {
-        const defaultLatLng = { lat: 37.5665, lng: 126.978 }; // 서울로 기본값 설정
-        const mapOptions = {
-          center: new naver.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng),
-          zoom: 15,
-        };
-
-        mapInstance.current = new naver.maps.Map(
-          mapElement.current,
-          mapOptions
-        );
-
-        setCurrentPosition(defaultLatLng);
-      };
-
-      if (centerLat && centerlng) {
-        const mapOptions = {
-          center: new naver.maps.LatLng(centerLat, centerlng), // 현재 위치로 초기화
-          zoom: 15,
-        };
-
-        mapInstance.current = new naver.maps.Map(
-          mapElement.current,
-          mapOptions
-        );
+      let defaultLatLng = { lat: 37.5665, lng: 126.978 }; // 서울로 기본값 설정
+      let zoom = 15;
+      if (centerLat && centerLng && mainZoom) {
+        defaultLatLng = { lat: centerLat, lng: centerLng }; // 서울로 기본값 설정
+        zoom = mainZoom;
       } else {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            setInitialLocation,
-            (err) => {
-              console.error('Failed to retrieve location:', err);
-              setDefaultLocation();
-            }
-          );
-        } else {
-          console.error('Geolocation is not supported by this browser.');
-          setDefaultLocation();
-        }
+        defaultLatLng = await getCurrentLocation(); // 서울로 기본값 설정
       }
+      const mapOptions = {
+        center: new naver.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng), // 현재 위치로 초기화
+        zoom: zoom,
+
+        scaleControl: false,
+        mapDataControl: false,
+        logoControl: true,
+        logoControlOptions: {
+          position: naver.maps.Position.TOP_RIGHT,
+        },
+      };
+
+      mapInstance.current = new naver.maps.Map(mapElement.current, mapOptions);
+      setCurrentPosition(defaultLatLng);
+      const defaultZoom = zoom;
+      handleCenterChange({
+        lat: defaultLatLng.lat,
+        lng: defaultLatLng.lng,
+        zoom: defaultZoom,
+      });
+
+      // 중심 위치 변경 이벤트 리스너 등록
+      mapInstance.current.addListener('center_changed', () => {
+        const center = mapInstance.current.getCenter();
+        const lat = center.lat();
+        const lng = center.lng();
+        const zoom = mapInstance.current.getZoom(); // 현재 줌 레벨 가져오기
+        const defaultZoom = zoom;
+        handleCenterChange({ lat, lng, zoom: defaultZoom });
+      });
     };
 
+    //네이버 지도 API 스크립트 로드
     if (!(window as any).naver) {
       const script = document.createElement('script');
       const apiKey = import.meta.env.VITE_MAP_API_KEY;
@@ -101,46 +135,50 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     }
   }, []); // 첫 렌더링 시 실행
 
-  const moveToCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const newCenter = new (window as any).naver.maps.LatLng(
-            latitude,
-            longitude
-          );
+  // 중심 위치 변경 이벤트 핸들러
+  let CenterChangeTimeout: NodeJS.Timeout | null = null; // 타이머 저장용 변수
+  const handleCenterChange = (newCenter: {
+    lat: number;
+    lng: number;
+    zoom: number;
+  }) => {
+    if (CenterChangeTimeout) {
+      // 3초 동안 로그가 이미 제한되어 있다면 바로 리턴
+      return;
+    }
+    console.log('Center changed to:', newCenter);
+    // 최대 반경 (줌 레벨 6)과 최소 반경 (줌 레벨 21) 정의
+    const maxRadius = 6; // 줌 레벨 6
+    const minRadius = 0.0002; // 줌 레벨 21
 
-          if (mapInstance.current) {
-            mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
-          }
+    // 기하급수적으로 줄어드는 비율 계산
+    const scaleFactor = Math.pow(minRadius / maxRadius, 1 / 15); // 15 단계로 스케일링
+    const radius = maxRadius * Math.pow(scaleFactor, newCenter.zoom - 6);
 
-          setCurrentPosition({
-            lat: latitude,
-            lng: longitude,
-          });
-        },
-        (error) => {
-          console.error('Error fetching location:', error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
+    searchPhotos(newCenter.lng, newCenter.lat, radius); // lon, lat, radius
+
+    CenterChangeTimeout = setTimeout(() => {
+      CenterChangeTimeout = null; // 3초 후 제한 해제
+    }, 500);
+  };
+
+  //현재위치 이동 버튼 클릭 시
+  const moveToCurrentLocation = async () => {
+    const currentLatLng = await getCurrentLocation();
+    const newCenter = new (window as any).naver.maps.LatLng(
+      currentLatLng.lat,
+      currentLatLng.lng
+    );
+    setCurrentPosition(currentLatLng);
+    if (mapInstance.current) {
+      mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
     }
   };
 
-  // 현재 위치의 약간 오른쪽 위 좌표 계산
-  const getOffsetPosition = () => {
-    if (!currentPosition) return null;
-    const offsetLat = currentPosition.lat + 0.0005; // 위도 약간 증가
-    const offsetLng = currentPosition.lng + 0.0005; // 경도 약간 증가
-    return { lat: offsetLat, lng: offsetLng };
+  const ClickImageMarker = (recordId: string) => {
+    // 선택된 이미지 마커의 photoId를 받아와서 처리하는 함수
+    console.log('Click Image Marker:', recordId);
   };
-
-  const offsetPosition = getOffsetPosition();
-  // 경로 데이터 생성 (현재 위치와 offsetPosition을 포함)
-  const polylinePath =
-    currentPosition && offsetPosition ? [currentPosition, offsetPosition] : [];
 
   return (
     <>
@@ -156,22 +194,22 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
               mapInstance={mapInstance.current}
             />
             {/* 이미지 마커 */}
-            {offsetPosition && (
+            {photos.map((photo) => (
               <ImageMarker
-                position={offsetPosition}
+                key={photo.photoId} // 고유한 key 추가
+                position={{ lat: photo.lat, lng: photo.lng }}
                 mapInstance={mapInstance.current}
-                imageSrc="https://images.pexels.com/photos/29358898/pexels-photo-29358898.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load" // 테스트 이미지 경로
-                isSelect={true} // 선택된 상태 아님
+                imageSrc={photo.url} // 테스트 이미지 경로
+                isSelect={photo.isSelect} // 선택된 상태 아님
+                ClickImageMarker={() => {
+                  ClickImageMarker(photo.recordId);
+                  togglePhotoSelection(photo.photoId);
+                }} // 클릭 이벤트 추가
               />
-            )}
-            {/* 경로 표시 (Polyline) */}
-            {polylinePath.length > 1 && (
-              <Polyline path={polylinePath} mapInstance={mapInstance.current} />
-            )}
+            ))}
           </>
         )}
       </div>
-
       {/* 현재 위치 버튼 */}
       <CurrentLocationButton onMoveToCurrentLocation={moveToCurrentLocation} />
       {/* 검색 버튼 */}
