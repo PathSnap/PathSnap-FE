@@ -32,10 +32,7 @@ const PackTripsModal: React.FC = () => {
           2024년 5월 <IconRight />
         </div>
         <DaysOfWeek className="h-11 mb-2" />
-        <CalendarBody
-          dateInfo={{ year: 2024, month: 11 }}
-          className="h-[42px]"
-        />
+        <CalendarBody className="h-[42px]" />
       </div>
       <div className={'w-full flex gap-4'}>
         <button
