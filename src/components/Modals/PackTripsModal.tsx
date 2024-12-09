@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ModalWrapper from './ModalWrapper';
 import IconModalClose from '../../icons/IconModalClose';
 import { DaysOfWeek } from '../Profile/Calendar';
@@ -7,13 +7,18 @@ import IconReset from '../../icons/ProfilePage/IconReset';
 import useCalendarInfoStore from '../../stores/Profiles/CalendarInfo';
 import IconLeft from '../../icons/ProfilePage/IconLeft';
 import { calculateDate, formattedDate } from '../../utils/formatDate';
+import Input from '../Input';
 
 const PackTripsModal: React.FC = () => {
   const [tripDate, setTripDate] = useState({
     startDate: '',
     endDate: '',
   });
-  const { selectedDate, setSelectedDate } = useCalendarInfoStore(
+  const [packTripTitle, setPackTripTitle] = useState('');
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const { selectedDate, setSelectedDate, savePackTrips } = useCalendarInfoStore(
     (state) => state
   );
   const { selectedYear, selectedMonth } = selectedDate;
@@ -39,16 +44,48 @@ const PackTripsModal: React.FC = () => {
       }
     }
   };
+  const handleClickPackBtn = () => {
+    setIsSubmit(true);
+    if (
+      packTripTitle === '' ||
+      tripDate.startDate === '' ||
+      tripDate.endDate === ''
+    ) {
+      if (packTripTitle === '') {
+        setIsError(true);
+      }
+      return;
+    }
+
+    savePackTrips({
+      userId: localStorage.getItem('userId') || '',
+      packTripName: packTripTitle,
+      dates: [tripDate.startDate, tripDate.endDate],
+    });
+  };
+
+  useEffect(() => {
+    isSubmit && packTripTitle && setIsError(false);
+  }, [isSubmit, packTripTitle]);
 
   return (
     <ModalWrapper classProp="w-[330px] h-fit bg-white rounded-[20px] px-[30px] pt-5 pb-7 gap-6 text-second">
       <ModalHeader title="여행 묶기" />
+      {/* TODO : 디자인 수정 */}
+      <Input
+        label="여행 제목"
+        placeholder="여행 제목을 입력해주세요."
+        value={packTripTitle}
+        setValue={setPackTripTitle}
+        isSubmit={isSubmit}
+        error={isError}
+        errorStyle="text-xxs"
+      />
       <div className={'w-full flex gap-4'}>
         <SelectDateButton text="시작" tripDate={tripDate.startDate} />
         <SelectDateButton text="끝" tripDate={tripDate.endDate} />
       </div>
       <div className={'w-full'}>
-        {/*  */}
         <div className={'w-full flex gap-[14px] justify-center items-center'}>
           <IconLeft onClick={() => handleClickArrow(true)} />
           <div className={'font-semibold'}>
@@ -58,7 +95,6 @@ const PackTripsModal: React.FC = () => {
         </div>
 
         <DaysOfWeek className="h-11 mb-2 text-xs" />
-        {/* <CalendarBody className="h-[42px]" /> */}
         <CalendarBody tripDate={tripDate} setTripDate={setTripDate} />
       </div>
       <div className={'w-full flex gap-4'}>
@@ -71,8 +107,15 @@ const PackTripsModal: React.FC = () => {
           <IconReset />
           초기화
         </button>
-        <button className={'w-full h-11 is-active-green-button'}>
-          여행 {calculateDate(tripDate.startDate, tripDate.endDate)}일 묶기
+        <button
+          onClick={handleClickPackBtn}
+          className={'w-full h-11 is-active-green-button'}
+        >
+          여행
+          {tripDate.startDate && tripDate.endDate
+            ? calculateDate(tripDate.startDate, tripDate.endDate)
+            : 0}
+          일 묶기
         </button>
       </div>
     </ModalWrapper>

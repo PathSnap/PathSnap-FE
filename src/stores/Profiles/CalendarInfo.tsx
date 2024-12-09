@@ -1,27 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../../utils/api';
 
-// "calendar": [
-//     {
-//       "recordId": "string",
-//       "startDate": "2024-12-09T11:37:04.438Z",
-//       "recordName": "string",
-//       "image": {
-//         "imageId": "string",
-//         "url": "string"
-//       }
-//     }
-//   ],
-//   "newTrips": [
-//     {
-//       "packTripId": "string",
-//       "packTripName": "string",
-//       "dates": [
-//         "string"
-//       ]
-//     }
-//   ]
-
 export type SelectedDate = {
   selectedYear: number;
   selectedMonth: number;
@@ -42,12 +21,20 @@ type PackTrip = {
   packTripName: string;
   dates: string[];
 };
+
+type PackTripReq = {
+  userId: string;
+  packTripName: string;
+  dates: string[];
+};
+
 interface CalendarInfoStore {
   selectedDate: SelectedDate;
   setSelectedDate: (newDate: Partial<SelectedDate>) => void;
   searchMonthTrip: (selectedDate: SelectedDate) => void;
   trips: Trip[];
   packTrips: PackTrip[];
+  savePackTrips: (pakcTripReq: PackTripReq) => void;
 }
 
 const useCalendarInfoStore = create<CalendarInfoStore>((set) => ({
@@ -76,6 +63,9 @@ const useCalendarInfoStore = create<CalendarInfoStore>((set) => ({
   },
   trips: [],
   packTrips: [],
+  savePackTrips: async (packTripReq: PackTripReq) => {
+    api.post('/profiles/trips/profiles/trips', packTripReq);
+  },
 }));
 
 export default useCalendarInfoStore;
