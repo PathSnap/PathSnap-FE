@@ -15,11 +15,21 @@ interface userInfo {
     },
   ];
 }
+
+interface updateUserInfo {
+  userId: string;
+  userName: string;
+  birthDate: string;
+  phoneNumber: string;
+  address: string;
+  imageId?: string;
+}
+
 interface UserInfoStoreState {
   userInfo: userInfo;
   setUserInfo: (userInfo: userInfo) => void;
   getUserInfo: () => Promise<void>;
-  updateUserInfo: (userInfo: userInfo) => Promise<void>;
+  updateUserInfo: (userInfo: updateUserInfo) => Promise<void>;
 }
 
 const useUserInfoStore = create<UserInfoStoreState>((set) => ({
@@ -50,18 +60,15 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
       console.error('프로필 불러오기 실패:', error);
     }
   },
-  updateUserInfo: async (userInfo: userInfo): Promise<void> => {
+  updateUserInfo: async (userInfo: updateUserInfo): Promise<void> => {
     try {
       const filteredUserInfo = { ...userInfo };
       // imageId 없을 경우 빼서 요청 보내기
-      if (!filteredUserInfo.images || !filteredUserInfo.images[0].imageId) {
-        delete filteredUserInfo.images;
+      if (!filteredUserInfo.imageId) {
+        delete filteredUserInfo.imageId;
       }
 
-      const res: any = await api.patch('/profiles', {
-        userId: localStorage.getItem('userId'),
-        userInfo: filteredUserInfo,
-      });
+      const res: any = await api.patch('/profiles', filteredUserInfo);
 
       set({ userInfo: res.data });
       console.log('프로필 저장 성공:', res.data);

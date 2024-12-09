@@ -50,6 +50,7 @@ const ShowProfile: React.FC = () => {
     setIsDropdownOpen((prev) => !prev);
   };
   const router = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태 관리
 
   //   드롭다운 아이템들
   const dropdownItems = [
@@ -75,8 +76,18 @@ const ShowProfile: React.FC = () => {
   };
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+    const fetchData = async () => {
+      await getUserInfo();
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [getUserInfo]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <BoxWrapper className="flex flex-col gap-5 p-4">
       {/* 사진, 이름, 이메일 */}
@@ -111,7 +122,7 @@ const ShowProfile: React.FC = () => {
           <IconBirth />
           <div>{userInfo.birthDate}</div>
         </div>
-        <div className={'flex gap-1 items-center'}>
+        <div className={'flex gap-1 items-center break-keep'}>
           <IconMyHome />
           <div>{userInfo.address || '주소 미등록'}</div>
         </div>
