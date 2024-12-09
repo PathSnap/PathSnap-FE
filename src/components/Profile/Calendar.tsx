@@ -99,7 +99,7 @@ export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({ className = '' }) => {
       {DAYS.map((day, index) => (
         <div
           key={index}
-          className={'w-full text-center text-second-light font-medium'}
+          className={`w-full text-center text-second-light font-medium ${index === 0 ? 'text-[#FF9292]' : ''} ${index === DAYS.length - 1 ? 'text-[#61C2FF]' : ''}`}
         >
           {day}
         </div>
