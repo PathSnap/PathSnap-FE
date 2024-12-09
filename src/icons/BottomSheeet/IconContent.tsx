@@ -14,15 +14,14 @@ const IconContent: React.FC<IconContentProps> = ({ onClick }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g filter="url(#filter0_d_602_5456)">
+      <g filter="url(#filter0_d_975_4793)">
         <rect
           x="6"
           y="6"
           width="24"
           height="24"
           rx="4"
-          fill="white"
-          fillOpacity="0.5"
+          fill="#E8E8E8"
           shapeRendering="crispEdges"
         />
         <path
@@ -46,7 +45,7 @@ const IconContent: React.FC<IconContentProps> = ({ onClick }) => {
       </g>
       <defs>
         <filter
-          id="filter0_d_602_5456"
+          id="filter0_d_975_4793"
           x="0"
           y="0"
           width="36"
@@ -71,12 +70,12 @@ const IconContent: React.FC<IconContentProps> = ({ onClick }) => {
           <feBlend
             mode="normal"
             in2="BackgroundImageFix"
-            result="effect1_dropShadow_602_5456"
+            result="effect1_dropShadow_975_4793"
           />
           <feBlend
             mode="normal"
             in="SourceGraphic"
-            in2="effect1_dropShadow_602_5456"
+            in2="effect1_dropShadow_975_4793"
             result="shape"
           />
         </filter>
