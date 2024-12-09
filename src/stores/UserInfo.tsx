@@ -6,12 +6,15 @@ interface userInfo {
   birthDate: string;
   phoneNumber: string;
   address: string;
+  lat: number;
+  lng: number;
   imageId?: string;
 }
 interface UserInfoStoreState {
   userInfo: userInfo;
   setUserInfo: (userInfo: userInfo) => void;
   updateUserInfo: (userInfo: userInfo) => Promise<void>;
+  getUserInfo: () => Promise<void>;
 }
 
 const useUserInfoStore = create<UserInfoStoreState>((set) => ({
@@ -19,6 +22,8 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
     userName: '',
     birthDate: '',
     phoneNumber: '',
+    lat: 0,
+    lng: 0,
     address: '',
     imageId: '',
   },
@@ -42,6 +47,18 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
       console.log('프로필 저장 성공:', res.data);
     } catch (error) {
       console.error('프로필 저장 실패:', error);
+    }
+  },
+  getUserInfo: async () => {
+    try {
+      const res: any = await api.get('/profiles', {
+        params: {
+          userId: localStorage.getItem('userId'),
+        },
+      });
+      set({ userInfo: res.data });
+    } catch (error) {
+      console.error('프로필 정보 불러오기 실패:', error);
     }
   },
 }));

@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MainMarker from './marker/CustomMainMarker';
+import HomeMarker from './marker/CustomHomeMarker';
 import ImageMarker from './marker/CustomImageMarker';
 // import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
 import SerchButton from '../SerchButton';
 import usePhotoStore from '../../../stores/PhotoStore';
+import useUserInfoStore from '../../../stores/UserInfo';
 
 interface CenterLocationProps {
   centerLat?: number;
@@ -20,7 +22,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
   const { togglePhotoSelection, searchPhotos, photos } = usePhotoStore();
-
+  const { getUserInfo, userInfo } = useUserInfoStore();
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
@@ -75,6 +77,9 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     intervalId.current = setInterval(() => {
       saveCurrentPosition();
     }, 3000);
+
+    //현재 집 위치 저장
+    getUserInfo();
 
     //지도 초기화 함수
     const initializeMap = async () => {
@@ -191,6 +196,11 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
             {/* 현재 위치 마커 */}
             <MainMarker
               position={currentPosition}
+              mapInstance={mapInstance.current}
+            />
+            {/* 홈 마커 */}
+            <HomeMarker
+              position={{ lat: userInfo.lat, lng: userInfo.lng }}
               mapInstance={mapInstance.current}
             />
             {/* 이미지 마커 */}
