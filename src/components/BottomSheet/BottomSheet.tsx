@@ -86,6 +86,14 @@ const BottomSheet2: React.FC = () => {
     }
   };
 
+  const handleClickCancelBtn = () => {
+    setTitle(record.recordName);
+    setTravelDate(recordDate);
+    setCopyFriends(_.cloneDeep(friends));
+    setCopyRecord(_.cloneDeep(record));
+    setState('NONE');
+  };
+
   useEffect(() => {
     getRecordInfo();
   }, []);
@@ -125,11 +133,17 @@ const BottomSheet2: React.FC = () => {
       {currentState === 'EDIT' && isBottomSheetOpen && (
         <div
           className={
-            'absolute -bottom-20 h-[110px] px-[22px] bg-white pt-4 w-full z-[60] shadow-xs'
+            'fixed bottom-0 h-[110px] px-[22px] bg-white w-full z-[60] shadow-xs text-lg flex gap-4 justify-center items-center'
           }
         >
           <button
-            className={'is-active-green-button w-full h-[58px] text-lg'}
+            onClick={handleClickCancelBtn}
+            className={'gray-button w-full h-[58px]'}
+          >
+            취소
+          </button>
+          <button
+            className={'is-active-green-button w-full h-[58px] '}
             onClick={() => handleClickSaveBtn()}
           >
             완료
