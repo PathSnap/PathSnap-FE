@@ -85,11 +85,13 @@ const CalendarHeader: React.FC = () => {
 interface DaysOfWeekProps {
   className?: string;
 }
-export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({ className = '' }) => {
+export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({
+  className = 'h-14',
+}) => {
   const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   return (
     <div
-      className={`w-full h-14 grid grid-cols-7 place-items-center relative ${className}`}
+      className={`w-full grid grid-cols-7 place-items-center relative ${className}`}
     >
       <div
         className={

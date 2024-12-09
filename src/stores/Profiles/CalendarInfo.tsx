@@ -1,15 +1,53 @@
 import { create } from 'zustand';
 import { api } from '../../utils/api';
 
+// "calendar": [
+//     {
+//       "recordId": "string",
+//       "startDate": "2024-12-09T11:37:04.438Z",
+//       "recordName": "string",
+//       "image": {
+//         "imageId": "string",
+//         "url": "string"
+//       }
+//     }
+//   ],
+//   "newTrips": [
+//     {
+//       "packTripId": "string",
+//       "packTripName": "string",
+//       "dates": [
+//         "string"
+//       ]
+//     }
+//   ]
+
 export type SelectedDate = {
   selectedYear: number;
   selectedMonth: number;
 };
 
+type Trip = {
+  recordId: string;
+  startDate: string;
+  recordName: string;
+  image: {
+    imageId: string;
+    url: string;
+  };
+};
+
+type PackTrip = {
+  packTripId: string;
+  packTripName: string;
+  dates: string[];
+};
 interface CalendarInfoStore {
   selectedDate: SelectedDate;
   setSelectedDate: (newDate: Partial<SelectedDate>) => void;
   searchMonthTrip: (selectedDate: SelectedDate) => void;
+  trips: Trip[];
+  packTrips: PackTrip[];
 }
 
 const useCalendarInfoStore = create<CalendarInfoStore>((set) => ({
@@ -24,16 +62,20 @@ const useCalendarInfoStore = create<CalendarInfoStore>((set) => ({
         ...newDate,
       },
     })),
-  searchMonthTrip: (selectedDate: SelectedDate) => {
+  searchMonthTrip: async (selectedDate: SelectedDate) => {
     try {
       set({ selectedDate: selectedDate });
-      api.get(
+      const res: any = await api.get(
         `/profiles/calendar/${localStorage.getItem('userId')}/${selectedDate.selectedMonth}`
       );
+      set({ trips: res.calendar });
+      set({ packTrips: res.newTrips });
     } catch (error) {
       console.error(error);
     }
   },
+  trips: [],
+  packTrips: [],
 }));
 
 export default useCalendarInfoStore;

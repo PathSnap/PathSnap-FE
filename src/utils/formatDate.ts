@@ -1,9 +1,12 @@
-export const formattedDate = () => {
-  const now = new Date(Date.now());
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+export const formattedDate = (year?: number, month?: number, day?: number) => {
+  if (!year || !month || !day) {
+    const now = new Date();
+    year = now.getFullYear();
+    month = now.getMonth() + 1;
+    day = now.getDate();
+  }
+
+  return `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 };
 
 export const calculateTime = (startTime: string, endTime: string): string => {
@@ -53,4 +56,14 @@ export const formattedRealTime = (): string => {
 
   console.log(formattedTimeStamp);
   return formattedTimeStamp;
+};
+
+export const calculateDate = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const diffInMilliseconds = end.getTime() - start.getTime();
+  const diffInDays = Math.floor(diffInMilliseconds / 1000 / 60 / 60 / 24);
+
+  return `${diffInDays + 1}`;
 };
