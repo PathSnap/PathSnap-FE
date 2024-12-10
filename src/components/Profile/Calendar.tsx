@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoxWrapper } from '../../pages/ProfilePage';
 import IconLeft from '../../icons/ProfilePage/IconLeft';
 import IconRight from '../../icons/ProfilePage/IconRight';
 import useModalStore from '../../stores/Modals/ModalStore';
+import useCalendarInfoStore from '../../stores/Profiles/CalendarInfo';
 
 const Calendar: React.FC = () => {
-  const [dateInfo, setDateInfo] = React.useState({
-    year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
-  });
+  const { searchMonthTrip, selectedDate } = useCalendarInfoStore(
+    (state) => state
+  );
+
+  useEffect(() => {
+    searchMonthTrip(selectedDate);
+  }, [selectedDate]);
 
   return (
     <div className={'flex flex-col gap-[14px]'}>
       <div className={'font-semibold'}>캘린더</div>
       <BoxWrapper className="flex flex-col px-4 py-6 items-center gap-5 relative">
-        <CalendarHeader dateInfo={dateInfo} setDateInfo={setDateInfo} />
+        <CalendarHeader />
         <DaysOfWeek />
-        <CalendarBody dateInfo={dateInfo} />
+        <CalendarBody />
       </BoxWrapper>
       <CombineDaysBtn />
     </div>
@@ -25,36 +29,32 @@ const Calendar: React.FC = () => {
 
 export default Calendar;
 
-interface CalendarHeaderProps {
-  dateInfo: {
-    year: number;
-    month: number;
-  };
-  setDateInfo: React.Dispatch<
-    React.SetStateAction<{ year: number; month: number }>
-  >;
-}
+const CalendarHeader: React.FC = () => {
+  const { selectedDate, setSelectedDate } = useCalendarInfoStore(
+    (state) => state
+  );
 
-const CalendarHeader: React.FC<CalendarHeaderProps> = ({
-  dateInfo,
-  setDateInfo,
-}) => {
-  const { year, month } = dateInfo;
+  const { selectedYear, selectedMonth } = selectedDate;
   const handleClickArrow = (isLeft: boolean) => {
     if (isLeft) {
-      setDateInfo((prev) => {
-        if (prev.month === 1) {
-          return { year: prev.year - 1, month: 12 };
-        }
-        return { year: prev.year, month: prev.month - 1 };
-      });
+      if (selectedMonth === 1) {
+        setSelectedDate({ selectedYear: selectedYear - 1, selectedMonth: 12 });
+      } else {
+        setSelectedDate({
+          selectedYear: selectedYear,
+          selectedMonth: selectedMonth - 1,
+        });
+      }
     } else {
-      setDateInfo((prev) => {
-        if (prev.month === 12) {
-          return { year: prev.year + 1, month: 1 };
-        }
-        return { year: prev.year, month: prev.month + 1 };
-      });
+      // 오른쪽 화살표 클릭
+      if (selectedMonth === 12) {
+        setSelectedDate({ selectedYear: selectedYear + 1, selectedMonth: 1 });
+      } else {
+        setSelectedDate({
+          selectedYear: selectedYear,
+          selectedMonth: selectedMonth + 1,
+        });
+      }
     }
   };
 
@@ -70,7 +70,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         onClick={handleClickMonthPicker}
         className={`text-xxl font-semibold ${isMonthPickerOpen && 'text-[#77CEBD]'}`}
       >
-        {year}년 {month}월
+        {selectedYear}년 {selectedMonth}월
       </div>
       <IconRight onClick={() => handleClickArrow(false)} />
       {isMonthPickerOpen && (
@@ -85,11 +85,13 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 interface DaysOfWeekProps {
   className?: string;
 }
-export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({ className = '' }) => {
+export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({
+  className = 'h-14',
+}) => {
   const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   return (
     <div
-      className={`w-full h-14 grid grid-cols-7 place-items-center relative ${className}`}
+      className={`w-full grid grid-cols-7 place-items-center relative ${className}`}
     >
       <div
         className={
@@ -99,7 +101,7 @@ export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({ className = '' }) => {
       {DAYS.map((day, index) => (
         <div
           key={index}
-          className={'w-full text-center text-second-light font-medium'}
+          className={`w-full text-center text-second-light font-medium ${index === 0 ? 'text-[#FF9292]' : ''} ${index === DAYS.length - 1 ? 'text-[#61C2FF]' : ''}`}
         >
           {day}
         </div>
@@ -109,23 +111,20 @@ export const DaysOfWeek: React.FC<DaysOfWeekProps> = ({ className = '' }) => {
 };
 
 interface CalendarBodyProps {
-  dateInfo: {
-    year: number;
-    month: number;
-  };
   className?: string;
 }
 export const CalendarBody: React.FC<CalendarBodyProps> = ({
-  dateInfo,
   className = 'h-[54px]',
 }) => {
-  const { year, month } = dateInfo;
+  const { selectedDate } = useCalendarInfoStore((state) => state);
+
+  const { selectedYear, selectedMonth } = selectedDate;
 
   // 해당 달의 1일의 요일
-  const firstDay = new Date(year, month - 1, 1).getDay();
+  const firstDay = new Date(selectedYear, selectedMonth - 1, 1).getDay();
 
   // 해당 달의 마지막 날
-  const lastDay = new Date(year, month, 0).getDate();
+  const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
 
   const renderDays = () => {
     const daysOfMonth = [];

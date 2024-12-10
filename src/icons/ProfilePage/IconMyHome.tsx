@@ -1,6 +1,7 @@
 const IconMyHome = () => {
   return (
     <svg
+      className={'flex-shrink-0'}
       width="24"
       height="24"
       viewBox="0 0 24 24"
