@@ -20,8 +20,13 @@ import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useRouteRecordStore from '../../stores/RouteRecord';
 
 const BottomSheet2: React.FC = () => {
-  const { sheetRef, headerRef, isBottomSheetOpen, setIsBottomSheetOpen } =
-    useBottomSheet();
+  const {
+    sheetRef,
+    headerRef,
+    isBottomSheetOpen,
+    setIsBottomSheetOpen,
+    setCanHandleBottomSheet,
+  } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore((state) => state);
   const {
     record,
@@ -87,11 +92,15 @@ const BottomSheet2: React.FC = () => {
     }
   };
 
-  const handleClickCancelBtn = () => {
+  const intiInfo = () => {
     setTitle(record.recordName);
     setTravelDate(recordDate);
     setCopyFriends(_.cloneDeep(friends));
     setCopyRecord(_.cloneDeep(record));
+  };
+
+  const handleClickCancelBtn = () => {
+    intiInfo();
     setState('NONE');
   };
 
@@ -105,6 +114,9 @@ const BottomSheet2: React.FC = () => {
         console.log(res);
         if (res?.group) await searchFriendsAtRecord(location.state.recordId);
         setIsBottomSheetOpen(true);
+        setCanHandleBottomSheet(true);
+      } else {
+        getRecordInfo();
       }
     };
 
@@ -112,10 +124,7 @@ const BottomSheet2: React.FC = () => {
   }, [location?.state?.recordId]);
 
   useEffect(() => {
-    setTitle(record.recordName);
-    setTravelDate(recordDate);
-    setCopyFriends(_.cloneDeep(friends));
-    setCopyRecord(_.cloneDeep(record));
+    intiInfo();
   }, [record, recordDate]);
 
   return (

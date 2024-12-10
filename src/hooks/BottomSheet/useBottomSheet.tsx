@@ -18,6 +18,7 @@ export function useBottomSheet() {
   const headerRef = useRef<HTMLDivElement>(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
+  const [canHandleBottomSheet, setCanHandleBottomSheet] = useState(false);
 
   const metrics = useRef<BottomSheetMetrics>({
     touchStart: {
@@ -32,7 +33,8 @@ export function useBottomSheet() {
 
   useEffect(() => {
     // 기록 중일 때만 바텀시트 열리도록
-    if (!recordingInfo.isRecording && !isBottomSheetOpen) return;
+    if (!recordingInfo.isRecording && !canHandleBottomSheet) return;
+
     const handleTouchStart = (e: TouchEvent) => {
       const { touchStart } = metrics.current;
 
@@ -85,6 +87,7 @@ export function useBottomSheet() {
         // 닫기
         if (touchMove.movingDirection === 'down') {
           sheetRef.current!.style.setProperty('transform', 'translateY(0)');
+          setIsBottomSheetOpen(false);
         }
         // 열기
         if (touchMove.movingDirection === 'up') {
@@ -92,6 +95,7 @@ export function useBottomSheet() {
             'transform',
             `translateY(-${MAX_Y - MIN_Y}px)`
           );
+          setIsBottomSheetOpen(true);
         }
       }
 
@@ -111,6 +115,13 @@ export function useBottomSheet() {
     headerRef.current?.addEventListener('touchmove', handleTouchMove);
     headerRef.current?.addEventListener('touchend', handleTouchEnd);
 
+    if (isBottomSheetOpen) {
+      sheetRef.current!.style.setProperty(
+        'transform',
+        `translateY(-${MAX_Y - MIN_Y}px)`
+      );
+    }
+
     return () => {
       headerRef.current?.removeEventListener('touchstart', handleTouchStart);
       headerRef.current?.removeEventListener('touchmove', handleTouchMove);
@@ -118,5 +129,11 @@ export function useBottomSheet() {
     };
   }, [recordingInfo.isRecording, isBottomSheetOpen]);
 
-  return { sheetRef, headerRef, isBottomSheetOpen, setIsBottomSheetOpen };
+  return {
+    sheetRef,
+    headerRef,
+    isBottomSheetOpen,
+    setIsBottomSheetOpen,
+    setCanHandleBottomSheet,
+  };
 }
