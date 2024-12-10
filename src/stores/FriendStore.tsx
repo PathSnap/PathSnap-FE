@@ -21,7 +21,7 @@ interface FriendStore {
   leader: Leader;
   friends: Friend[];
   setFriends: (friends: Friend[]) => void;
-  searchFriendsAtRecord: (recordId: string) => void;
+  searchFriendsAtRecord: (recordId: string) => Promise<void>;
   // 유저 검색
   searchResults: Friend[];
   setSearchResults: (friends: Friend[]) => void;

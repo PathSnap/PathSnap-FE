@@ -6,7 +6,7 @@ export type SelectedDate = {
   selectedMonth: number;
 };
 
-type Trip = {
+export type Trip = {
   recordId: string;
   startDate: string;
   recordName: string;

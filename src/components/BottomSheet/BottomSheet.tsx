@@ -7,7 +7,7 @@ import useRecordStore from '../../stores/RecordStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import useModalStore from '../../stores/Modals/ModalStore';
 import RouteRecord from './Records/RouteRecord';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import IconMenu from '../../icons/BottomSheeet/IconMenu';
 import IconEdit from '../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../icons/BottomSheeet/IconTrash';
@@ -20,7 +20,8 @@ import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useRouteRecordStore from '../../stores/RouteRecord';
 
 const BottomSheet2: React.FC = () => {
-  const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
+  const { sheetRef, headerRef, isBottomSheetOpen, setIsBottomSheetOpen } =
+    useBottomSheet();
   const { currentState, setState } = useEditRecordStore((state) => state);
   const {
     record,
@@ -94,9 +95,21 @@ const BottomSheet2: React.FC = () => {
     setState('NONE');
   };
 
+  // 프로필에서 바텀시트로 이동
+  const location = useLocation();
+
   useEffect(() => {
-    getRecordInfo();
-  }, []);
+    const getTravelInfo = async () => {
+      if (location?.state?.recordId) {
+        const res = await searchRecord(location.state.recordId);
+        console.log(res);
+        if (res?.group) await searchFriendsAtRecord(location.state.recordId);
+        setIsBottomSheetOpen(true);
+      }
+    };
+
+    getTravelInfo();
+  }, [location?.state?.recordId]);
 
   useEffect(() => {
     setTitle(record.recordName);

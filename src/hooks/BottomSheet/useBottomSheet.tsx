@@ -32,7 +32,7 @@ export function useBottomSheet() {
 
   useEffect(() => {
     // 기록 중일 때만 바텀시트 열리도록
-    if (!recordingInfo.isRecording) return;
+    if (!recordingInfo.isRecording && !isBottomSheetOpen) return;
     const handleTouchStart = (e: TouchEvent) => {
       const { touchStart } = metrics.current;
 
@@ -116,7 +116,7 @@ export function useBottomSheet() {
       headerRef.current?.removeEventListener('touchmove', handleTouchMove);
       headerRef.current?.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [recordingInfo.isRecording]);
+  }, [recordingInfo.isRecording, isBottomSheetOpen]);
 
-  return { sheetRef, headerRef, isBottomSheetOpen };
+  return { sheetRef, headerRef, isBottomSheetOpen, setIsBottomSheetOpen };
 }

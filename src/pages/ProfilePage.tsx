@@ -10,6 +10,7 @@ import IconLogout from '../icons/ProfilePage/IconLogout';
 import { useNavigate } from 'react-router';
 import Calendar from '../components/Profile/Calendar';
 import useUserInfoStore from '../stores/UserInfo';
+import useCalendarInfoStore, { Trip } from '../stores/Profiles/CalendarInfo';
 
 const ProfilePage: React.FC = () => {
   return (
@@ -132,28 +133,51 @@ const ShowProfile: React.FC = () => {
 };
 
 const TimeLine: React.FC = () => {
+  const { trips } = useCalendarInfoStore((state) => state);
+  const tripsLength = trips.length;
   return (
     <div className={'flex flex-col gap-[14px]'}>
       <div className={'font-semibold'}>
         타임라인
-        <span className={'pl-1.5 text-primary'}>17</span>
+        <span className={'pl-1.5 text-primary'}>{tripsLength}</span>
       </div>
-      <TimeLineItem />
+
+      {trips.map((trip) => {
+        return <TimeLineItem trip={trip} key={trip.recordId} />;
+      })}
     </div>
   );
 };
 
-const TimeLineItem: React.FC = () => {
+interface TimeLineProps {
+  trip: Trip;
+}
+
+const TimeLineItem: React.FC<TimeLineProps> = ({ trip }) => {
+  const router = useNavigate();
   return (
     <BoxWrapper className="grid grid-cols-[54px_auto_24px] gap-4 px-[18px] py-4 items-center">
-      <img src="/cute.png" className={'aspect-square rounded-2xl'} />
+      <img
+        src={trip.image?.url ?? 'src/icons/Logo.svg'}
+        className={'aspect-square rounded-2xl object-cover'}
+      />
       <div className={'flex flex-col gap-1.5 text-sm'}>
-        <div className={'font-bold'}>독서모임 여행</div>
+        <div className={'font-bold'}>{trip.recordName}</div>
         <div>
-          2024.02.12 ~ 2024.02.15<span className={'pl-3'}>8명</span>
+          {trip.startDate.slice(0, 10).replaceAll('-', '.')}
+          {/* 2024.02.12 ~ 2024.02.15 */}
+          {/* <span className={'pl-3'}>8명</span> */}
         </div>
       </div>
-      <IconRight />
+      <IconRight
+        onClick={() => {
+          router('/', {
+            state: {
+              recordId: trip.recordId,
+            },
+          });
+        }}
+      />
     </BoxWrapper>
   );
 };
