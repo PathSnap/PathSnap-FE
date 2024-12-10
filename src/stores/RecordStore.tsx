@@ -19,6 +19,7 @@ export type photoRecord = {
   photoDate: string;
   lat: number;
   lng: number;
+  isSelect: boolean;
 };
 
 type image = {
@@ -79,6 +80,7 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       const recordNum =
         (res.photoRecords?.length ?? 0) + (res.routeRecords?.length ?? 1);
       set({ seq: recordNum });
+      console.log(res);
       return res;
     } catch (error) {
       console.error('Error fetching record:', error);

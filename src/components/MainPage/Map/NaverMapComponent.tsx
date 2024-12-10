@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import MainMarker from './marker/CustomMainMarker';
 import HomeMarker from './marker/CustomHomeMarker';
 import ImageMarker from './marker/CustomImageMarker';
-// import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
+import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
-import SerchButton from '../SerchButton';
+import SelectBox from '../../../components/MainPage/SelectBox';
+import SearchButton from '../SerchButton';
 import usePhotoStore from '../../../stores/PhotoStore';
 import useUserInfoStore from '../../../stores/UserInfo';
+import useRecordStore from '../../../stores/RecordStore';
 
 interface CenterLocationProps {
   centerLat?: number;
@@ -21,13 +23,19 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null); // 지도 인스턴스를 저장할 ref
+  const [isSearchDetailRecord, setIsSerachDetailRecord] =
+    useState<boolean>(false);
+  const [selectedBoxIndex, setSelectedBoxIndex] = useState<number>(0); // 셀렉트 박스 상태 관리
   const { togglePhotoSelection, searchPhotos, photos } = usePhotoStore();
   const { getUserInfo, userInfo } = useUserInfoStore();
+  const { searchRecord, record } = useRecordStore();
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
+
+  //현재 위치 저장 함수
   const saveCurrentPosition = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -151,7 +159,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       // 3초 동안 로그가 이미 제한되어 있다면 바로 리턴
       return;
     }
-    console.log('Center changed to:', newCenter);
+    // console.log('Center changed to:', newCenter);
     // 최대 반경 (줌 레벨 6)과 최소 반경 (줌 레벨 21) 정의
     const maxRadius = 6; // 줌 레벨 6
     const minRadius = 0.0002; // 줌 레벨 21
@@ -180,9 +188,32 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     }
   };
 
-  const ClickImageMarker = (recordId: string) => {
+  const ClickImageMarker = (
+    recordId: string,
+    photoId: string,
+    isSelect: boolean,
+    isDetailPhoto: boolean
+  ) => {
     // 선택된 이미지 마커의 photoId를 받아와서 처리하는 함수
-    console.log('Click Image Marker:', recordId);
+    // console.log('Click Image Marker:', recordId);
+    //현재위치
+    console.log('currentPosition:', currentPosition);
+    setIsSerachDetailRecord(true);
+
+    if (!isDetailPhoto) {
+      if (!isSelect) {
+        searchRecord(recordId);
+        record.photoRecords?.map((photo) => {
+          if (photo.photoId !== photoId) {
+            togglePhotoSelection(photo.photoId);
+          }
+        });
+      } else {
+        setIsSerachDetailRecord(false);
+      }
+    } else {
+      setIsSerachDetailRecord(false);
+    }
   };
 
   return (
@@ -198,34 +229,80 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
               position={currentPosition}
               mapInstance={mapInstance.current}
             />
-            {/* 홈 마커 */}
-            {userInfo && userInfo.lat && userInfo.lng && (
+            {/* 집 위치 마커 */}
+            {userInfo?.lat && userInfo?.lng && (
               <HomeMarker
                 position={{ lat: userInfo.lat, lng: userInfo.lng }}
                 mapInstance={mapInstance.current}
               />
             )}
-            {/* 이미지 마커 */}
-            {photos.map((photo) => (
-              <ImageMarker
-                key={photo.photoId} // 고유한 key 추가
-                position={{ lat: photo.lat, lng: photo.lng }}
-                mapInstance={mapInstance.current}
-                imageSrc={photo.url} // 테스트 이미지 경로
-                isSelect={photo.isSelect} // 선택된 상태 아님
-                ClickImageMarker={() => {
-                  ClickImageMarker(photo.recordId);
-                  togglePhotoSelection(photo.photoId);
-                }} // 클릭 이벤트 추가
-              />
-            ))}
+            {/* 전체 조회 사진 마커 */}
+            {!isSearchDetailRecord &&
+              photos.map((photo) => (
+                <ImageMarker
+                  key={photo.photoId}
+                  position={{ lat: photo.lat, lng: photo.lng }}
+                  mapInstance={mapInstance.current}
+                  imageSrc={photo.url}
+                  isSelect={photo.isSelect}
+                  ClickImageMarker={() => {
+                    ClickImageMarker(
+                      photo.recordId,
+                      photo.photoId,
+                      photo.isSelect,
+                      false
+                    );
+                    togglePhotoSelection(photo.photoId);
+                  }}
+                />
+              ))}
+            {/* 상세 조회 마커 */}
+            {isSearchDetailRecord && record && (
+              <>
+                {record.routeRecords?.map((routeRecord) => (
+                  <Polyline
+                    key={routeRecord.routeId}
+                    path={routeRecord.coordinates.map((coordinate) => ({
+                      lat: coordinate.lat,
+                      lng: coordinate.lng,
+                    }))}
+                    mapInstance={mapInstance.current}
+                  />
+                ))}
+                {record.photoRecords?.map((photo) => (
+                  <ImageMarker
+                    key={photo.photoId}
+                    position={{ lat: photo.lat, lng: photo.lng }}
+                    mapInstance={mapInstance.current}
+                    imageSrc={photo.images?.[0]?.url}
+                    isSelect={photo.isSelect}
+                    ClickImageMarker={() => {
+                      ClickImageMarker(
+                        record.recordId,
+                        photo.photoId,
+                        photo.isSelect,
+                        true
+                      );
+                      togglePhotoSelection(photo.photoId);
+                    }}
+                  />
+                ))}
+              </>
+            )}
           </>
         )}
       </div>
       {/* 현재 위치 버튼 */}
       <CurrentLocationButton onMoveToCurrentLocation={moveToCurrentLocation} />
       {/* 검색 버튼 */}
-      <SerchButton />
+      <SearchButton />
+      {/* 조회/기록 셀렉트 박스 */}
+      <SelectBox
+        leftText="조회"
+        rightText="기록"
+        selectedBoxIndex={selectedBoxIndex}
+        setSelectedBoxIndex={setSelectedBoxIndex}
+      />
     </>
   );
 };

@@ -25,7 +25,7 @@ const usePhotoStore = create<PhotoStore>((set, get) => ({
     lat: number,
     radius: number
   ): Promise<void> => {
-    console.log('Searching photos:', lon, lat, radius);
+    // console.log('Searching photos:', lon, lat, radius);
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -60,7 +60,7 @@ const usePhotoStore = create<PhotoStore>((set, get) => ({
         const limitedPhotos = mergedPhotos.slice(-MAX_PHOTOS);
 
         set({ photos: limitedPhotos });
-        console.log('Fetched photos:', limitedPhotos);
+        // console.log('Fetched photos:', limitedPhotos);
       } else {
         console.error('Unexpected API response:', res);
       }
