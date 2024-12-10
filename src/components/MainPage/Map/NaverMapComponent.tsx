@@ -199,10 +199,12 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
               mapInstance={mapInstance.current}
             />
             {/* 홈 마커 */}
-            <HomeMarker
-              position={{ lat: userInfo.lat, lng: userInfo.lng }}
-              mapInstance={mapInstance.current}
-            />
+            {userInfo && userInfo.lat && userInfo.lng && (
+              <HomeMarker
+                position={{ lat: userInfo.lat, lng: userInfo.lng }}
+                mapInstance={mapInstance.current}
+              />
+            )}
             {/* 이미지 마커 */}
             {photos.map((photo) => (
               <ImageMarker

@@ -43,20 +43,21 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
         userInfo: filteredUserInfo,
       });
 
-      set({ userInfo: res.data });
-      console.log('프로필 저장 성공:', res.data);
+      set({ userInfo: res });
+      console.log('프로필 저장 성공:', res);
     } catch (error) {
       console.error('프로필 저장 실패:', error);
     }
   },
-  getUserInfo: async () => {
+  getUserInfo: async (): Promise<void> => {
     try {
-      const res: any = await api.get('/profiles', {
-        params: {
-          userId: localStorage.getItem('userId'),
-        },
-      });
-      set({ userInfo: res.data });
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error('User ID not found in localStorage');
+        return;
+      }
+      const res: any = await api.get(`/profiles/${userId}`);
+      set({ userInfo: res });
     } catch (error) {
       console.error('프로필 정보 불러오기 실패:', error);
     }

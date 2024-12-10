@@ -20,7 +20,11 @@ const MAX_PHOTOS = 20; // 최대 사진 개수
 
 const usePhotoStore = create<PhotoStore>((set, get) => ({
   photos: [],
-  searchPhotos: async (lon: number, lat: number, radius: number) => {
+  searchPhotos: async (
+    lon: number,
+    lat: number,
+    radius: number
+  ): Promise<void> => {
     console.log('Searching photos:', lon, lat, radius);
     try {
       const userId = localStorage.getItem('userId');
