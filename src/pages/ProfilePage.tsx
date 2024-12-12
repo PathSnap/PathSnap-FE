@@ -94,7 +94,7 @@ const ShowProfile: React.FC = () => {
       {/* 사진, 이름, 이메일 */}
       <div className={'grid grid-cols-[70px_auto_24px] gap-5 items-center'}>
         <img
-          src={userInfo.images?.[0]?.url || ''}
+          src={userInfo.images?.[0]?.url || 'src/icons/BasicProfile.svg'}
           className={'aspect-square rounded-2xl object-cover'}
         />
         <div className={'flex flex-col gap-1.5'}>

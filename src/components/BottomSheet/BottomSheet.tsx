@@ -396,7 +396,7 @@ const Profile: React.FC<ProfileProps> = ({ info, isLeader }) => {
       }
     >
       <img
-        src={info.url || ''}
+        src={info.url || 'src/icons/BasicProfile.svg'}
         className={'w-14 rounded-full aspect-square object-cover'}
       />
       <div className={'text-sm text-second'}>

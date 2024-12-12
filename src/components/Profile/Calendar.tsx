@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BoxWrapper } from '../../pages/ProfilePage';
 import IconLeft from '../../icons/ProfilePage/IconLeft';
 import IconRight from '../../icons/ProfilePage/IconRight';
@@ -63,6 +63,83 @@ const CalendarHeader: React.FC = () => {
     setIsMonthPickerOpen((prev) => !prev);
   };
 
+  const yearContainer = useRef<HTMLDivElement>(null);
+
+  const MONTHS: number[] = [];
+  const monthsList = () => {
+    for (let i = 1; i <= 12; i++) {
+      MONTHS.push(i);
+    }
+    return (
+      <div className={'grid grid-cols-3 grid-rows-4 gap-2.5'}>
+        {MONTHS.map((month, index) => (
+          <div
+            onClick={() => setSelectedDate({ selectedMonth: month })}
+            key={index}
+            className={`rounded-[10px] border grid place-items-center h-[50px] ${
+              selectedMonth === month
+                ? 'text-primary border-primary'
+                : 'text-[#D5D5D5]'
+            }`}
+          >
+            {month}월
+          </div>
+        ))}
+      </div>
+    );
+  };
+  const years = [selectedYear];
+  const YearList = () => {
+    for (let i = 1; i <= 10; i++) {
+      years.unshift(selectedYear - i);
+      years.push(selectedYear + i);
+    }
+
+    return (
+      <div
+        ref={yearContainer}
+        className={'overflow-x-scroll max-w-full flex gap-3'}
+      >
+        {years.map((year, index) => (
+          <div
+            onClick={() => setSelectedDate({ selectedYear: year })}
+            key={index}
+            className={`flex-shrink-0 text-xl ${
+              selectedYear === year
+                ? 'text-primary'
+                : selectedYear - 1 === year || selectedYear + 1 === year
+                  ? 'text-[#BDBDBB]'
+                  : 'text-[#EEEEEE]'
+            }`}
+          >
+            {year}년
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (yearContainer.current) {
+      const selectedIndex = years.indexOf(selectedYear);
+      const selectedElement = yearContainer.current.children[selectedIndex];
+      if (selectedElement) {
+        // container의 너비
+        const containerWidth = yearContainer.current.offsetWidth;
+        // 선택된 요소의 왼쪽 위치
+        const selectedElementOffset = (selectedElement as HTMLElement)
+          .offsetLeft;
+
+        // 스크롤 중앙 정렬 계산
+        const scrollPosition = selectedElementOffset - containerWidth / 2;
+        yearContainer.current.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth', // 부드럽게 스크롤
+        });
+      }
+    }
+  }, [selectedYear, years]);
+
   return (
     <div className={'w-full flex gap-[14px] justify-center items-center'}>
       <IconLeft onClick={() => handleClickArrow(true)} />
@@ -74,8 +151,11 @@ const CalendarHeader: React.FC = () => {
       </div>
       <IconRight onClick={() => handleClickArrow(false)} />
       {isMonthPickerOpen && (
-        <div className="w-full h-[calc(100%-56px)] overflow-y-auto absolute top-14 bg-white z-10 rounded-2xl">
-          {'이후 추가 예정>_<'}
+        <div className="w-full h-[calc(100%-80px)] absolute top-20 bg-white z-10 rounded-2xl">
+          <div className={'w-full h-full flex flex-col p-6 border-t gap-6'}>
+            {YearList()}
+            {monthsList()}
+          </div>
         </div>
       )}
     </div>
