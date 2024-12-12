@@ -65,6 +65,29 @@ const CalendarHeader: React.FC = () => {
 
   const yearContainer = useRef<HTMLDivElement>(null);
 
+  const MONTHS: number[] = [];
+  const monthsList = () => {
+    for (let i = 1; i <= 12; i++) {
+      MONTHS.push(i);
+    }
+    return (
+      <div className={'grid grid-cols-3 grid-rows-4 gap-2.5'}>
+        {MONTHS.map((month, index) => (
+          <div
+            onClick={() => setSelectedDate({ selectedMonth: month })}
+            key={index}
+            className={`rounded-[10px] border grid place-items-center h-[50px] ${
+              selectedMonth === month
+                ? 'text-primary border-primary'
+                : 'text-[#D5D5D5]'
+            }`}
+          >
+            {month}월
+          </div>
+        ))}
+      </div>
+    );
+  };
   const years = [selectedYear];
   const YearList = () => {
     for (let i = 1; i <= 10; i++) {
@@ -72,23 +95,28 @@ const CalendarHeader: React.FC = () => {
       years.push(selectedYear + i);
     }
 
-    return years.map((year, index) => {
-      return (
-        <div
-          onClick={() => setSelectedDate({ selectedYear: year, selectedMonth })}
-          key={index}
-          className={`flex-shrink-0 text-xl ${
-            selectedYear === year
-              ? 'text-primary'
-              : selectedYear - 1 === year || selectedYear + 1 === year
-                ? 'text-[#BDBDBB]'
-                : 'text-[#EEEEEE]'
-          }`}
-        >
-          {year}년
-        </div>
-      );
-    });
+    return (
+      <div
+        ref={yearContainer}
+        className={'overflow-x-scroll max-w-full flex gap-3'}
+      >
+        {years.map((year, index) => (
+          <div
+            onClick={() => setSelectedDate({ selectedYear: year })}
+            key={index}
+            className={`flex-shrink-0 text-xl ${
+              selectedYear === year
+                ? 'text-primary'
+                : selectedYear - 1 === year || selectedYear + 1 === year
+                  ? 'text-[#BDBDBB]'
+                  : 'text-[#EEEEEE]'
+            }`}
+          >
+            {year}년
+          </div>
+        ))}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -124,13 +152,9 @@ const CalendarHeader: React.FC = () => {
       <IconRight onClick={() => handleClickArrow(false)} />
       {isMonthPickerOpen && (
         <div className="w-full h-[calc(100%-80px)] absolute top-20 bg-white z-10 rounded-2xl">
-          <div className={'w-full h-full flex flex-col p-6 border-t'}>
-            <div
-              ref={yearContainer}
-              className={'overflow-x-scroll max-w-full flex gap-3'}
-            >
-              {YearList()}
-            </div>
+          <div className={'w-full h-full flex flex-col p-6 border-t gap-6'}>
+            {YearList()}
+            {monthsList()}
           </div>
         </div>
       )}
