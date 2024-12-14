@@ -11,8 +11,19 @@ import OAuth2Callback from './pages/OAuth2Callback';
 import ProfilePage from './pages/ProfilePage';
 import FooterLayout from './layouts/FooterLayout';
 import EditProfilePage from './pages/EditProfilePage';
+import useUserInfoStore from './stores/UserInfo';
+import { useEffect } from 'react';
 
 function App() {
+  const { setIsLogin } = useUserInfoStore();
+  const isLogin = useUserInfoStore((state) => state.isLogin);
+
+  useEffect(() => {
+    console.log(isLogin);
+  }, [isLogin]);
+  useEffect(() => {
+    localStorage.getItem('userId') ? setIsLogin(true) : setIsLogin(false);
+  }, []);
   return (
     <Router>
       <Routes>

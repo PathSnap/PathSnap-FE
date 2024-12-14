@@ -27,55 +27,34 @@ baseApi.interceptors.request.use(
   }
 );
 
-// baseApi.interceptors.response.use(
-//   async (response) => {
-//     // 302 상태 코드 처리
-//     if (response.status === 302) {
-//       try {
-//         const res = await baseApi.post('/reissue', null); // 토큰 갱신 요청
-//         const newAccessToken = res.data.accessToken;
+baseApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    console.log(error);
+    const originalRequest = error.config;
 
-//         // 새로운 Access Token 저장 및 요청 헤더 갱신
-//         localStorage.setItem('accessToken', newAccessToken);
+    // 401에러 -> access Token 만료 + refresh Token이 있는 경우
+    if (error.status === 401 && localStorage.getItem('refreshToken')) {
+      try {
+        const res = await baseApi.post('/reissue');
+        console.log(res);
+        const newAccessToken = res.data.accessToken;
 
-//         // 원래 요청 복구 및 재시도
-//         const originalRequest = response.config;
-//         originalRequest.headers.access = newAccessToken;
-//         return baseApi.request(originalRequest);
-//       } catch (error) {
-//         console.error('302 상태에서 토큰 갱신 실패:', error);
-//         return Promise.reject(error); // 에러 처리
-//       }
-//     }
+        if (newAccessToken) {
+          localStorage.setItem('accessToken', newAccessToken);
+          originalRequest.headers.access = newAccessToken;
+        }
 
-//     return response; // 성공 응답 그대로 반환
-//   },
-//   async (error) => {
-//     const originalRequest = error.config;
+        return baseApi.request(originalRequest);
+      } catch (error) {
+        console.error('401 상태에서 토큰 갱신 실패:', error);
+        return Promise.reject(error);
+      }
+    }
 
-//     // 401 상태 코드 처리 (토큰 갱신)
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
-//       try {
-//         const res = await baseApi.post('/reissue');
-//         const newAccessToken = res.data.accessToken;
-
-//         // 새로운 Access Token 저장 및 요청 헤더 갱신
-//         localStorage.setItem('accessToken', newAccessToken);
-//         originalRequest.headers.access = newAccessToken;
-
-//         // 원래 요청 재시도
-//         return baseApi.request(originalRequest);
-//       } catch (tokenError) {
-//         console.error('401 상태에서 토큰 갱신 실패:', tokenError);
-//         return Promise.reject(tokenError);
-//       }
-//     }
-
-//     console.error('응답 인터셉터 에러:', error);
-//     return Promise.reject(error);
-//   }
-// );
+    return Promise.reject(error);
+  }
+);
 
 // API 호출 객체
 export const api = {

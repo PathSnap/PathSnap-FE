@@ -26,6 +26,8 @@ interface updateUserInfo {
 }
 
 interface UserInfoStoreState {
+  isLogin: boolean;
+  setIsLogin: (isLogin: boolean) => void;
   userInfo: userInfo;
   setUserInfo: (userInfo: userInfo) => void;
   getUserInfo: () => Promise<void>;
@@ -33,6 +35,10 @@ interface UserInfoStoreState {
 }
 
 const useUserInfoStore = create<UserInfoStoreState>((set) => ({
+  isLogin: false,
+  setIsLogin: (isLogin) => {
+    set({ isLogin });
+  },
   userInfo: {
     userName: '',
     birthDate: '',

@@ -45,13 +45,13 @@ export const BoxWrapper: React.FC<BoxWrapperProps> = ({
 };
 
 const ShowProfile: React.FC = () => {
-  const { getUserInfo, userInfo } = useUserInfoStore((state) => state);
+  const { getUserInfo, userInfo, isLogin } = useUserInfoStore((state) => state);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const handleClickMenu = () => {
     setIsDropdownOpen((prev) => !prev);
   };
   const router = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태 관리
+  const [isLoading, setIsLoading] = useState<boolean>(false); // 로딩 상태 관리
 
   //   드롭다운 아이템들
   const dropdownItems = [
@@ -77,6 +77,7 @@ const ShowProfile: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!isLogin) return;
     const fetchData = async () => {
       await getUserInfo();
       setIsLoading(false);

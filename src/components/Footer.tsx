@@ -6,6 +6,7 @@ import IconRecord from '../icons/Footer/IconRecord';
 import useModalStore from '../stores/Modals/ModalStore';
 import useDetailModalTypeStore from '../stores/Modals/DetailModalType';
 import useRouteRecordStore from '../stores/RouteRecord';
+import useUserInfoStore from '../stores/UserInfo';
 
 interface MenuItem {
   component: React.FC<{ isActive: boolean }>;
@@ -16,6 +17,7 @@ interface MenuItem {
 const Footer: React.FC = () => {
   const router = useNavigate();
   const location = useLocation();
+  const isLogin = useUserInfoStore((state) => state.isLogin);
 
   const menuItems: MenuItem[] = [
     {
@@ -37,6 +39,7 @@ const Footer: React.FC = () => {
   const { recordingInfo, saveRouteRecord } = useRouteRecordStore();
 
   const handleClickRecord = () => {
+    if (!isLogin) return;
     // 기록중이 아님
     if (!recordingInfo.isRecording) {
       setDetailModalType('recordType');
