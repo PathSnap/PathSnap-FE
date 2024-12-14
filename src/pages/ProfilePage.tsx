@@ -75,6 +75,11 @@ const ShowProfile: React.FC = () => {
   const formatPhoneNumber = (phoneNumber: string) => {
     return phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
   };
+  const handleProfileClick = () => {
+    if (!isLogin) {
+      router('/login');
+    }
+  };
 
   useEffect(() => {
     if (!isLogin) return;
@@ -96,15 +101,24 @@ const ShowProfile: React.FC = () => {
       <div className={'grid grid-cols-[70px_auto_24px] gap-5 items-center'}>
         <img
           src={userInfo.images?.[0]?.url || 'src/icons/BasicProfile.svg'}
-          className={'aspect-square rounded-2xl object-cover'}
+          className={'aspect-square rounded-2xl object-cover h-[70px]'}
         />
         <div className={'flex flex-col gap-1.5'}>
-          <div className={'text-[22px] font-semibold'}>{userInfo.userName}</div>
+          <div
+            onClick={handleProfileClick}
+            className={'text-[22px] font-semibold'}
+          >
+            {isLogin ? userInfo.userName : '로그인'}
+          </div>
           {/* TODO : ADD EMAIL */}
-          <div className={'text-xs text-second-light'}>asc1234@gmail.com</div>
+          <div className={'text-xs text-second-light'}>
+            나만의 여행을 기록해보세요!
+          </div>
         </div>
         <div className={'w-6 h-full place-items-end relative'}>
-          <IconMenu width={5} height={24} onClick={handleClickMenu} />
+          {isLogin && (
+            <IconMenu width={5} height={24} onClick={handleClickMenu} />
+          )}
           {isDropdownOpen && (
             <Dropdown
               setIsDropdownOpen={setIsDropdownOpen}
@@ -115,20 +129,22 @@ const ShowProfile: React.FC = () => {
         </div>
       </div>
       {/* 전화번호, 생년월일, 집 주소 */}
-      <div className={'grid grid-cols-3 text-xxs'}>
-        <div className={'flex gap-1 items-center'}>
-          <IconPhone />
-          <div>{formatPhoneNumber(userInfo.phoneNumber)}</div>
+      {isLogin && (
+        <div className={'grid grid-cols-3 text-xxs'}>
+          <div className={'flex gap-1 items-center'}>
+            <IconPhone />
+            <div>{formatPhoneNumber(userInfo.phoneNumber)}</div>
+          </div>
+          <div className={'flex gap-1 items-center'}>
+            <IconBirth />
+            <div>{userInfo.birthDate}</div>
+          </div>
+          <div className={'flex gap-1 items-center break-keep'}>
+            <IconMyHome />
+            <div>{userInfo.address || '주소 미등록'}</div>
+          </div>
         </div>
-        <div className={'flex gap-1 items-center'}>
-          <IconBirth />
-          <div>{userInfo.birthDate}</div>
-        </div>
-        <div className={'flex gap-1 items-center break-keep'}>
-          <IconMyHome />
-          <div>{userInfo.address || '주소 미등록'}</div>
-        </div>
-      </div>
+      )}
     </BoxWrapper>
   );
 };
@@ -164,11 +180,7 @@ const TimeLineItem: React.FC<TimeLineProps> = ({ trip }) => {
       />
       <div className={'flex flex-col gap-1.5 text-sm'}>
         <div className={'font-bold'}>{trip.recordName}</div>
-        <div>
-          {trip.startDate.slice(0, 10).replaceAll('-', '.')}
-          {/* 2024.02.12 ~ 2024.02.15 */}
-          {/* <span className={'pl-3'}>8명</span> */}
-        </div>
+        <div>{trip.startDate.slice(0, 10).replaceAll('-', '.')}</div>
       </div>
       <IconRight
         onClick={() => {

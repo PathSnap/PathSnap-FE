@@ -4,13 +4,16 @@ import IconLeft from '../../icons/ProfilePage/IconLeft';
 import IconRight from '../../icons/ProfilePage/IconRight';
 import useModalStore from '../../stores/Modals/ModalStore';
 import useCalendarInfoStore from '../../stores/Profiles/CalendarInfo';
+import useUserInfoStore from '../../stores/UserInfo';
 
 const Calendar: React.FC = () => {
   const { searchMonthTrip, selectedDate } = useCalendarInfoStore(
     (state) => state
   );
+  const isLogin = useUserInfoStore((state) => state.isLogin);
 
   useEffect(() => {
+    if (!isLogin) return;
     searchMonthTrip(selectedDate);
   }, [selectedDate]);
 
@@ -33,6 +36,7 @@ const CalendarHeader: React.FC = () => {
   const { selectedDate, setSelectedDate } = useCalendarInfoStore(
     (state) => state
   );
+  const isLogin = useUserInfoStore((state) => state.isLogin);
 
   const { selectedYear, selectedMonth } = selectedDate;
   const handleClickArrow = (isLeft: boolean) => {
@@ -60,6 +64,7 @@ const CalendarHeader: React.FC = () => {
 
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState<boolean>(false);
   const handleClickMonthPicker = () => {
+    if (!isLogin) return;
     setIsMonthPickerOpen((prev) => !prev);
   };
 
@@ -231,10 +236,15 @@ export const CalendarBody: React.FC<CalendarBodyProps> = ({
 
 const CombineDaysBtn = () => {
   const { openModal } = useModalStore();
+  const isLogin = useUserInfoStore((state) => state.isLogin);
+  const buttonStyle = isLogin
+    ? 'is-active-green-button'
+    : 'non-active-green-button';
   return (
     <button
+      disabled={!isLogin}
       onClick={() => openModal('packTripsModal')}
-      className={'is-active-green-button h-[58px] text-lg my-3'}
+      className={`${buttonStyle} h-[58px] text-lg my-3`}
     >
       일정을 하나로 묶어보세요!
     </button>
