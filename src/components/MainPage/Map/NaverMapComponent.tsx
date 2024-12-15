@@ -26,9 +26,14 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
   const [isSearchDetailRecord, setIsSerachDetailRecord] =
     useState<boolean>(false);
   const [selectedBoxIndex, setSelectedBoxIndex] = useState<number>(0); // 셀렉트 박스 상태 관리
-  const { togglePhotoSelection, searchPhotos, photos } = usePhotoStore();
+  const { searchPhotos, photos } = usePhotoStore();
   const { getUserInfo, userInfo } = useUserInfoStore();
-  const { searchRecord, record } = useRecordStore();
+  const {
+    changePhotoRecordIsSelect,
+    changeALLPhotoRecordIsSelectfalse,
+    searchRecord,
+    record,
+  } = useRecordStore();
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
@@ -191,28 +196,28 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
   const ClickImageMarker = (
     recordId: string,
     photoId: string,
-    isSelect: boolean,
-    isDetailPhoto: boolean
+    isDetailPhoto: boolean,
+    isSelect?: boolean
   ) => {
     // 선택된 이미지 마커의 photoId를 받아와서 처리하는 함수
     // console.log('Click Image Marker:', recordId);
     //현재위치
-    console.log('currentPosition:', currentPosition);
-    setIsSerachDetailRecord(true);
-
-    if (!isDetailPhoto) {
-      if (!isSelect) {
-        searchRecord(recordId);
-        record.photoRecords?.map((photo) => {
-          if (photo.photoId !== photoId) {
-            togglePhotoSelection(photo.photoId);
-          }
-        });
-      } else {
-        setIsSerachDetailRecord(false);
-      }
-    } else {
+    if (isDetailPhoto && isSelect) {
+      // 상세 조회 상태에서의 자기 자신 클릭
+      changeALLPhotoRecordIsSelectfalse();
       setIsSerachDetailRecord(false);
+    } else if (isDetailPhoto && !isSelect) {
+      // 상세 조회 상태에서의 다른 이미지 클릭
+      changeALLPhotoRecordIsSelectfalse();
+      changePhotoRecordIsSelect(photoId);
+    } else if (!isDetailPhoto) {
+      // 조회 상태에서의 클릭
+      console.log('photoId', photoId);
+      searchRecord(recordId).then(() => {
+        changeALLPhotoRecordIsSelectfalse();
+        changePhotoRecordIsSelect(photoId);
+      });
+      setIsSerachDetailRecord(true);
     }
   };
 
@@ -244,15 +249,14 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                   position={{ lat: photo.lat, lng: photo.lng }}
                   mapInstance={mapInstance.current}
                   imageSrc={photo.url}
-                  isSelect={photo.isSelect}
+                  isSelect={false}
                   ClickImageMarker={() => {
                     ClickImageMarker(
                       photo.recordId,
                       photo.photoId,
-                      photo.isSelect,
+                      false,
                       false
                     );
-                    togglePhotoSelection(photo.photoId);
                   }}
                 />
               ))}
@@ -280,10 +284,9 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                       ClickImageMarker(
                         record.recordId,
                         photo.photoId,
-                        photo.isSelect,
-                        true
+                        true,
+                        photo.isSelect
                       );
-                      togglePhotoSelection(photo.photoId);
                     }}
                   />
                 ))}

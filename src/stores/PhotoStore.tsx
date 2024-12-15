@@ -7,13 +7,11 @@ type Photo = {
   url: string;
   lat: number;
   lng: number;
-  isSelect: boolean;
 };
 
 interface PhotoStore {
   photos: Photo[];
   searchPhotos: (lon: number, lat: number, radius: number) => void;
-  togglePhotoSelection: (photoId: string) => void; // 특정 photo의 선택 상태를 반전
 }
 
 const MAX_PHOTOS = 20; // 최대 사진 개수
@@ -67,16 +65,6 @@ const usePhotoStore = create<PhotoStore>((set, get) => ({
     } catch (error) {
       console.error('Error fetching photos:', error);
     }
-  },
-
-  togglePhotoSelection: (photoId) => {
-    set((state) => ({
-      photos: state.photos.map((photo) =>
-        photo.photoId === photoId
-          ? { ...photo, isSelect: !photo.isSelect } // 선택 상태 반전
-          : photo
-      ),
-    }));
   },
 }));
 
