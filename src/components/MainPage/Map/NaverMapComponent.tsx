@@ -6,6 +6,8 @@ import Polyline from './line/CustomPolyline'; // CustomPolyline 컴포넌트
 import CurrentLocationButton from '../CurrentLocationButton';
 import SelectBox from '../../../components/MainPage/SelectBox';
 import SearchButton from '../SerchButton';
+import IconRecordInfo from '../../../icons/IconRecordInfo';
+import PhotoRecordSlider from './PhotoRecordSlider';
 import usePhotoStore from '../../../stores/PhotoStore';
 import useUserInfoStore from '../../../stores/UserInfo';
 import useRecordStore from '../../../stores/RecordStore';
@@ -242,24 +244,35 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
               />
             )}
             {/* 전체 조회 사진 마커 */}
-            {!isSearchDetailRecord &&
-              photos.map((photo) => (
-                <ImageMarker
-                  key={photo.photoId}
-                  position={{ lat: photo.lat, lng: photo.lng }}
-                  mapInstance={mapInstance.current}
-                  imageSrc={photo.url}
-                  isSelect={false}
-                  ClickImageMarker={() => {
-                    ClickImageMarker(
-                      photo.recordId,
-                      photo.photoId,
-                      false,
-                      false
-                    );
-                  }}
+            {!isSearchDetailRecord && (
+              <>
+                {photos.map((photo) => (
+                  <ImageMarker
+                    key={photo.photoId}
+                    position={{ lat: photo.lat, lng: photo.lng }}
+                    mapInstance={mapInstance.current}
+                    imageSrc={photo.url}
+                    isSelect={false}
+                    ClickImageMarker={() => {
+                      ClickImageMarker(
+                        photo.recordId,
+                        photo.photoId,
+                        false,
+                        false
+                      );
+                    }}
+                  />
+                ))}
+                {/* 조회 기록 셀렉트 박스 */}
+                <SelectBox
+                  leftText="조회"
+                  rightText="기록"
+                  selectedBoxIndex={selectedBoxIndex}
+                  setSelectedBoxIndex={setSelectedBoxIndex}
                 />
-              ))}
+              </>
+            )}
+
             {/* 상세 조회 마커 */}
             {isSearchDetailRecord && record && (
               <>
@@ -290,22 +303,37 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                     }}
                   />
                 ))}
+                {/* 기록 요약 아이콘 */}
+                <div
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-start mt-[4%]"
+                  style={{ zIndex: 1000 }}
+                >
+                  <IconRecordInfo
+                    title={record.recordName}
+                    number={record.photoRecords?.length ?? 0}
+                    width={
+                      record.recordName.length > 10
+                        ? 'width: 800'
+                        : 'width: 200'
+                    }
+                  />
+                </div>
+                {/* 기록 카드 */}
+                {record.photoRecords && (
+                  <PhotoRecordSlider photoRecords={record.photoRecords} />
+                )}
               </>
             )}
           </>
         )}
       </div>
       {/* 현재 위치 버튼 */}
-      <CurrentLocationButton onMoveToCurrentLocation={moveToCurrentLocation} />
+      <CurrentLocationButton
+        isSearchDetailRecord={isSearchDetailRecord}
+        onMoveToCurrentLocation={moveToCurrentLocation}
+      />
       {/* 검색 버튼 */}
       <SearchButton />
-      {/* 조회/기록 셀렉트 박스 */}
-      <SelectBox
-        leftText="조회"
-        rightText="기록"
-        selectedBoxIndex={selectedBoxIndex}
-        setSelectedBoxIndex={setSelectedBoxIndex}
-      />
     </>
   );
 };
