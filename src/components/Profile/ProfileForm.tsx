@@ -67,8 +67,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           userName: info.name,
           birthDate: info.birth,
           phoneNumber: info.phoneNum,
-          lat: 0,
-          lng: 0,
           address: info.address,
           imageId: imageValue || '',
         });
