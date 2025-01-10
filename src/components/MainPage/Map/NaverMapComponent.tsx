@@ -243,8 +243,17 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                 mapInstance={mapInstance.current}
               />
             )}
-            {/* 전체 조회 사진 마커 */}
+            {/* 조회 기록 셀렉트 박스 */}
             {!isSearchDetailRecord && (
+              <SelectBox
+                leftText="조회"
+                rightText="기록"
+                selectedBoxIndex={selectedBoxIndex}
+                setSelectedBoxIndex={setSelectedBoxIndex}
+              />
+            )}
+            {/* 전체 조회 사진 마커 */}
+            {selectedBoxIndex === 0 && !isSearchDetailRecord && (
               <>
                 {photos.map((photo) => (
                   <ImageMarker
@@ -263,18 +272,11 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                     }}
                   />
                 ))}
-                {/* 조회 기록 셀렉트 박스 */}
-                <SelectBox
-                  leftText="조회"
-                  rightText="기록"
-                  selectedBoxIndex={selectedBoxIndex}
-                  setSelectedBoxIndex={setSelectedBoxIndex}
-                />
               </>
             )}
 
             {/* 상세 조회 마커 */}
-            {isSearchDetailRecord && record && (
+            {selectedBoxIndex === 0 && isSearchDetailRecord && record && (
               <>
                 {record.routeRecords?.map((routeRecord) => (
                   <Polyline
