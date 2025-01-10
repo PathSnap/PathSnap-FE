@@ -11,6 +11,7 @@ import PhotoRecordSlider from './PhotoRecordSlider';
 import usePhotoStore from '../../../stores/PhotoStore';
 import useUserInfoStore from '../../../stores/UserInfo';
 import useRecordStore from '../../../stores/RecordStore';
+import useRouteRecordStore from '../../../stores/RouteRecord';
 
 interface CenterLocationProps {
   centerLat?: number;
@@ -36,6 +37,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     searchRecord,
     record,
   } = useRecordStore();
+  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
@@ -208,6 +210,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       // 상세 조회 상태에서의 자기 자신 클릭
       changeALLPhotoRecordIsSelectfalse();
       setIsSerachDetailRecord(false);
+      recordingInfo.isRecording = false;
     } else if (isDetailPhoto && !isSelect) {
       // 상세 조회 상태에서의 다른 이미지 클릭
       changeALLPhotoRecordIsSelectfalse();
@@ -219,6 +222,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         changeALLPhotoRecordIsSelectfalse();
         changePhotoRecordIsSelect(photoId);
       });
+      recordingInfo.isRecording = true;
       setIsSerachDetailRecord(true);
     }
   };
