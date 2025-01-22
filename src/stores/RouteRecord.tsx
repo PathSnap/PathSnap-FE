@@ -3,12 +3,14 @@ import { api } from '../utils/api';
 import { formattedRealTime } from '../utils/formatDate';
 
 type RecordingInfo = {
+  isSerching: boolean;
   isRecording: boolean;
   recordId: string;
   routeId: string;
 };
 
 const defaultRecordingInfo: RecordingInfo = {
+  isSerching: false,
   isRecording: false,
   recordId: '',
   routeId: '',
@@ -52,6 +54,7 @@ const useRouteRecordStore = create<RouteRecordState>((set, get) => ({
     try {
       const res: any = await api.get(`/routes/start/${recordId}/${seq}`);
       get().setRecordingInfo({
+        isSerching: false,
         recordId,
         isRecording: true,
         routeId: res.routeId,

@@ -36,7 +36,7 @@ export type routeRecord = {
   coordinates: coordinate[];
 };
 
-type coordinate = {
+export type coordinate = {
   lat: number;
   lng: number;
   timeStamp: string;

@@ -210,7 +210,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       // 상세 조회 상태에서의 자기 자신 클릭
       changeALLPhotoRecordIsSelectfalse();
       setIsSerachDetailRecord(false);
-      recordingInfo.isRecording = false;
+      recordingInfo.isSerching = false;
     } else if (isDetailPhoto && !isSelect) {
       // 상세 조회 상태에서의 다른 이미지 클릭
       changeALLPhotoRecordIsSelectfalse();
@@ -222,7 +222,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         changeALLPhotoRecordIsSelectfalse();
         changePhotoRecordIsSelect(photoId);
       });
-      recordingInfo.isRecording = true;
+      recordingInfo.isSerching = true;
       setIsSerachDetailRecord(true);
     }
   };
