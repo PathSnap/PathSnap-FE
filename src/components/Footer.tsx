@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
 
   const { openModal } = useModalStore();
   const { setDetailModalType } = useDetailModalTypeStore();
-  const { recordingInfo, saveRouteRecord } = useRouteRecordStore();
+  const { recordingInfo, EndsaveRouteRecord } = useRouteRecordStore();
 
   const handleClickRecord = () => {
     // 기록중이 아님
@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
       openModal('detailModal');
     } else {
       // 기록중 -> 기록 중단
-      saveRouteRecord();
+      EndsaveRouteRecord();
     }
   };
 

@@ -28,9 +28,30 @@ interface RouteRecordState {
   deleteRecord: () => void;
   // 기록에 대한 정보 초기화
   initRecord: () => void;
+  EndsaveRouteRecord: () => void;
   recordingInfo: RecordingInfo;
   setRecordingInfo: (recordingInfo: RecordingInfo) => void;
 }
+const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported by this browser.'));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (error) => {
+        reject(new Error('Failed to retrieve location: ' + error.message));
+      }
+    );
+  });
+};
 
 const useRouteRecordStore = create<RouteRecordState>((set, get) => ({
   recordingInfo: (() => {
@@ -69,19 +90,39 @@ const useRouteRecordStore = create<RouteRecordState>((set, get) => ({
   },
   saveRouteRecord: async () => {
     try {
+      const currentLocation = await getCurrentLocation(); // ✅ 현재 위치 가져오기
+
       const res = await api.post('routes/save', {
         routeId: get().recordingInfo.routeId,
         coordinateReqDto: {
-          // TODO : 실시간 수정
-          lat: 0,
-          lng: 0,
+          lat: currentLocation.lat, // ✅ 현재 위도 저장
+          lng: currentLocation.lng, // ✅ 현재 경도 저장
           timeStamp: formattedRealTime(),
         },
       });
+
+      console.log(res);
+    } catch (error) {
+      console.error('❌ Error saving route record:', error);
+    }
+  },
+  EndsaveRouteRecord: async () => {
+    try {
+      const currentLocation = await getCurrentLocation(); // ✅ 현재 위치 가져오기
+
+      const res = await api.post('routes/save', {
+        routeId: get().recordingInfo.routeId,
+        coordinateReqDto: {
+          lat: currentLocation.lat, // ✅ 현재 위도 저장
+          lng: currentLocation.lng, // ✅ 현재 경도 저장
+          timeStamp: formattedRealTime(),
+        },
+      });
+
       console.log(res);
       get().initRecord();
     } catch (error) {
-      console.error('Error ending record:', error);
+      console.error('❌ Error saving route record:', error);
     }
   },
   deleteRecord: async () => {
