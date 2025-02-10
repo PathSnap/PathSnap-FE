@@ -195,6 +195,8 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
     }
+
+    console.log('RecordId', recordingInfo.recordId);
   };
 
   const ClickImageMarker = (
@@ -313,7 +315,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
             )}
 
             {/* 상세 조회 마커 */}
-            {isSearchDetailRecord && record && (
+            {(isSearchDetailRecord || selectedBoxIndex == 1) && record && (
               <>
                 {record.routeRecords?.map((routeRecord) => (
                   <Polyline
@@ -343,22 +345,24 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                   />
                 ))}
                 {/* 기록 요약 아이콘 */}
-                <div
-                  className="absolute top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-start mt-[4%]"
-                  style={{ zIndex: 1000 }}
-                >
-                  <IconRecordInfo
-                    title={record.recordName}
-                    number={record.photoRecords?.length ?? 0}
-                    width={
-                      record.recordName.length > 10
-                        ? 'width: 800'
-                        : 'width: 200'
-                    }
-                  />
-                </div>
+                {selectedBoxIndex == 0 && (
+                  <div
+                    className="absolute top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-start mt-[4%]"
+                    style={{ zIndex: 1000 }}
+                  >
+                    <IconRecordInfo
+                      title={record.recordName}
+                      number={record.photoRecords?.length ?? 0}
+                      width={
+                        record.recordName.length > 10
+                          ? 'width: 800'
+                          : 'width: 200'
+                      }
+                    />
+                  </div>
+                )}
                 {/* 기록 카드 */}
-                {record.photoRecords && (
+                {selectedBoxIndex == 0 && record.photoRecords && (
                   <PhotoRecordSlider photoRecords={record.photoRecords} />
                 )}
               </>
