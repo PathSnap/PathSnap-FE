@@ -53,7 +53,7 @@ const ShowProfile: React.FC = () => {
   const router = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태 관리
 
-  //   드롭다운 아이템들
+  // 드롭다운 아이템들
   const dropdownItems = [
     {
       name: '프로필 수정',
@@ -72,7 +72,8 @@ const ShowProfile: React.FC = () => {
     },
   ];
 
-  const formatPhoneNumber = (phoneNumber: string) => {
+  const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
+    if (!phoneNumber) return '전화번호 없음';
     return phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
   };
 
@@ -89,20 +90,35 @@ const ShowProfile: React.FC = () => {
     return <div>Loading...</div>;
   }
 
+  // userInfo가 null 또는 undefined일 경우를 대비하여 기본값 설정
+  const {
+    images,
+    userName = '미등록',
+    phoneNumber,
+    birthDate,
+    address,
+  } = userInfo || {};
+
   return (
     <BoxWrapper className="flex flex-col gap-5 p-4">
       {/* 사진, 이름, 이메일 */}
-      <div className={'grid grid-cols-[70px_auto_24px] gap-5 items-center'}>
+      <div className="grid grid-cols-[70px_auto_24px] gap-5 items-center">
         <img
-          src={userInfo.images?.[0]?.url || 'src/icons/BasicProfile.svg'}
-          className={'aspect-square rounded-2xl object-cover'}
+          src={
+            images?.[0]?.url ||
+            'https://pathsnap1.s3.ap-northeast-2.amazonaws.com/DefualtUser.png'
+          }
+          alt="Profile"
+          className="aspect-square rounded-2xl object-cover"
         />
-        <div className={'flex flex-col gap-1.5'}>
-          <div className={'text-[22px] font-semibold'}>{userInfo.userName}</div>
+        <div className="flex flex-col gap-1.5">
+          <div className="text-[22px] font-semibold">
+            {userName || '정보수정이 필요합니다.'}
+          </div>
           {/* TODO : ADD EMAIL */}
-          <div className={'text-xs text-second-light'}>asc1234@gmail.com</div>
+          <div className="text-xs text-second-light">asc1234@gmail.com</div>
         </div>
-        <div className={'w-6 h-full place-items-end relative'}>
+        <div className="w-6 h-full place-items-end relative">
           <IconMenu width={5} height={24} onClick={handleClickMenu} />
           {isDropdownOpen && (
             <Dropdown
@@ -114,18 +130,18 @@ const ShowProfile: React.FC = () => {
         </div>
       </div>
       {/* 전화번호, 생년월일, 집 주소 */}
-      <div className={'grid grid-cols-3 text-xxs'}>
-        <div className={'flex gap-1 items-center'}>
+      <div className="grid grid-cols-3 text-xxs">
+        <div className="flex gap-1 items-center">
           <IconPhone />
-          <div>{formatPhoneNumber(userInfo.phoneNumber)}</div>
+          <div>{formatPhoneNumber(phoneNumber)}</div>
         </div>
-        <div className={'flex gap-1 items-center'}>
+        <div className="flex gap-1 items-center">
           <IconBirth />
-          <div>{userInfo.birthDate}</div>
+          <div>{birthDate || '미등록'}</div>
         </div>
-        <div className={'flex gap-1 items-center break-keep'}>
+        <div className="flex gap-1 items-center break-keep">
           <IconMyHome />
-          <div>{userInfo.address || '주소 미등록'}</div>
+          <div>{address || '미등록'}</div>
         </div>
       </div>
     </BoxWrapper>

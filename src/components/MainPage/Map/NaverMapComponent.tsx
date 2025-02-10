@@ -227,6 +227,39 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     }
   };
 
+  useEffect(() => {
+    console.log(`선택된 박스 인덱스가 변경됨: ${selectedBoxIndex}`);
+
+    const routeRecordStore = useRouteRecordStore.getState();
+    if (selectedBoxIndex === 0) {
+      routeRecordStore.setRecordingInfo({
+        ...routeRecordStore.recordingInfo,
+        isRenderingRecording: false,
+      });
+    } else {
+      searchRecord(routeRecordStore.recordingInfo.recordId);
+      routeRecordStore.setRecordingInfo({
+        ...routeRecordStore.recordingInfo,
+        isRenderingRecording: true,
+      });
+    }
+
+    console.log('recordingInfo:', recordingInfo);
+  }, [selectedBoxIndex]); // selectedBoxIndex가 변경될 때마다 실행됨
+
+  const handleSelectBoxClick = (index: number) => {
+    if (index == 1 && !recordingInfo.isRecording) return; // ✅ recordingInfo.isRecording이 false면 클릭 방지
+    setSelectedBoxIndex(index);
+  };
+
+  useEffect(() => {
+    if (!recordingInfo.isRecording) {
+      setSelectedBoxIndex(0);
+    } else {
+      setSelectedBoxIndex(1);
+    }
+  }, [recordingInfo.isRecording]);
+
   return (
     <>
       <div
@@ -253,7 +286,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
                 leftText="조회"
                 rightText="기록"
                 selectedBoxIndex={selectedBoxIndex}
-                setSelectedBoxIndex={setSelectedBoxIndex}
+                setSelectedBoxIndex={handleSelectBoxClick}
               />
             )}
             {/* 전체 조회 사진 마커 */}
@@ -280,7 +313,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
             )}
 
             {/* 상세 조회 마커 */}
-            {selectedBoxIndex === 0 && isSearchDetailRecord && record && (
+            {isSearchDetailRecord && record && (
               <>
                 {record.routeRecords?.map((routeRecord) => (
                   <Polyline

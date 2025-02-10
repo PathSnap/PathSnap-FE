@@ -5,6 +5,7 @@ import { formattedRealTime } from '../utils/formatDate';
 type RecordingInfo = {
   isSerching: boolean;
   isRecording: boolean;
+  isRenderingRecording: boolean;
   recordId: string;
   routeId: string;
 };
@@ -12,6 +13,7 @@ type RecordingInfo = {
 const defaultRecordingInfo: RecordingInfo = {
   isSerching: false,
   isRecording: false,
+  isRenderingRecording: false,
   recordId: '',
   routeId: '',
 };
@@ -57,6 +59,7 @@ const useRouteRecordStore = create<RouteRecordState>((set, get) => ({
         isSerching: false,
         recordId,
         isRecording: true,
+        isRenderingRecording: true,
         routeId: res.routeId,
       });
       return res.routeId;

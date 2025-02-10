@@ -36,14 +36,14 @@ const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
         </div>
       </div>
       <div className={'w-full rounded-2xl border-2 border-gray-200'}>
-        <StaticMap
+        {/* <StaticMap
           lat={record.coordinates[0].lat}
           lng={record.coordinates[0].lng}
           level={15}
           width={700}
           height={600}
           coordinates={record.coordinates}
-        />
+        /> */}
       </div>
     </RecordWrapper>
   );
