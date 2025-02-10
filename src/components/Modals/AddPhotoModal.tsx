@@ -9,6 +9,7 @@ import uploadS3 from '../../apis/Photos/uploadS3';
 import { formattedDate } from '../../utils/formatDate';
 import useRouteRecordStore from '../../stores/RouteRecord';
 import useRecordStore from '../../stores/RecordStore';
+import exifr from 'exifr';
 
 const AddPhotoModal: React.FC = () => {
   const [isFill, setIsFill] = useState(false);
@@ -58,7 +59,21 @@ const AddPhotoModal: React.FC = () => {
     // 에러가 하나라도 있으면 true 반환
     return Object.values(newErrors).some((error) => error);
   };
-
+  // EXIF 좌표 추출 함수
+  const getExifCoordinates = async (
+    file: File
+  ): Promise<{ lat: number | null; lng: number | null }> => {
+    try {
+      const data = await exifr.parse(file, { gps: true });
+      if (data && data.latitude && data.longitude) {
+        return { lat: data.latitude, lng: data.longitude };
+      }
+      return { lat: null, lng: null };
+    } catch (error) {
+      console.error('EXIF parse error:', error);
+      return { lat: null, lng: null };
+    }
+  };
   const handleSubmit = async () => {
     const hasErrors = validateFields();
 
@@ -77,10 +92,17 @@ const AddPhotoModal: React.FC = () => {
           imageId: image.imageId,
         }));
 
-        // TODO: 순서에 맞게 수정하기
-        const lat = 0;
-        const lng = 0;
-
+        // exifr를 사용해 이미지에서 EXIF 좌표 추출 (첫 번째 이미지 사용)
+        let lat: number | null = null;
+        let lng: number | null = null;
+        if (formData) {
+          const files = formData.getAll('images') as File[];
+          if (files.length > 0) {
+            const exifResult = await getExifCoordinates(files[0]);
+            lat = exifResult.lat;
+            lng = exifResult.lng;
+          }
+        }
         const res = await api.post(`photos/create/${recordingInfo.recordId}`, {
           seq,
           images: imageIds,

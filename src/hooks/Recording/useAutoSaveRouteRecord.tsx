@@ -10,7 +10,7 @@ const useAutoSaveRouteRecord = () => {
       console.log('✅ 자동 저장 시작');
       intervalRef.current = setInterval(() => {
         console.log('🚀 현재 위치 저장 실행');
-        saveRouteRecord();
+        // saveRouteRecord();
       }, 3000);
     } else {
       console.log('⏹️ 자동 저장 중단');
