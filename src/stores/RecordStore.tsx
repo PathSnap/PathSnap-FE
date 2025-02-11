@@ -58,6 +58,7 @@ interface RecordStoreState {
   setSeq: (seq: number) => void;
   changeALLPhotoRecordIsSelectfalse: () => void;
   changePhotoRecordIsSelect: (photoId: string) => void;
+  deleteSearchRecord: () => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
@@ -177,6 +178,15 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       return photoRecord;
     });
     get().setRecord({ ...get().record, photoRecords: filteredRecords });
+  },
+  deleteSearchRecord: async () => {
+    try {
+      const res = await api.delete(`/records/delete/${get().record.recordId}`);
+
+      console.log(res);
+    } catch (error) {
+      console.error('Error deleting record:', error);
+    }
   },
 }));
 

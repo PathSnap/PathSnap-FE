@@ -1,4 +1,5 @@
 import IconCancel from '../../icons/IconCancel';
+import RecordInfo from '../../icons/IconRecordInfo';
 import useFriendStore from '../../stores/FriendStore';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
@@ -55,13 +56,11 @@ const Content = () => {
 const Buttons = () => {
   const { detailModalType } = useDetailModalTypeStore((state) => state);
   const { closeModal } = useModalStore();
-  const { deleteCopyRecord, searchRecord, seq, setSeq } = useRecordStore(
-    (state) => state
-  );
+  const { deleteSearchRecord, deleteCopyRecord, searchRecord, seq, setSeq } =
+    useRecordStore((state) => state);
   const { selectedRecord } = useSelectedPhotoStore((state) => state);
-  const { startRecord, saveStartRouteRecord, deleteRecord } =
+  const { recordingInfo, startRecord, saveStartRouteRecord, deleteRecord } =
     useRouteRecordStore();
-
   const { searchFriendsAtRecord } = useFriendStore();
 
   const getRecordInfo = async (recordId: string) => {
@@ -76,7 +75,13 @@ const Buttons = () => {
       deleteCopyRecord(selectedRecord.photoId);
     }
     if (detailModalType === 'deleteRecord') {
-      deleteRecord();
+      if (recordingInfo.isRenderingRecording) {
+        // 녹화 중인 루트 삭제 (화면 내려줘야됨됨)
+        deleteRecord();
+      } else if (recordingInfo.isSerching) {
+        // 검색 중인 루트 삭제 (포토 초기화해줘야됨됨)
+        deleteSearchRecord();
+      }
     }
 
     closeModal();
@@ -113,7 +118,7 @@ const Buttons = () => {
           >
             개인 여행
           </button>
-          <button
+          {/* <button
             onClick={() => {
               handleClickRecordType(true);
             }}
@@ -122,7 +127,7 @@ const Buttons = () => {
             }
           >
             단체 여행
-          </button>
+          </button> */}
         </>
       ) : (
         <>

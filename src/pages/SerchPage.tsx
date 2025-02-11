@@ -323,7 +323,9 @@ const Buttons: React.FC<SelectLocationProps> = ({ selectedLocation }) => {
             state: {
               centerLatState,
               centerLngState,
+              mainZoom: 10,
             },
+            replace: true,
           });
         }}
       >

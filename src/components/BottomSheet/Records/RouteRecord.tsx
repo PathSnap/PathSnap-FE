@@ -16,7 +16,7 @@ const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
     >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
         {/* TODO :  */}
-        <div className={'font-semibold'}>전주로 이동</div>
+        <div className={'font-semibold'}>목적지로 이동</div>
         <div
           className={
             'text-sm grid grid-cols-[13px_minmax(0,1fr)] grid-rows-2 gap-x-1.5 gap-y-[18px]'
@@ -36,14 +36,14 @@ const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
         </div>
       </div>
       <div className={'w-full rounded-2xl border-2 border-gray-200'}>
-        {/* <StaticMap
+        <StaticMap
           lat={record.coordinates[0].lat}
           lng={record.coordinates[0].lng}
           level={15}
           width={700}
           height={600}
           coordinates={record.coordinates}
-        /> */}
+        />
       </div>
     </RecordWrapper>
   );

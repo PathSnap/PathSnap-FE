@@ -12,11 +12,12 @@ import usePhotoStore from '../../../stores/PhotoStore';
 import useUserInfoStore from '../../../stores/UserInfo';
 import useRecordStore from '../../../stores/RecordStore';
 import useRouteRecordStore from '../../../stores/RouteRecord';
+import { useNavigate } from 'react-router-dom';
 
 interface CenterLocationProps {
-  centerLat?: number;
-  centerLng?: number;
-  mainZoom?: number;
+  centerLat?: number | null;
+  centerLng?: number | null;
+  mainZoom?: number | null;
 }
 
 const NaverMapComponent: React.FC<CenterLocationProps> = ({
@@ -43,6 +44,8 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     lat: number;
     lng: number;
   } | null>(null);
+  const [loading, setLoading] = useState(true); // 위치 로딩 상태
+  const Navigate = useNavigate();
 
   //현재 위치 저장 함수
   const saveCurrentPosition = () => {
@@ -55,11 +58,13 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
             lng: longitude,
           });
 
+          setLoading(false); // 로딩 완료
           // 위치 저장 로직 (API 호출 등)
           // console.log('Position saved:', { lat: latitude, lng: longitude });
         },
         (err) => {
           console.error('Failed to retrieve location:', err);
+          setLoading(false); // 오류 시 로딩 해제
         }
       );
     } else {
@@ -79,6 +84,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          console.log('Current location:', { lat: latitude, lng: longitude });
           resolve({ lat: latitude, lng: longitude }); // 성공 시 위도와 경도를 반환
         },
         (error) => {
@@ -104,13 +110,13 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 
       const naver = (window as any).naver;
 
-      let defaultLatLng = { lat: 37.5665, lng: 126.978 }; // 서울로 기본값 설정
+      let defaultLatLng = { lat: 37.5665, lng: 126.978 }; // 서울 시청 좌표
       let zoom = 15;
       if (centerLat && centerLng && mainZoom) {
-        defaultLatLng = { lat: centerLat, lng: centerLng }; // 서울로 기본값 설정
+        defaultLatLng = { lat: centerLat, lng: centerLng };
         zoom = mainZoom;
       } else {
-        defaultLatLng = await getCurrentLocation(); // 서울로 기본값 설정
+        defaultLatLng = await getCurrentLocation();
       }
       const mapOptions = {
         center: new naver.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng), // 현재 위치로 초기화
@@ -155,6 +161,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     } else {
       initializeMap();
     }
+    Navigate('/', {});
   }, []); // 첫 렌더링 시 실행
 
   // 중심 위치 변경 이벤트 핸들러
@@ -195,8 +202,6 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
     }
-
-    console.log('RecordId', recordingInfo.recordId);
   };
 
   const ClickImageMarker = (
@@ -230,7 +235,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
   };
 
   useEffect(() => {
-    console.log(`선택된 박스 인덱스가 변경됨: ${selectedBoxIndex}`);
+    // console.log(`선택된 박스 인덱스가 변경됨: ${selectedBoxIndex}`);
 
     const routeRecordStore = useRouteRecordStore.getState();
     if (selectedBoxIndex === 0) {
@@ -245,8 +250,6 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         isRenderingRecording: true,
       });
     }
-
-    console.log('recordingInfo:', recordingInfo);
   }, [selectedBoxIndex]); // selectedBoxIndex가 변경될 때마다 실행됨
 
   const handleSelectBoxClick = (index: number) => {
@@ -271,10 +274,12 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
         {mapInstance.current && currentPosition && (
           <>
             {/* 현재 위치 마커 */}
-            <MainMarker
-              position={currentPosition}
-              mapInstance={mapInstance.current}
-            />
+            {!loading && (
+              <MainMarker
+                position={currentPosition}
+                mapInstance={mapInstance.current}
+              />
+            )}
             {/* 집 위치 마커 */}
             {userInfo?.lat && userInfo?.lng && (
               <HomeMarker
