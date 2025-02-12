@@ -19,9 +19,9 @@ const StaticMap: React.FC<StaticMapProps> = ({
   width = 600,
   height = 400,
   coordinates,
-  lineColor = '#ff0000',
-  // lineColor = '#77CEBD',
-  lineWidth = 6,
+  // lineColor = '#ff0000',
+  lineColor = '#77CEBD',
+  lineWidth = 20,
 }) => {
   const [mapSrc, setMapSrc] = useState('');
 
@@ -39,7 +39,7 @@ const StaticMap: React.FC<StaticMapProps> = ({
         //    (문서상 co:FF0000FF 같이 ARGB 형태도 가능)
         //    strokeOpacity를 조절하려면 co: 뒤쪽에 알파 채널까지 지정해야 합니다.
         const colorHex = lineColor.replace('#', '0x');
-        const pathsParam = `style:lw:${lineWidth}|co:${colorHex}|fill:true|pos:${pathString}`;
+        const pathsParam = `style:lw:${lineWidth}|co:${colorHex}|fill:false|pos:${pathString}`;
 
         // 3) raster-cors 엔드포인트 (HTTP Referer 인증)
         //    혹은 raster 엔드포인트(헤더 인증) 쓸 경우 Preflight 문제 발생
@@ -54,6 +54,7 @@ const StaticMap: React.FC<StaticMapProps> = ({
           `&paths=${encodeURIComponent(pathsParam)}`;
 
         setMapSrc(url);
+        console.log('Static map URL:', url);
       } catch (error) {
         console.error('Error building static map URL:', error);
       }
@@ -68,7 +69,7 @@ const StaticMap: React.FC<StaticMapProps> = ({
         <img
           src={mapSrc}
           alt="Naver static map"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />
       ) : (
         <div>지도 불러오는 중...</div>
