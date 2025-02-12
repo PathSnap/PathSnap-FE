@@ -201,7 +201,6 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
     }
-    searchRecord(recordingInfo.recordId);
   };
 
   const ClickImageMarker = (
@@ -263,6 +262,8 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       setSelectedBoxIndex(0);
     } else {
       setSelectedBoxIndex(1);
+      moveToCurrentLocation();
+      mapInstance.current.setZoom(18); // 줌 레벨 설정
     }
   }, [recordingInfo.isRecording]);
 
