@@ -84,7 +84,6 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log('Current location:', { lat: latitude, lng: longitude });
           resolve({ lat: latitude, lng: longitude }); // 성공 시 위도와 경도를 반환
         },
         (error) => {
@@ -202,6 +201,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     if (mapInstance.current) {
       mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
     }
+    searchRecord(recordingInfo.recordId);
   };
 
   const ClickImageMarker = (
@@ -232,6 +232,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       recordingInfo.isSerching = true;
       setIsSerachDetailRecord(true);
     }
+    console.log('record', record);
   };
 
   useEffect(() => {

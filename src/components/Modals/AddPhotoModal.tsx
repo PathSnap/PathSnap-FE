@@ -16,7 +16,9 @@ const AddPhotoModal: React.FC = () => {
   const { closeModal } = useModalStore();
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
+  const { recordingInfo, saveStartRouteRecord } = useRouteRecordStore(
+    (state) => state
+  );
   const { seq, setSeq, searchRecord } = useRecordStore((state) => state);
 
   const errorStyle = 'text-xxs';
@@ -103,8 +105,9 @@ const AddPhotoModal: React.FC = () => {
             lng = exifResult.lng;
           }
         }
+        const updateSeq = seq + 1;
         const res = await api.post(`photos/create/${recordingInfo.recordId}`, {
-          seq,
+          seq: updateSeq,
           images: imageIds,
           photoTitle: recordInfo.title,
           photoContent: recordInfo.content,
@@ -114,8 +117,8 @@ const AddPhotoModal: React.FC = () => {
         });
 
         console.log('이미지 정보 저장 성공:', res);
-        setSeq(seq + 1);
-
+        setSeq(updateSeq + 1);
+        saveStartRouteRecord(recordingInfo.recordId, updateSeq + 1);
         // 모달 닫기
         searchRecord(recordingInfo.recordId);
         closeModal();

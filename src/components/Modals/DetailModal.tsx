@@ -81,6 +81,7 @@ const Buttons = () => {
       } else if (recordingInfo.isSerching) {
         // 검색 중인 루트 삭제 (포토 초기화해줘야됨됨)
         deleteSearchRecord();
+        window.location.reload();
       }
     }
 
@@ -89,6 +90,7 @@ const Buttons = () => {
 
   const handleClickRecordType = async (recordIsGroup: boolean) => {
     try {
+      setSeq(seq);
       const recordId = await startRecord(recordIsGroup);
 
       if (recordId) {
