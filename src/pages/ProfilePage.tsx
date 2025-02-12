@@ -158,9 +158,16 @@ const TimeLine: React.FC = () => {
         <span className={'pl-1.5 text-primary'}>{tripsLength}</span>
       </div>
 
-      {trips.map((trip) => {
-        return <TimeLineItem trip={trip} key={trip.recordId} />;
-      })}
+      {trips
+        .slice() // 원본 배열 복사
+        .reverse() // 복사된 배열을 역순으로 정렬
+        .map(
+          (
+            trip // 역순으로 정렬된 복사본을 매핑
+          ) => (
+            <TimeLineItem trip={trip} key={trip.recordId} />
+          )
+        )}
     </div>
   );
 };

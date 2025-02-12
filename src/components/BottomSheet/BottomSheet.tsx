@@ -113,8 +113,6 @@ const BottomSheet2: React.FC = () => {
         const res = await searchRecord(location.state.recordId);
         console.log(res);
         if (res?.group) await searchFriendsAtRecord(location.state.recordId);
-        setIsBottomSheetOpen(true);
-        setCanHandleBottomSheet(true);
       } else {
         getRecordInfo();
       }
