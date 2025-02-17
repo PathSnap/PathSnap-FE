@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
       component: IconHome,
       text: '홈',
       onClick: () => {
-        router('/');
+        router('/', {});
       },
     },
     {

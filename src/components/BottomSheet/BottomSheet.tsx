@@ -20,13 +20,7 @@ import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useRouteRecordStore from '../../stores/RouteRecord';
 
 const BottomSheet2: React.FC = () => {
-  const {
-    sheetRef,
-    headerRef,
-    isBottomSheetOpen,
-    setIsBottomSheetOpen,
-    setCanHandleBottomSheet,
-  } = useBottomSheet();
+  const { sheetRef, headerRef, isBottomSheetOpen } = useBottomSheet();
   const { currentState, setState } = useEditRecordStore((state) => state);
   const {
     record,
@@ -110,9 +104,10 @@ const BottomSheet2: React.FC = () => {
   useEffect(() => {
     const getTravelInfo = async () => {
       if (location?.state?.recordId) {
-        const res = await searchRecord(location.state.recordId);
-        console.log(res);
-        if (res?.group) await searchFriendsAtRecord(location.state.recordId);
+        // const res = await searchRecord(location.state.recordId);
+        // // console.log(res);
+        // if (res?.group) await searchFriendsAtRecord(location.state.recordId);
+        // 단체 기록을 나중에 하기 때문에 일단 보류 (2025/02/18) 네이버지도 컴포넌트랑 중복으로 searchRecord가 호출되어서 주석처리함
       } else {
         getRecordInfo();
       }

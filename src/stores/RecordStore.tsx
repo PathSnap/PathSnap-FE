@@ -57,7 +57,7 @@ interface RecordStoreState {
   seq: number;
   setSeq: (seq: number) => void;
   changeALLPhotoRecordIsSelectfalse: () => void;
-  changePhotoRecordIsSelect: (photoId: string) => void;
+  changePhotoRecordIsSelect: (photoId: string) => Record;
   deleteSearchRecord: () => void;
 }
 
@@ -96,7 +96,7 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       const recordNum =
         (res.photoRecords?.length ?? 0) + (res.routeRecords?.length ?? 1);
       set({ seq: recordNum });
-      return res;
+      return updatedRecord;
     } catch (error) {
       console.error('Error fetching record:', error);
     }
@@ -119,7 +119,7 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
     } else {
       date = new Date().toISOString().slice(0, 10);
     }
-    console.log(date);
+    // console.log(date);
 
     set({ recordDate: date });
   },
@@ -169,15 +169,15 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
     });
     get().setRecord({ ...get().record, photoRecords: filteredRecords });
   },
-  changePhotoRecordIsSelect: (photoId: string) => {
+  changePhotoRecordIsSelect: (photoId?: string): Record => {
     const photoRecords = get().record.photoRecords || [];
-    const filteredRecords = photoRecords.map((photoRecord) => {
-      if (photoRecord.photoId === photoId) {
-        return { ...photoRecord, isSelect: !photoRecord.isSelect };
-      }
-      return photoRecord;
-    });
-    get().setRecord({ ...get().record, photoRecords: filteredRecords });
+    const updatedRecords = photoRecords.map((photoRecord) => ({
+      ...photoRecord,
+      isSelect: photoRecord.photoId === photoId, // 선택한 것만 true, 나머지는 false
+    }));
+    const newRecord: Record = { ...get().record, photoRecords: updatedRecords };
+    get().setRecord(newRecord);
+    return newRecord;
   },
   deleteSearchRecord: async () => {
     try {

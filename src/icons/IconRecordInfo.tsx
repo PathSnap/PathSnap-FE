@@ -1,4 +1,6 @@
 import React from 'react';
+import IconClose from './IconClose';
+import { useNavigate } from 'react-router';
 
 interface RecordInfoProps {
   title: string; // 왼쪽 텍스트 (여행 제목)
@@ -11,12 +13,21 @@ const RecordInfo: React.FC<RecordInfoProps> = ({
   number,
   width = '180',
 }) => {
+  const Navigate = useNavigate();
   return (
     <div
       className={`w-[${width}px] h-[52px] bg-white shadow-xxs rounded-full flex px-[22px] justify-between items-center pt-0.5`}
     >
       <div className="font-semibold text-gray-700 mr-[10px]">{title}</div>
       <div className="font-normal text-[#CCCCCC]">{number}곳</div>
+      {/* <IconClose
+        className="ml-[10px]"
+        onClick={() => {
+          console.log('close');
+          Navigate('/', {});
+          window.location.reload();
+        }}
+      /> */}
     </div>
   );
 };

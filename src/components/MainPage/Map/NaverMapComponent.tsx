@@ -12,7 +12,7 @@ import usePhotoStore from '../../../stores/PhotoStore';
 import useUserInfoStore from '../../../stores/UserInfo';
 import useRecordStore from '../../../stores/RecordStore';
 import useRouteRecordStore from '../../../stores/RouteRecord';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 interface CenterLocationProps {
   centerLat?: number | null;
@@ -36,8 +36,9 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     changePhotoRecordIsSelect,
     changeALLPhotoRecordIsSelectfalse,
     searchRecord,
+    setRecord,
     record,
-  } = useRecordStore();
+  } = useRecordStore((state) => state);
   const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
   // 현재 위치 상태 저장 함수
   const [currentPosition, setCurrentPosition] = useState<{
@@ -45,7 +46,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     lng: number;
   } | null>(null);
   const [loading, setLoading] = useState(true); // 위치 로딩 상태
-  const Navigate = useNavigate();
+  const location = useLocation();
 
   //현재 위치 저장 함수
   const saveCurrentPosition = () => {
@@ -160,8 +161,46 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     } else {
       initializeMap();
     }
-    Navigate('/', {});
+
+    recordingInfo.isSerching = false;
   }, []); // 첫 렌더링 시 실행
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let resRecord;
+      if (location?.state?.recordId) {
+        resRecord = await searchRecord(location?.state?.recordId);
+      }
+      //1초뒤 실행
+      if (
+        location?.state?.recordId &&
+        resRecord &&
+        resRecord?.photoRecords &&
+        resRecord?.photoRecords?.length > 0
+      ) {
+        //record.photoRecords의 첫번쨰 사진의 isSelect를 true로 변경 및 photo에 저장
+        const photo = resRecord.photoRecords[0];
+        changeALLPhotoRecordIsSelectfalse();
+        if (photo) {
+          const res = changePhotoRecordIsSelect(photo.photoId);
+          setRecord(res);
+          const newCenter = new (window as any).naver.maps.LatLng(
+            photo.lat,
+            photo.lng
+          );
+          if (mapInstance.current) {
+            mapInstance.current.panTo(newCenter); // 부드럽게 중심 이동
+          }
+        }
+      }
+    };
+    if (location?.state?.recordId) {
+      recordingInfo.isSerching = true;
+      setIsSerachDetailRecord(true);
+      setSelectedBoxIndex(0);
+    }
+    fetchData();
+  }, [location?.state?.recordId]);
 
   // 중심 위치 변경 이벤트 핸들러
   let CenterChangeTimeout: NodeJS.Timeout | null = null; // 타이머 저장용 변수
@@ -223,7 +262,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       changePhotoRecordIsSelect(photoId);
     } else if (!isDetailPhoto) {
       // 조회 상태에서의 클릭
-      console.log('photoId', photoId);
+      // console.log('photoId', photoId);
       searchRecord(recordId).then(() => {
         changeALLPhotoRecordIsSelectfalse();
         changePhotoRecordIsSelect(photoId);
@@ -231,7 +270,6 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
       recordingInfo.isSerching = true;
       setIsSerachDetailRecord(true);
     }
-    console.log('record', record);
   };
 
   useEffect(() => {
@@ -263,7 +301,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
     } else {
       setSelectedBoxIndex(1);
       moveToCurrentLocation();
-      mapInstance.current.setZoom(18); // 줌 레벨 설정
+      if (mapInstance.current) mapInstance.current.setZoom(18); // 줌 레벨 설정
     }
   }, [recordingInfo.isRecording]);
 
