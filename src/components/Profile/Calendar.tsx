@@ -196,8 +196,7 @@ interface CalendarBodyProps {
 export const CalendarBody: React.FC<CalendarBodyProps> = ({
   className = 'h-[54px]',
 }) => {
-  const { selectedDate } = useCalendarInfoStore((state) => state);
-
+  const { selectedDate, trips } = useCalendarInfoStore((state) => state);
   const { selectedYear, selectedMonth } = selectedDate;
 
   // 해당 달의 1일의 요일
@@ -215,12 +214,39 @@ export const CalendarBody: React.FC<CalendarBodyProps> = ({
       daysOfMonth.push(i);
     }
     return daysOfMonth.map((day, index) => {
+      if (day === null) {
+        return (
+          <div
+            className={`day-cell w-full text-center font-medium text-sm grid place-items-center ${className}`}
+            key={index}
+          ></div>
+        );
+      }
+
+      // day가 숫자인 경우 (해당 달의 날짜)
+      const dateString = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      // 해당 날짜에 맞는 trip 찾기
+      const tripForDay = trips.find((trip) => {
+        const tripDatePart = trip.startDate.split(' ')[0]; // 공백으로 분리 후 첫 번째 요소 (날짜)
+        return tripDatePart === dateString;
+      });
+      console.log('tripForDay', tripForDay);
+      console.log('trips', trips);
+
       return (
         <div
-          className={`w-full text-center font-medium text-sm grid place-items-center ${className}`}
+          className={`day-cell relative w-full text-center font-medium text-sm grid place-items-center ${className}`}
           key={index}
         >
-          {day}
+          {/* 해당 날짜에 trip이 있을 때만 이미지 띄우고, trip image url 사용 */}
+          {tripForDay && tripForDay.image && tripForDay.image.url && (
+            <img
+              src={tripForDay.image.url}
+              alt="record"
+              className="absolute inset-0 object-cover w-[95%] h-[80%] mt-1 ml-0.5 z-0 rounded-[35px] opacity-50"
+            />
+          )}
+          <div className="relative z-10 text-center">{day}</div>
         </div>
       );
     });
