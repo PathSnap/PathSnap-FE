@@ -12,7 +12,7 @@ import usePhotoStore from '../../../stores/PhotoStore';
 import useUserInfoStore from '../../../stores/UserInfo';
 import useRecordStore from '../../../stores/RecordStore';
 import useRouteRecordStore from '../../../stores/RouteRecord';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface CenterLocationProps {
   centerLat?: number | null;
@@ -47,6 +47,7 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
   } | null>(null);
   const [loading, setLoading] = useState(true); // 위치 로딩 상태
   const location = useLocation();
+  const navigate = useNavigate();
 
   //현재 위치 저장 함수
   const saveCurrentPosition = () => {
@@ -96,6 +97,10 @@ const NaverMapComponent: React.FC<CenterLocationProps> = ({
 
   const intervalId = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
+    // userId가 로컬 스토리지에 없으면 로그인 페이지로 이동
+    if (!localStorage.getItem('userId')) {
+      navigate('/login');
+    }
     //현재위치 상태 저장 타이머
     intervalId.current = setInterval(() => {
       saveCurrentPosition();
