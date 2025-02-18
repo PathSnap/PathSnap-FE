@@ -1,5 +1,5 @@
 import React from 'react';
-import useRouteRecordStore from '../../stores/RouteRecord';
+// import useRouteRecordStore from '../../stores/RouteRecord';
 
 interface SelectBoxProps {
   leftText: string;
@@ -15,7 +15,7 @@ const SelectBox: React.FC<SelectBoxProps> = ({
   setSelectedBoxIndex,
 }) => {
   const boxItems: string[] = [leftText, rightText];
-  const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
+  // const recordingInfo = useRouteRecordStore((state) => state.recordingInfo);
   return (
     <div
       className={

@@ -1,6 +1,6 @@
 import React from 'react';
-import IconClose from './IconClose';
-import { useNavigate } from 'react-router';
+// import IconClose from './IconClose';
+// import { useNavigate } from 'react-router';
 
 interface RecordInfoProps {
   title: string; // 왼쪽 텍스트 (여행 제목)
@@ -13,7 +13,7 @@ const RecordInfo: React.FC<RecordInfoProps> = ({
   number,
   width = '180',
 }) => {
-  const Navigate = useNavigate();
+  // const Navigate = useNavigate();
   return (
     <div
       className={`w-[${width}px] h-[52px] bg-white shadow-xxs rounded-full flex px-[22px] justify-between items-center pt-0.5`}

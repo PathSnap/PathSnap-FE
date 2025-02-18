@@ -1,5 +1,5 @@
 import IconCancel from '../../icons/IconCancel';
-import RecordInfo from '../../icons/IconRecordInfo';
+// import RecordInfo from '../../icons/IconRecordInfo';
 import useFriendStore from '../../stores/FriendStore';
 import useDetailModalTypeStore from '../../stores/Modals/DetailModalType';
 import useModalStore from '../../stores/Modals/ModalStore';
