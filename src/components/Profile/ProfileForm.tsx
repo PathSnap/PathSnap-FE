@@ -9,6 +9,7 @@ interface ProfileFormProps {
   setIsFill: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmit: boolean;
   setIsSubmit: React.Dispatch<React.SetStateAction<boolean>>;
+  imageValue?: string;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
@@ -16,9 +17,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   setIsFill,
   isSubmit,
   setIsSubmit,
+  imageValue = '',
 }) => {
   const labelStyle = 'text-base font-semibold';
   const inputStyle = 'h-[54px]';
+  const { userInfo } = useUserInfoStore();
 
   const [info, setInfo] = useState({
     name: '',
@@ -60,14 +63,17 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
       setIsSubmit(false);
       try {
         await updateUserInfo({
+          userId: localStorage.getItem('userId')!,
           userName: info.name,
           birthDate: info.birth,
           phoneNumber: info.phoneNum,
           address: info.address,
-          imageId: info.imageId,
+          imageId: imageValue || '',
         });
         if (isRegisterPage) {
           router('/');
+        } else {
+          router('/profile');
         }
       } catch (error) {
         console.error(error);
@@ -98,6 +104,18 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
       setIsFill(false);
     }
   }, [info.name, info.birth, info.phoneNum, info.address]);
+
+  useEffect(() => {
+    if (!isRegisterPage) {
+      setInfo({
+        name: userInfo.userName,
+        birth: userInfo.birthDate,
+        phoneNum: userInfo.phoneNumber,
+        address: userInfo.address,
+        imageId: userInfo?.images?.[0]?.imageId || '',
+      });
+    }
+  }, [isRegisterPage]);
 
   return (
     <form

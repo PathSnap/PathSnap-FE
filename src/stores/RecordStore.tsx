@@ -19,6 +19,7 @@ export type photoRecord = {
   photoDate: string;
   lat: number;
   lng: number;
+  isSelect: boolean;
 };
 
 type image = {
@@ -35,7 +36,7 @@ export type routeRecord = {
   coordinates: coordinate[];
 };
 
-type coordinate = {
+export type coordinate = {
   lat: number;
   lng: number;
   timeStamp: string;
@@ -55,6 +56,9 @@ interface RecordStoreState {
   deletePhotoRecord: (photoId: string) => void;
   seq: number;
   setSeq: (seq: number) => void;
+  changeALLPhotoRecordIsSelectfalse: () => void;
+  changePhotoRecordIsSelect: (photoId: string) => Record;
+  deleteSearchRecord: () => void;
 }
 
 const useRecordStore = create<RecordStoreState>((set, get) => ({
@@ -73,13 +77,26 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
   searchRecord: async (recordId: string) => {
     try {
       const res: Record = await api.get(`/records/detail/${recordId}`);
-      get().setRecord(res);
+
+      // photoRecords에 isSelect 추가
+      const updatedPhotoRecords = res.photoRecords?.map((photoRecord) => ({
+        ...photoRecord,
+        isSelect: false, // 기본값 추가
+      }));
+
+      // 가공된 데이터를 상태에 저장
+      const updatedRecord: Record = {
+        ...res,
+        photoRecords: updatedPhotoRecords,
+      };
+
+      get().setRecord(updatedRecord);
       get().setRecordDate();
 
       const recordNum =
         (res.photoRecords?.length ?? 0) + (res.routeRecords?.length ?? 1);
       set({ seq: recordNum });
-      return res;
+      return updatedRecord;
     } catch (error) {
       console.error('Error fetching record:', error);
     }
@@ -102,7 +119,7 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
     } else {
       date = new Date().toISOString().slice(0, 10);
     }
-    console.log(date);
+    // console.log(date);
 
     set({ recordDate: date });
   },
@@ -143,6 +160,32 @@ const useRecordStore = create<RecordStoreState>((set, get) => ({
       console.log(res);
     } catch (error) {
       console.error('Error deleting photoRecord:', error);
+    }
+  },
+  changeALLPhotoRecordIsSelectfalse: () => {
+    const photoRecords = get().record.photoRecords || [];
+    const filteredRecords = photoRecords.map((photoRecord) => {
+      return { ...photoRecord, isSelect: false };
+    });
+    get().setRecord({ ...get().record, photoRecords: filteredRecords });
+  },
+  changePhotoRecordIsSelect: (photoId?: string): Record => {
+    const photoRecords = get().record.photoRecords || [];
+    const updatedRecords = photoRecords.map((photoRecord) => ({
+      ...photoRecord,
+      isSelect: photoRecord.photoId === photoId, // 선택한 것만 true, 나머지는 false
+    }));
+    const newRecord: Record = { ...get().record, photoRecords: updatedRecords };
+    get().setRecord(newRecord);
+    return newRecord;
+  },
+  deleteSearchRecord: async () => {
+    try {
+      const res = await api.delete(`/records/delete/${get().record.recordId}`);
+
+      console.log(res);
+    } catch (error) {
+      console.error('Error deleting record:', error);
     }
   },
 }));

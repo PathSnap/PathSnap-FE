@@ -7,7 +7,7 @@ import useRecordStore from '../../stores/RecordStore';
 import IconPlus from '../../icons/BottomSheeet/IconPlus';
 import useModalStore from '../../stores/Modals/ModalStore';
 import RouteRecord from './Records/RouteRecord';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import IconMenu from '../../icons/BottomSheeet/IconMenu';
 import IconEdit from '../../icons/BottomSheeet/IconEdit';
 import IconTrash from '../../icons/BottomSheeet/IconTrash';
@@ -86,15 +86,38 @@ const BottomSheet2: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getRecordInfo();
-  }, []);
-
-  useEffect(() => {
+  const intiInfo = () => {
     setTitle(record.recordName);
     setTravelDate(recordDate);
     setCopyFriends(_.cloneDeep(friends));
     setCopyRecord(_.cloneDeep(record));
+  };
+
+  const handleClickCancelBtn = () => {
+    intiInfo();
+    setState('NONE');
+  };
+
+  // 프로필에서 바텀시트로 이동
+  const location = useLocation();
+
+  useEffect(() => {
+    const getTravelInfo = async () => {
+      if (location?.state?.recordId) {
+        // const res = await searchRecord(location.state.recordId);
+        // // console.log(res);
+        // if (res?.group) await searchFriendsAtRecord(location.state.recordId);
+        // 단체 기록을 나중에 하기 때문에 일단 보류 (2025/02/18) 네이버지도 컴포넌트랑 중복으로 searchRecord가 호출되어서 주석처리함
+      } else {
+        getRecordInfo();
+      }
+    };
+
+    getTravelInfo();
+  }, [location?.state?.recordId]);
+
+  useEffect(() => {
+    intiInfo();
   }, [record, recordDate]);
 
   return (
@@ -125,11 +148,17 @@ const BottomSheet2: React.FC = () => {
       {currentState === 'EDIT' && isBottomSheetOpen && (
         <div
           className={
-            'absolute -bottom-20 h-[110px] px-[22px] bg-white pt-4 w-full z-[60] shadow-xs'
+            'fixed bottom-0 h-[110px] px-[22px] bg-white w-full z-[60] shadow-xs text-lg flex gap-4 justify-center items-center'
           }
         >
           <button
-            className={'is-active-green-button w-full h-[58px] text-lg'}
+            onClick={handleClickCancelBtn}
+            className={'gray-button w-full h-[58px]'}
+          >
+            취소
+          </button>
+          <button
+            className={'is-active-green-button w-full h-[58px] '}
             onClick={() => handleClickSaveBtn()}
           >
             완료
@@ -360,7 +389,7 @@ const Profile: React.FC<ProfileProps> = ({ info, isLeader }) => {
       }
     >
       <img
-        src={info.url || ''}
+        src={info.url || 'src/icons/BasicProfile.svg'}
         className={'w-14 rounded-full aspect-square object-cover'}
       />
       <div className={'text-sm text-second'}>

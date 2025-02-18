@@ -3,6 +3,7 @@ import IconCar from '../../../icons/BottomSheeet/IconCar';
 import RecordWrapper from './RecordWrapper';
 import { routeRecord } from '../../../stores/RecordStore';
 import { calculateTime, formattedTime } from '../../../utils/formatDate';
+import StaticMap from './StaticMapByDynamic';
 
 interface RouteRecordProps {
   record: routeRecord;
@@ -11,11 +12,13 @@ interface RouteRecordProps {
 const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
   return (
     <RecordWrapper
-      className={'shadow-l p-[14px] grid grid-cols-[auto_1fr] gap-[30px]'}
+      className={
+        'h-[100%] shadow-l p-[14px] grid grid-cols-[auto_1fr] gap-[30px]'
+      }
     >
       <div className={'flex flex-col py-1.5 text-third justify-between w-full'}>
         {/* TODO :  */}
-        <div className={'font-semibold'}>전주로 이동</div>
+        <div className={'font-semibold'}>목적지로 이동</div>
         <div
           className={
             'text-sm grid grid-cols-[13px_minmax(0,1fr)] grid-rows-2 gap-x-1.5 gap-y-[18px]'
@@ -34,8 +37,21 @@ const RouteRecord: React.FC<RouteRecordProps> = ({ record }) => {
           <div>{calculateTime(record.startDate, record.endDate)} | 3.5km</div>
         </div>
       </div>
-      <div className={'w-full rounded-2xl border-2 border-gray-200'}>
-        지도자리..
+      <div className={'w-full h-full rounded-2xl border-2 border-gray-200'}>
+        <StaticMap
+          lat={
+            (record.coordinates[0].lat +
+              record.coordinates[record.coordinates.length - 1].lat) /
+            2
+          }
+          lng={
+            (record.coordinates[0].lng +
+              record.coordinates[record.coordinates.length - 1].lng) /
+            2
+          }
+          level={13}
+          coordinates={record.coordinates}
+        />
       </div>
     </RecordWrapper>
   );

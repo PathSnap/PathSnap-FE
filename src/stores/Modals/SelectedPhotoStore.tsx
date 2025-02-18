@@ -16,6 +16,7 @@ const useSelectedPhotoStore = create<SelectedPhotoStoreState>((set) => ({
     photoDate: '',
     lat: 0,
     lng: 0,
+    isSelect: false,
   },
   setSelectedRecord: (record: photoRecord) => {
     set({ selectedRecord: record });
