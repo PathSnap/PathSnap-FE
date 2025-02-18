@@ -53,7 +53,7 @@ const useCalendarInfoStore = create<CalendarInfoStore>((set) => ({
     try {
       set({ selectedDate: selectedDate });
       const res: any = await api.get(
-        `/profiles/calendar/${localStorage.getItem('userId')}/${selectedDate.selectedMonth}`
+        `/profiles/calendar/${localStorage.getItem('userId')}/${selectedDate.selectedYear}/${selectedDate.selectedMonth}`
       );
       set({ trips: res.calendar });
       set({ packTrips: res.newTrips });

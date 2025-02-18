@@ -12,7 +12,10 @@ import ProfilePage from './pages/ProfilePage';
 import FooterLayout from './layouts/FooterLayout';
 import EditProfilePage from './pages/EditProfilePage';
 
+import useAutoSaveRouteRecord from './hooks/Recording/useAutoSaveRouteRecord';
+
 function App() {
+  useAutoSaveRouteRecord();
   return (
     <Router>
       <Routes>

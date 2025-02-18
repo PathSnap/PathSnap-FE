@@ -37,9 +37,9 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
     userName: '',
     birthDate: '',
     phoneNumber: '',
-    address: '',
     lat: 0,
     lng: 0,
+    address: '',
     images: [
       {
         imageId: '',
@@ -70,8 +70,8 @@ const useUserInfoStore = create<UserInfoStoreState>((set) => ({
 
       const res: any = await api.patch('/profiles', filteredUserInfo);
 
-      set({ userInfo: res.data });
-      console.log('프로필 저장 성공:', res.data);
+      set({ userInfo: res });
+      console.log('프로필 저장 성공:', res);
     } catch (error) {
       console.error('프로필 저장 실패:', error);
     }

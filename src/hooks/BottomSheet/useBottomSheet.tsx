@@ -33,8 +33,13 @@ export function useBottomSheet() {
 
   useEffect(() => {
     // 기록 중일 때만 바텀시트 열리도록
-    if (!recordingInfo.isRecording && !canHandleBottomSheet) return;
-
+    if (
+      !(recordingInfo.isRecording && recordingInfo.isRenderingRecording) &&
+      !recordingInfo.isSerching &&
+      !canHandleBottomSheet
+    ) {
+      return;
+    }
     const handleTouchStart = (e: TouchEvent) => {
       const { touchStart } = metrics.current;
 
@@ -127,7 +132,12 @@ export function useBottomSheet() {
       headerRef.current?.removeEventListener('touchmove', handleTouchMove);
       headerRef.current?.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [recordingInfo.isRecording, isBottomSheetOpen]);
+  }, [
+    recordingInfo.isSerching,
+    recordingInfo.isRecording,
+    recordingInfo.isRenderingRecording,
+    isBottomSheetOpen,
+  ]);
 
   return {
     sheetRef,

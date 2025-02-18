@@ -7,21 +7,23 @@ type Photo = {
   url: string;
   lat: number;
   lng: number;
-  isSelect: boolean;
 };
 
 interface PhotoStore {
   photos: Photo[];
   searchPhotos: (lon: number, lat: number, radius: number) => void;
-  togglePhotoSelection: (photoId: string) => void; // 특정 photo의 선택 상태를 반전
 }
 
 const MAX_PHOTOS = 20; // 최대 사진 개수
 
 const usePhotoStore = create<PhotoStore>((set, get) => ({
   photos: [],
-  searchPhotos: async (lon: number, lat: number, radius: number) => {
-    console.log('Searching photos:', lon, lat, radius);
+  searchPhotos: async (
+    lon: number,
+    lat: number,
+    radius: number
+  ): Promise<void> => {
+    // console.log('Searching photos:', lon, lat, radius);
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -56,23 +58,13 @@ const usePhotoStore = create<PhotoStore>((set, get) => ({
         const limitedPhotos = mergedPhotos.slice(-MAX_PHOTOS);
 
         set({ photos: limitedPhotos });
-        console.log('Fetched photos:', limitedPhotos);
+        // console.log('Fetched photos:', limitedPhotos);
       } else {
         console.error('Unexpected API response:', res);
       }
     } catch (error) {
       console.error('Error fetching photos:', error);
     }
-  },
-
-  togglePhotoSelection: (photoId) => {
-    set((state) => ({
-      photos: state.photos.map((photo) =>
-        photo.photoId === photoId
-          ? { ...photo, isSelect: !photo.isSelect } // 선택 상태 반전
-          : photo
-      ),
-    }));
   },
 }));
 

@@ -1,15 +1,21 @@
 import React from 'react';
 
 interface CurrentLocationButtonProps {
+  isSearchDetailRecord: boolean; // 검색 상세 레코드 화면인지 여부
   onMoveToCurrentLocation: () => void; // 현재 위치로 이동하는 콜백
 }
 
 const CurrentLocationButton: React.FC<CurrentLocationButtonProps> = ({
+  isSearchDetailRecord,
   onMoveToCurrentLocation,
 }) => {
   return (
     <div className="relative">
-      <div className="absolute bottom-[70px] right-2 z-1000">
+      <div
+        className={`absolute bottom-[70px] right-2 z-1000 ${
+          isSearchDetailRecord ? 'bottom-[220px] right-2' : ''
+        }`}
+      >
         <button
           onClick={onMoveToCurrentLocation} // 클릭 시 현재 위치로 이동
           className="h-[44px] w-[44px] bg-[#FFFFFF] rounded-full shadow-lg flex items-center justify-center"
